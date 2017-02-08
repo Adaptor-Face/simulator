@@ -8,7 +8,7 @@ package simulator;
 /**
  *
  * @author Kristoffer
- */
+ */ 
 public class Simulator {
 
     /**
