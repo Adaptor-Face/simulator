@@ -29,6 +29,8 @@ public class Seal extends Animal {
     // Individual characteristics (instance fields).
     private int foodLevel;
     
+    private Landscape ls = new Landscape();
+    
     // The rabbit's age.
     private int age;
 
@@ -59,9 +61,14 @@ public class Seal extends Animal {
         incrementAge();
         incrementHunger(foodLevel);
         if(isAlive()) {
-            giveBirth(newSeals);            
+            giveBirth(newSeals);
+            Location newLocation;
+            if (ls.getType() == 2) {
+                newLocation = findFood();
+            } else {
+                newLocation = getField().freeAdjacentLocation(getLocation());
+            }
             // Try to move into a free location.
-            Location newLocation = findFood();
             if(newLocation != null) {
                 setLocation(newLocation);
             }
