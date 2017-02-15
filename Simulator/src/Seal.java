@@ -8,7 +8,7 @@ import java.util.Random;
  * @author David J. Barnes and Michael Kölling
  * @version 2011.07.31
  */
-public class Rabbit extends Animal
+public class Seal extends Animal
 {
     // Characteristics shared by all rabbits (class variables).
 
@@ -36,7 +36,7 @@ public class Rabbit extends Animal
      * @param field The field currently occupied.
      * @param location The location within the field.
      */
-    public Rabbit(boolean randomAge, Field field, Location location)
+    public Seal(boolean randomAge, Field field, Location location)
     {
         super(field, location);
         age = 0;
@@ -93,7 +93,7 @@ public class Rabbit extends Animal
         int births = breed();
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
-            Rabbit young = new Rabbit(false, field, loc);
+            Seal young = new Seal(false, field, loc);
             newRabbits.add(young);
         }
     }
