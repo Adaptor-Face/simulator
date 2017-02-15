@@ -8,6 +8,10 @@
  *
  * @author Kristoffer
  */
-public class C extends Landscape{
+public class Ocean extends Landscape{
     
+    public Ocean (double value){
+        setFoodDensitiy(value);
+        setType(2);
+    }
 }

@@ -14,16 +14,16 @@ public class PolarBear extends Animal
     // Characteristics shared by all bears (class variables).
     
     // The age at which a bear can start to breed.
-    private static final int BREEDING_AGE = 15;
+    private static final int BREEDING_AGE = 52*4;
     // The age to which a bear can live.
-    private static final int MAX_AGE = 150;
+    private static final int MAX_AGE = 52*30;
     // The likelihood of a bear breeding.
     private static final double BREEDING_PROBABILITY = 0.08;
     // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 2;
+    private static final int MAX_LITTER_SIZE = 4;
     // The food value of a single seal. In effect, this is the
     // number of steps a bear can go before it has to eat again.
-    private static final int RABBIT_FOOD_VALUE = 9;
+    private static final int RABBIT_FOOD_VALUE = 12;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     
@@ -118,7 +118,7 @@ public class PolarBear extends Animal
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
+            Object animal = field.getAnimalAt(where);
             if(animal instanceof Seal) {
                 Seal rabbit = (Seal) animal;
                 if(rabbit.isAlive()) { 
