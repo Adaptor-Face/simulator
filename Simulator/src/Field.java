@@ -1,4 +1,5 @@
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,8 +20,8 @@ public class Field
     // The depth and width of the field.
     private int depth, width;
     // Storage for the animals.
-    private Object[][] field;
-
+    private HashMap<Location, Animal> field;
+    private HashMap<Location, Landscape> landscape;
     /**
      * Represent a field of the given dimensions.
      * @param depth The depth of the field.
@@ -30,9 +31,18 @@ public class Field
     {
         this.depth = depth;
         this.width = width;
-        field = new Object[depth][width];
+        field = new HashMap<>();
+        landscape = new HashMap<>(createLandscape(depth, width));
     }
-    
+    private HashMap<Location, Landscape> createLandscape(int depth, int width){
+        HashMap<Location, Landscape> field = new HashMap<>();
+        for (int y = 0; y<=depth; y++){
+            for(int x = 0; x<=width; x++){
+                field.put(new Location(y, x), null);
+            }
+        }
+        return field;
+    }
     /**
      * Empty the field.
      */
