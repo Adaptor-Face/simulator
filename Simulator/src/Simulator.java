@@ -59,8 +59,8 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-        view.setColor(Rabbit.class, Color.ORANGE);
-        view.setColor(Fox.class, Color.BLUE);
+        view.setColor(Seal.class, Color.ORANGE);
+        view.setColor(PolarBear.class, Color.BLUE);
         
         // Setup a valid starting point.
         reset();
@@ -137,12 +137,12 @@ public class Simulator
             for(int col = 0; col < field.getWidth(); col++) {
                 if(rand.nextDouble() <= FOX_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Fox fox = new Fox(true, field, location);
+                    PolarBear fox = new PolarBear(true, field, location);
                     animals.add(fox);
                 }
                 else if(rand.nextDouble() <= RABBIT_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Rabbit rabbit = new Rabbit(true, field, location);
+                    Seal rabbit = new Seal(true, field, location);
                     animals.add(rabbit);
                 }
                 // else leave the location empty.

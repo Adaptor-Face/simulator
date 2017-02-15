@@ -1,16 +1,12 @@
-
 import java.util.List;
 import java.util.Random;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- *
- * @author Erik
+ * A simple model of a rabbit.
+ * Rabbits age, move, breed, and die.
+ * 
+ * @author David J. Barnes and Michael Kölling
+ * @version 2011.07.31
  */
 public class Seal extends Animal {
     // Characteristics shared by all rabbits (class variables).
@@ -125,8 +121,4 @@ public class Seal extends Animal {
     {
         return age >= BREEDING_AGE;
     }
-    
-    
-    
-    
 }
