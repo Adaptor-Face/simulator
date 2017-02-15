@@ -1,5 +1,7 @@
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A simple model of a rabbit.
@@ -21,6 +23,8 @@ public class Seal extends Animal {
     private static final int MAX_LITTER_SIZE = 1;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
+    private static final int FISH_FOOD_VALUE = 9;
+    private static final double FISH_CONSTANT = 0.85;
     
     // Individual characteristics (instance fields).
     private int foodLevel;
@@ -57,7 +61,7 @@ public class Seal extends Animal {
         if(isAlive()) {
             giveBirth(newSeals);            
             // Try to move into a free location.
-            Location newLocation = getField().freeAdjacentLocation(getLocation());
+            Location newLocation = findFood();
             if(newLocation != null) {
                 setLocation(newLocation);
             }
@@ -121,4 +125,20 @@ public class Seal extends Animal {
     {
         return age >= BREEDING_AGE;
     }
+    
+        private Location findFood()
+    {
+        //Random r = new Random();
+        double min = 0;
+        double max = 1;
+        //double randomFishValue = min +  (max - min) * r.nextDouble();
+        double randomFishValue = ThreadLocalRandom.current().nextDouble(min, max);
+            Location where = getField().freeAdjacentLocation(getLocation());
+            if(randomFishValue <= FISH_CONSTANT) {
+                    foodLevel += FISH_FOOD_VALUE;
+                    return where;
+            }
+        return null;
+    }
+    
 }
