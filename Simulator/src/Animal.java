@@ -88,4 +88,13 @@ public abstract class Animal
     {
         return field;
     }
+    
+    protected void incrementHunger(int foodLevel)
+    {
+        foodLevel--;
+        if(foodLevel <= 0) {
+            setDead();
+        }
+    }
+    
 }

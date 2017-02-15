@@ -8,8 +8,7 @@ import java.util.Random;
  * @author David J. Barnes and Michael Kölling
  * @version 2011.07.31
  */
-public class Seal extends Animal
-{
+public class Seal extends Animal {
     // Characteristics shared by all rabbits (class variables).
 
     // The age at which a rabbit can start to breed.
@@ -24,6 +23,7 @@ public class Seal extends Animal
     private static final Random rand = Randomizer.getRandom();
     
     // Individual characteristics (instance fields).
+    private int foodLevel;
     
     // The rabbit's age.
     private int age;
@@ -48,13 +48,14 @@ public class Seal extends Animal
     /**
      * This is what the rabbit does most of the time - it runs 
      * around. Sometimes it will breed or die of old age.
-     * @param newRabbits A list to return newly born rabbits.
+     * @param newSeals A list to return newly born rabbits.
      */
-    public void act(List<Animal> newRabbits)
+    public void act(List<Animal> newSeals)
     {
         incrementAge();
+        incrementHunger(foodLevel);
         if(isAlive()) {
-            giveBirth(newRabbits);            
+            giveBirth(newSeals);            
             // Try to move into a free location.
             Location newLocation = getField().freeAdjacentLocation(getLocation());
             if(newLocation != null) {
@@ -84,7 +85,7 @@ public class Seal extends Animal
      * New births will be made into free adjacent locations.
      * @param newRabbits A list to return newly born rabbits.
      */
-    private void giveBirth(List<Animal> newRabbits)
+    private void giveBirth(List<Animal> newSeals)
     {
         // New rabbits are born into adjacent locations.
         // Get a list of adjacent free locations.
@@ -94,7 +95,7 @@ public class Seal extends Animal
         for(int b = 0; b < births && free.size() > 0; b++) {
             Location loc = free.remove(0);
             Seal young = new Seal(false, field, loc);
-            newRabbits.add(young);
+            newSeals.add(young);
         }
     }
         
