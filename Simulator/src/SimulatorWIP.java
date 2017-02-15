@@ -11,7 +11,7 @@ import java.awt.Color;
  * @author David J. Barnes and Michael Kölling
  * @version 2011.07.31
  */
-public class Simulator
+public class SimulatorWIP
 {
     // Constants representing configuration information for the simulation.
     // The default width for the grid.
@@ -35,7 +35,7 @@ public class Simulator
     /**
      * Construct a simulation field with default size.
      */
-    public Simulator()
+    public SimulatorWIP()
     {
         this(DEFAULT_DEPTH, DEFAULT_WIDTH);
     }
@@ -45,7 +45,7 @@ public class Simulator
      * @param depth Depth of the field. Must be greater than zero.
      * @param width Width of the field. Must be greater than zero.
      */
-    public Simulator(int depth, int width)
+    public SimulatorWIP(int depth, int width)
     {
         if(width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
@@ -59,8 +59,8 @@ public class Simulator
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-        view.setColor(Seal.class, Color.ORANGE);
-        view.setColor(PolarBear.class, Color.BLUE);
+        view.setColor(Rabbit.class, Color.ORANGE);
+        view.setColor(Fox.class, Color.BLUE);
         view.setColor(Land.class, Color.GREEN);
         view.setColor(Ocean.class, Color.CYAN);
         
@@ -139,12 +139,12 @@ public class Simulator
             for(int col = 0; col < field.getWidth(); col++) {
                 if(rand.nextDouble() <= FOX_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    PolarBear fox = new PolarBear(true, field, location);
+                    Fox fox = new Fox(true, field, location);
                     animals.add(fox);
                 }
                 else if(rand.nextDouble() <= RABBIT_CREATION_PROBABILITY) {
                     Location location = new Location(row, col);
-                    Seal rabbit = new Seal(true, field, location);
+                    Rabbit rabbit = new Rabbit(true, field, location);
                     animals.add(rabbit);
                 }
                 // else leave the location empty.

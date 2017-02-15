@@ -133,7 +133,7 @@ public class Field {
      * @param col The desired column.
      * @return The landscape at the given location, or null if there is none.
      */
-    public Landscape getLanscapeAt(int row, int col) {
+    public Landscape getLandscapeAt(int row, int col) {
         return landscape.get(new Location(row, col));
     }
 

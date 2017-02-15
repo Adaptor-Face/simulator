@@ -10,7 +10,7 @@
  */
 public class SimStart {
     public static void main(String[] args) {
-        Simulator sim = new Simulator();
-        sim.runLongSimulation();
+        SimulatorWIP sim = new SimulatorWIP();
+        sim.simulate(1000);
     }
 }
