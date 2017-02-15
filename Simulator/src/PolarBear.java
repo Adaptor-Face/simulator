@@ -118,7 +118,7 @@ public class PolarBear extends Animal
         Iterator<Location> it = adjacent.iterator();
         while(it.hasNext()) {
             Location where = it.next();
-            Object animal = field.getObjectAt(where);
+            Object animal = field.getAnimalAt(where);
             if(animal instanceof Seal) {
                 Seal rabbit = (Seal) animal;
                 if(rabbit.isAlive()) { 
