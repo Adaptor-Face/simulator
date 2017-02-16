@@ -64,7 +64,7 @@ public class Seal extends Animal {
         if(isAlive()) {
             giveBirth(newSeals);
             Location newLocation;
-            if (ls.getType() == 2) {
+            if (ls.getType().equals(LandscapeType.OCEAN)) {
                 newLocation = findFood();
             } else {
                 newLocation = getField().freeAdjacentLocation(getLocation());
