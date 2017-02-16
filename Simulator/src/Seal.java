@@ -49,6 +49,7 @@ public class Seal extends Animal {
         foodLevel = rand.nextInt(FISH_FOOD_VALUE);
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
+            foodLevel = rand.nextInt(FISH_FOOD_VALUE);
         }
     }
     
@@ -62,6 +63,7 @@ public class Seal extends Animal {
         incrementAge();
         incrementHunger(foodLevel);
         if(isAlive()) {
+            ls = getField().getLandscapeAt(getLocation());
             giveBirth(newSeals);
             Location newLocation;
             if (ls.getType().equals(LandscapeType.OCEAN)) {
@@ -144,6 +146,7 @@ public class Seal extends Animal {
             Location where = getField().freeAdjacentLocation(getLocation());
             if(randomFishValue <= FISH_CONSTANT) {
                     foodLevel += FISH_FOOD_VALUE;
+                    System.out.println("Kristoffer suge pikk");
                     return where;
             }
         return null;
