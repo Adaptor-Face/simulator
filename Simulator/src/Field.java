@@ -63,7 +63,6 @@ public class Field {
             } else if (middle > 120) {
                 middle = 120;
             }
-            System.out.println(y + "  " + number + "  " + middle);
         }
         return field;
     }
