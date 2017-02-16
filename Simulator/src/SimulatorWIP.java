@@ -12,7 +12,7 @@ import java.awt.Color;
  * @author David J. Barnes and Michael Kölling
  * @version 2011.07.31
  */
-public class SimulatorWIP {
+public class SimulatorWIP  {
 
     // Constants representing configuration information for the simulation.
     // The default width for the grid.
@@ -58,7 +58,7 @@ public class SimulatorWIP {
         field = new Field(depth, width, seed);
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width);
+        view = new SimulatorView(depth, width, this);
         view.setColor(Rabbit.class, Color.ORANGE);
         view.setColor(Fox.class, Color.BLUE);
         view.setColor(Land.class, Color.GREEN);

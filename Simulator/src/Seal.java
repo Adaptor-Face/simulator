@@ -151,8 +151,6 @@ public class Seal extends Animal {
         double randomFishValue = ThreadLocalRandom.current().nextDouble(min, max);
             if(randomFishValue <= ls.getFoodDensitiy()) {
                     foodLevel += FISH_FOOD_VALUE;
-                    System.out.println(foodLevel);
-                    System.out.println(location.getCol() + ", " +  location.getRow());
             }
     }
         
