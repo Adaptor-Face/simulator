@@ -8,10 +8,11 @@
  *
  * @author Kristoffer
  */
-public class Ocean extends Landscape{
+public class LandscapeType extends Landscape{
     
-    public Ocean (double value){
-        setFoodDensitiy(value);
-        setType(LandscapeType.OCEAN);
-    }
+    public static int LAND = 1;
+    public static int SHORE = 2;
+    public static int SHALLOWS = 3;
+    public static int OCEAN = 4;
+    
 }
