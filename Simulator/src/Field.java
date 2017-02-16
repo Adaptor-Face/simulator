@@ -43,6 +43,7 @@ public class Field {
         if (seed.length == 1) {
             landscapeSeed = seed[0];
         }
+        boolean invert = landscapeSeed < 0;
         HashMap<Location, Landscape> field = new HashMap<>();
         int middle = Integer.parseInt("" + width / 2);
         for (int y = 0; y <= depth; y++) {
@@ -55,6 +56,7 @@ public class Field {
             }
             int number = middle;
             number = Math.abs(((landscapeSeed ^ middle + middle ^ landscapeSeed) - ((middle + landscapeSeed) * (y ^ 2 - y))) % 10) - 5;
+            
             middle += number;
             if (middle < 0) {
                 middle = 0;
