@@ -39,6 +39,7 @@ public class SimulatorView extends JFrame
      */
     public SimulatorView(int height, int width)
     {
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         stats = new FieldStats();
         colors = new LinkedHashMap<Class, Color>();
 
