@@ -160,5 +160,16 @@ public class Seal extends Animal {
         }
         return null;
     }
+        
+        private Location scanForOceanTile(Location location) {
+            Field field = getField();
+            List<Location> adjacent = field.getFreeAdjacentLocations(location);
+            for (Location cT : adjacent) {
+                if ((cT.equals(LandscapeType.OCEAN)) || (cT.equals(LandscapeType.SHALLOWS))) {
+                    return cT;
+                }            
+        }
+            return null;
+        }
     
 }
