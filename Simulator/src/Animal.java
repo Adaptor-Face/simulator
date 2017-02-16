@@ -93,7 +93,6 @@ public abstract class Animal
     {
         foodLevel--;
         if(foodLevel <= 0) {
-            System.out.println("I STARVED ----------------------------------");
             setDead();
             return 0;
         }
