@@ -58,7 +58,7 @@ public class Simulator
         field = new Field(depth, width, seed);
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width);
+        view = new SimulatorView(depth, width, this);
         view.setColor(Seal.class, Color.RED);
         view.setColor(PolarBear.class, Color.BLUE);
         view.setColor(Land.class, Color.GREEN);
@@ -99,7 +99,7 @@ public class Simulator
         step++;
 
         // Provide space for newborn animals.
-        List<Animal> newAnimals = new ArrayList<Animal>();        
+        List<Animal> newAnimals = new ArrayList<>();        
         // Let all rabbits act.
         for(Iterator<Animal> it = animals.iterator(); it.hasNext(); ) {
             Animal animal = it.next();

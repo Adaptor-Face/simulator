@@ -37,11 +37,11 @@ public class SimulatorView extends JFrame
      * @param height The simulation's height.
      * @param width  The simulation's width.
      */
-    public SimulatorView(int height, int width)
+    public SimulatorView(int height, int width, Simulator sim)
     {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         stats = new FieldStats();
-        colors = new LinkedHashMap<Class, Color>();
+        colors = new LinkedHashMap<>();
 
         setTitle("Fox and Rabbit Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
@@ -52,7 +52,16 @@ public class SimulatorView extends JFrame
         fieldView = new FieldView(height, width);
 
         Container contents = getContentPane();
-        contents.add(stepLabel, BorderLayout.NORTH);
+        JPanel topBar = new JPanel();
+        JButton oneStepBtn = new JButton("One Step");
+        oneStepBtn.setMnemonic(KeyEvent.VK_D);
+        oneStepBtn.setActionCommand("ONE_STEP");
+        oneStepBtn.addActionListener((ActionEvent e) -> {
+            sim.simulateOneStep();
+        });
+        topBar.add(oneStepBtn, BorderLayout.WEST);
+        topBar.add(stepLabel, BorderLayout.NORTH);
+        contents.add(topBar, BorderLayout.NORTH);
         contents.add(fieldView, BorderLayout.CENTER);
         contents.add(population, BorderLayout.SOUTH);
         pack();
