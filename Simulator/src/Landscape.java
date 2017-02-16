@@ -12,7 +12,7 @@ public class Landscape implements LandscapeType{
     private double foodDensitiy = 0;
     private int typeId = NONE;
     
-
+    
     public final double getFoodDensitiy() {
         return foodDensitiy;
     }
