@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.awt.Color;
+import java.awt.Container;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -66,6 +67,10 @@ public class Simulator
         
         // Setup a valid starting point.
         reset();
+    }
+
+    public SimulatorView getView() {
+        return view;
     }
     
     /**

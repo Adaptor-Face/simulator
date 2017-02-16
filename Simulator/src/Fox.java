@@ -61,7 +61,7 @@ public class Fox extends Animal
      * @param field The field currently occupied.
      * @param newFoxes A list to return newly born foxes.
      */
-    public void act(List<Animal> newFoxes)
+    public Location act(List<Animal> newFoxes)
     {
         incrementAge();
         incrementHunger();
@@ -82,6 +82,7 @@ public class Fox extends Animal
                 setDead();
             }
         }
+        return null;
     }
 
     /**
