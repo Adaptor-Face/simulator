@@ -66,8 +66,10 @@ public class Seal extends Animal {
             ls = getField().getLandscapeAt(getLocation());
             giveBirth(newSeals);
             Location newLocation;
-            if (ls.getType().equals(LandscapeType.OCEAN)) {
-                newLocation = findFood();
+            Location oceanTile = scanForOceanTile(getLocation());
+            if (oceanTile != null) {
+                findFood(oceanTile);
+                newLocation = oceanTile;
                 System.out.println(ls.getType());
             } else {
                 newLocation = getField().freeAdjacentLocation(getLocation());
@@ -139,26 +141,16 @@ public class Seal extends Animal {
         return age >= BREEDING_AGE;
     }
     
-        private Location findFood()
+        private void findFood(Location location)
     {
-        //Random r = new Random();
         double min = 0;
         double max = 1;
-        //double randomFishValue = min +  (max - min) * r.nextDouble();
         double randomFishValue = ThreadLocalRandom.current().nextDouble(min, max);
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while (it.hasNext()) {
-            Location where = it.next();
             if(randomFishValue <= ls.getFoodDensitiy()) {
                     foodLevel += FISH_FOOD_VALUE;
                     System.out.println(foodLevel);
-                    System.out.println(where.getCol() + ", " +  where.getRow());
-                    return where;
+                    System.out.println(location.getCol() + ", " +  location.getRow());
             }
-        }
-        return null;
     }
         
         private Location scanForOceanTile(Location location) {
