@@ -33,7 +33,7 @@ public abstract class Animal
      * whatever it wants/needs to do.
      * @param newAnimals A list to receive newly born animals.
      */
-    abstract public void act(List<Animal> newAnimals);
+    abstract public Location act(List<Animal> newAnimals);
 
     /**
      * Check whether the animal is alive or not.

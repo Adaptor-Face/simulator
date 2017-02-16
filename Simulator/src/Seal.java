@@ -58,7 +58,7 @@ public class Seal extends Animal {
      * around. Sometimes it will breed or die of old age.
      * @param newSeals A list to return newly born rabbits.
      */
-    public void act(List<Animal> newSeals)
+    public Location act(List<Animal> newSeals)
     {
         incrementAge();
         incrementHunger(foodLevel);
@@ -75,12 +75,14 @@ public class Seal extends Animal {
             // Try to move into a free location.
             if(newLocation != null) {
                 setLocation(newLocation);
+                return newLocation;
             }
             else {
                 // Overcrowding.
                 setDead();
             }
         }
+        return null;
     }
 
     /**

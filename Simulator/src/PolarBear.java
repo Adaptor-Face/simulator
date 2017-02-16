@@ -57,7 +57,7 @@ public class PolarBear extends Animal {
      * @param field The field currently occupied.
      * @param newBears A list to return newly born bears.
      */
-    public void act(List<Animal> newBears) {
+    public Location act(List<Animal> newBears) {
 //        incrementAge();
 //        incrementHunger();
 //        if (isAlive()) {
@@ -76,6 +76,7 @@ public class PolarBear extends Animal {
 //                setDead();
 //            }
 //        }
+        return null;
     }
 
     /**
