@@ -25,7 +25,7 @@ public class Landscape implements LandscapeType{
         return typeId;
     }
 
-    public final void setType(int typeId) {
+    public final void setType(Integer typeId) {
         this.typeId = typeId;
     }
     

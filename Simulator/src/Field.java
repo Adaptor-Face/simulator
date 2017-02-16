@@ -29,26 +29,39 @@ public class Field {
      *
      * @param depth The depth of the field.
      * @param width The width of the field.
+     * @param seed The seed to change the landscape (optional).
      */
-    public Field(int depth, int width) {
+    public Field(int depth, int width, int... seed) {
         this.depth = depth;
         this.width = width;
         field = new HashMap<>();
-        landscape = new HashMap<>(createLandscape(depth, width));
+        landscape = new HashMap<>(createLandscape(depth, width, seed));
     }
 
-    private HashMap<Location, Landscape> createLandscape(int depth, int width) {
+    private HashMap<Location, Landscape> createLandscape(int depth, int width, int... seed) {
+        int landscapeSeed = 812;
+        if (seed.length == 1) {
+            landscapeSeed = seed[0];
+        }
         HashMap<Location, Landscape> field = new HashMap<>();
         int middle = Integer.parseInt("" + width / 2);
         for (int y = 0; y <= depth; y++) {
             for (int x = 0; x <= width; x++) {
                 if (x <= middle) {
-                    field.put(new Location(y, x), new Land(0));
-                } else {
                     field.put(new Location(y, x), new Ocean(0.75));
+                } else {
+                    field.put(new Location(y, x), new Land(0));
                 }
             }
-            middle += (((middle * middle) + 88) % 10) - 5;
+            int number = middle;
+            number = Math.abs(((landscapeSeed ^ middle + middle ^ landscapeSeed) - ((middle + landscapeSeed) * (y ^ 2 - y))) % 10) - 5;
+            middle += number;
+            if (middle < 0) {
+                middle = 0;
+            } else if (middle > 120) {
+                middle = 120;
+            }
+            System.out.println(y + "  " + number + "  " + middle);
         }
         return field;
     }
@@ -106,6 +119,7 @@ public class Field {
     public Animal getAnimalAt(Location location) {
         return field.get(location);
     }
+
     /**
      * Return the landscape at the given location, if any.
      *
@@ -126,6 +140,7 @@ public class Field {
     public Animal getAnimalAt(int row, int col) {
         return field.get(new Location(row, col));
     }
+
     /**
      * Return the landscape at the given location.
      *

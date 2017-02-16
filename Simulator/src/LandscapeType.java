@@ -15,4 +15,6 @@ public interface LandscapeType {
     public static Integer SHALLOWS = 3;
     public static Integer OCEAN = 4;
     
+    public void setType(Integer typeId);
+    public Integer getType();
 }
