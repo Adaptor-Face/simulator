@@ -14,7 +14,7 @@ public class Seal extends Animal {
     // Characteristics shared by all rabbits (class variables).
 
     // The age at which a rabbit can start to breed.
-    private static final int BREEDING_AGE = 286;
+    private static final int BREEDING_AGE = 2860;
     // The age to which a rabbit can live.
     private static final int MAX_AGE = 1456;
     // The likelihood of a rabbit breeding.
@@ -68,6 +68,7 @@ public class Seal extends Animal {
             Location newLocation;
             if (ls.getType().equals(LandscapeType.OCEAN)) {
                 newLocation = findFood();
+                System.out.println(ls.getType());
             } else {
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }
@@ -143,12 +144,18 @@ public class Seal extends Animal {
         double max = 1;
         //double randomFishValue = min +  (max - min) * r.nextDouble();
         double randomFishValue = ThreadLocalRandom.current().nextDouble(min, max);
-            Location where = getField().freeAdjacentLocation(getLocation());
-            if(randomFishValue <= FISH_CONSTANT) {
+        Field field = getField();
+        List<Location> adjacent = field.adjacentLocations(getLocation());
+        Iterator<Location> it = adjacent.iterator();
+        while (it.hasNext()) {
+            Location where = it.next();
+            if(randomFishValue <= ls.getFoodDensitiy()) {
                     foodLevel += FISH_FOOD_VALUE;
-                    System.out.println("Kristoffer suge pikk");
+                    System.out.println(foodLevel);
+                    System.out.println(where.getCol() + ", " +  where.getRow());
                     return where;
             }
+        }
         return null;
     }
     

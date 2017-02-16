@@ -45,7 +45,7 @@ public class Simulator
      * @param depth Depth of the field. Must be greater than zero.
      * @param width Width of the field. Must be greater than zero.
      */
-    public Simulator(int depth, int width)
+    public Simulator(int depth, int width, int... seed)
     {
         if(width <= 0 || depth <= 0) {
             System.out.println("The dimensions must be greater than zero.");
@@ -55,11 +55,11 @@ public class Simulator
         }
         
         animals = new ArrayList<Animal>();
-        field = new Field(depth, width);
+        field = new Field(depth, width, seed);
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width);
-        view.setColor(Seal.class, Color.ORANGE);
+        view.setColor(Seal.class, Color.RED);
         view.setColor(PolarBear.class, Color.BLUE);
         view.setColor(Land.class, Color.GREEN);
         view.setColor(Ocean.class, Color.CYAN);

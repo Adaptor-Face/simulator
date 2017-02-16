@@ -43,25 +43,27 @@ public class Field {
         if (seed.length == 1) {
             landscapeSeed = seed[0];
         }
-        boolean invert = landscapeSeed < 0;
+        boolean noVariation = landscapeSeed == 0;
         HashMap<Location, Landscape> field = new HashMap<>();
         int middle = Integer.parseInt("" + width / 2);
         for (int y = 0; y <= depth; y++) {
             for (int x = 0; x <= width; x++) {
                 if (x <= middle) {
-                    field.put(new Location(y, x), new Ocean(0.75));
+                    field.put(new Location(y, x), new Ocean());
                 } else {
-                    field.put(new Location(y, x), new Land(0));
+                    field.put(new Location(y, x), new Land());
                 }
             }
-            int number = middle;
-            number = Math.abs(((landscapeSeed ^ middle + middle ^ landscapeSeed) - ((middle + landscapeSeed) * (y ^ 2 - y))) % 10) - 5;
-            
-            middle += number;
-            if (middle < 0) {
-                middle = 0;
-            } else if (middle > 120) {
-                middle = 120;
+            if (!noVariation) {
+                int number = middle;
+                number = Math.abs(((landscapeSeed ^ middle + middle ^ landscapeSeed) - ((middle + landscapeSeed) * (y ^ 2 - y))) % 10) - 5;
+
+                middle += number;
+                if (middle < 0) {
+                    middle = 0;
+                } else if (middle > 120) {
+                    middle = 120;
+                }
             }
         }
         return field;

@@ -1,3 +1,6 @@
+
+import java.util.HashMap;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -11,21 +14,13 @@
 public class SimStart {
 
     public static void main(String[] args) {
-        Simulator sim = new Simulator();
+        Simulator sim = new Simulator(-1,-1,0 );
         sim.simulate(1000);
-//        int middle = 60;
-//        int landscapeSeed = 812;
-//        int number = middle;
-//        for (int i = 0; i < 100; i++) {
-//            number = Math.abs(((landscapeSeed ^ middle + middle ^ landscapeSeed) - ((middle + landscapeSeed) * (i^2 - i))) % 10) - 5;
-//            middle += number;
-//            if(middle < 0){
-//                middle = 0;
-//            } else if (middle > 120){
-//                middle = 120;
-//            }
-//            
-//            System.out.println("" + number + "   " + middle);
-//        }
+//       HashMap<Integer, String> stuff = new HashMap<>();
+//       stuff.put(1, "value");
+//       stuff.put(1, "value1");
+//       stuff.put(1, "value2");
+//       stuff.put(2, "valasd");
+//        System.out.println(stuff.get(1));
     }
 }

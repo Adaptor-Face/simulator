@@ -8,9 +8,13 @@
  *
  * @author Kristoffer
  */
-public class Land extends Landscape{
-    
-    public Land(double value){
+public class Land extends Landscape {
+
+    public Land() {
+        this(0);
+    }
+
+    public Land(double value) {
         setFoodDensitiy(value);
         setType(LAND);
     }

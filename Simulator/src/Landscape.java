@@ -10,7 +10,7 @@
  */
 public class Landscape implements LandscapeType{
     private double foodDensitiy = 0;
-    private Integer typeId = NONE;
+    private String typeId = NONE;
     
     
     public final double getFoodDensitiy() {
@@ -21,11 +21,11 @@ public class Landscape implements LandscapeType{
         this.foodDensitiy = foodDensitiy;
     }
 
-    public final Integer getType() {
+    public final String getType() {
         return typeId;
     }
 
-    public final void setType(Integer typeId) {
+    public final void setType(String typeId) {
         this.typeId = typeId;
     }
     

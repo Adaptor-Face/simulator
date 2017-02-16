@@ -9,12 +9,12 @@
  * @author Kristoffer
  */
 public interface LandscapeType {
-    public static Integer NONE = -1;
-    public static Integer LAND = 1;
-    public static Integer SHORE = 2;
-    public static Integer SHALLOWS = 3;
-    public static Integer OCEAN = 4;
+    public static String NONE = "NONE";
+    public static String LAND = "LAND";
+    public static String SHORE = "SHORE";
+    public static String SHALLOWS = "SHALLOWS";
+    public static String OCEAN = "OCEAN";
     
-    public void setType(Integer typeId);
-    public Integer getType();
+    public void setType(String typeId);
+    public String getType();
 }
