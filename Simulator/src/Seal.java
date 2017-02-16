@@ -159,8 +159,10 @@ public class Seal extends Animal {
         private Location scanForOceanTile(Location location) {
             Field field = getField();
             List<Location> adjacent = field.getFreeAdjacentLocations(location);
+            Landscape tt = null;
             for (Location cT : adjacent) {
-                if ((cT.equals(LandscapeType.OCEAN)) || (cT.equals(LandscapeType.SHALLOWS))) {
+                tt = field.getLandscapeAt(cT);
+                if ((tt.getType().equals(LandscapeType.OCEAN)) || (tt.getType().equals(LandscapeType.SHALLOWS))) {
                     return cT;
                 }            
         }
