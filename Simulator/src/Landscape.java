@@ -8,9 +8,9 @@
  *
  * @author Kristoffer
  */
-public class Landscape {
+public class Landscape implements LandscapeType{
     private double foodDensitiy = 0;
-    private int typeId = -1;
+    private int typeId = NONE;
     
 
     public final double getFoodDensitiy() {

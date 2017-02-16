@@ -8,8 +8,8 @@
  *
  * @author Kristoffer
  */
-public class LandscapeType extends Landscape{
-    
+public interface LandscapeType {
+    public static int NONE = -1;
     public static int LAND = 1;
     public static int SHORE = 2;
     public static int SHALLOWS = 3;
