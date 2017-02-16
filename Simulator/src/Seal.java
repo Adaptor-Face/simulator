@@ -23,7 +23,7 @@ public class Seal extends Animal {
     private static final int MAX_LITTER_SIZE = 1;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    private static final int FISH_FOOD_VALUE = 9;
+    private static final int FISH_FOOD_VALUE = 1;
     private static final double FISH_CONSTANT = 0.85;
     
     // Individual characteristics (instance fields).
@@ -46,10 +46,10 @@ public class Seal extends Animal {
     {
         super(field, location);
         age = 0;
-        foodLevel = rand.nextInt(FISH_FOOD_VALUE);
+        foodLevel = rand.nextInt(20);
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(FISH_FOOD_VALUE);
+            foodLevel = rand.nextInt(20);
         }
     }
     
@@ -61,16 +61,16 @@ public class Seal extends Animal {
     public Location act(List<Animal> newSeals)
     {
         incrementAge();
-        incrementHunger(foodLevel);
+        foodLevel = incrementHunger(foodLevel);
         if(isAlive()) {
             ls = getField().getLandscapeAt(getLocation());
             giveBirth(newSeals);
             Location newLocation;
             if (ls.getType().equals(LandscapeType.OCEAN)) {
                 newLocation = findFood();
-                System.out.println(ls.getType());
             } else {
                 newLocation = getField().freeAdjacentLocation(getLocation());
+                System.out.println("I AM HERE: " + getField().getLandscapeAt(newLocation).getType() + "AND IS THIS HUNGRY: " + getFoodLevel());
             }
             // Try to move into a free location.
             if(newLocation != null) {
@@ -80,9 +80,14 @@ public class Seal extends Animal {
             else {
                 // Overcrowding.
                 setDead();
+                System.out.println("Crowded");
             }
-        }
+        } 
         return null;
+    }
+
+    public int getFoodLevel() {
+        return foodLevel;
     }
 
     /**
@@ -93,7 +98,9 @@ public class Seal extends Animal {
     {
         age++;
         if(age > MAX_AGE) {
+            System.out.println("Died of old age");
             setDead();
+            System.out.println("Died of old age");
         }
     }
     
@@ -153,8 +160,7 @@ public class Seal extends Animal {
             Location where = it.next();
             if(randomFishValue <= ls.getFoodDensitiy()) {
                     foodLevel += FISH_FOOD_VALUE;
-                    System.out.println(foodLevel);
-                    System.out.println(where.getCol() + ", " +  where.getRow());
+                    System.out.println("I FOUND FISH HERE: " + getField().getLandscapeAt(where).getType());
                     return where;
             }
         }

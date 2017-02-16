@@ -11,7 +11,7 @@
 public class Ocean extends Landscape{
     
     public Ocean (){
-        this(0.60);
+        this(1);
     }
     public Ocean (double value){
         setFoodDensitiy(value);

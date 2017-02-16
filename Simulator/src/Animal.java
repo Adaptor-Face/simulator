@@ -89,12 +89,15 @@ public abstract class Animal
         return field;
     }
     
-    protected void incrementHunger(int foodLevel)
+    protected int incrementHunger(int foodLevel)
     {
         foodLevel--;
         if(foodLevel <= 0) {
+            System.out.println("I STARVED ----------------------------------");
             setDead();
+            return 0;
         }
+        return foodLevel;
     }
     
 }
