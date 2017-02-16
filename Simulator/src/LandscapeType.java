@@ -9,10 +9,10 @@
  * @author Kristoffer
  */
 public interface LandscapeType {
-    public static int NONE = -1;
-    public static int LAND = 1;
-    public static int SHORE = 2;
-    public static int SHALLOWS = 3;
-    public static int OCEAN = 4;
+    public static Integer NONE = -1;
+    public static Integer LAND = 1;
+    public static Integer SHORE = 2;
+    public static Integer SHALLOWS = 3;
+    public static Integer OCEAN = 4;
     
 }
