@@ -108,7 +108,6 @@ public class Simulator
                 it.remove();
             }
         }
-        System.out.println("=======================================");
                
         // Add the newly born foxes and rabbits to the main lists.
         animals.addAll(newAnimals);
