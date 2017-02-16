@@ -14,7 +14,7 @@ public class Seal extends Animal {
     // Characteristics shared by all rabbits (class variables).
 
     // The age at which a rabbit can start to breed.
-    private static final int BREEDING_AGE = 2860;
+    private static final int BREEDING_AGE = 286;
     // The age to which a rabbit can live.
     private static final int MAX_AGE = 1456;
     // The likelihood of a rabbit breeding.
@@ -66,11 +66,12 @@ public class Seal extends Animal {
             ls = getField().getLandscapeAt(getLocation());
             giveBirth(newSeals);
             Location newLocation;
-            if (ls.getType().equals(LandscapeType.OCEAN)) {
-                newLocation = findFood();
+            Location oceanTile = scanForOceanTile(getLocation());
+            if (oceanTile != null) {
+                findFood(oceanTile);
+                newLocation = oceanTile;
             } else {
                 newLocation = getField().freeAdjacentLocation(getLocation());
-                System.out.println("I AM HERE: " + getField().getLandscapeAt(newLocation).getType() + "AND IS THIS HUNGRY: " + getFoodLevel());
             }
             // Try to move into a free location.
             if(newLocation != null) {
@@ -80,7 +81,6 @@ public class Seal extends Animal {
             else {
                 // Overcrowding.
                 setDead();
-                System.out.println("Crowded");
             }
         } 
         return null;
@@ -98,9 +98,7 @@ public class Seal extends Animal {
     {
         age++;
         if(age > MAX_AGE) {
-            System.out.println("Died of old age");
             setDead();
-            System.out.println("Died of old age");
         }
     }
     
@@ -146,25 +144,26 @@ public class Seal extends Animal {
         return age >= BREEDING_AGE;
     }
     
-        private Location findFood()
+        private void findFood(Location location)
     {
-        //Random r = new Random();
         double min = 0;
         double max = 1;
-        //double randomFishValue = min +  (max - min) * r.nextDouble();
         double randomFishValue = ThreadLocalRandom.current().nextDouble(min, max);
-        Field field = getField();
-        List<Location> adjacent = field.adjacentLocations(getLocation());
-        Iterator<Location> it = adjacent.iterator();
-        while (it.hasNext()) {
-            Location where = it.next();
             if(randomFishValue <= ls.getFoodDensitiy()) {
                     foodLevel += FISH_FOOD_VALUE;
-                    System.out.println("I FOUND FISH HERE: " + getField().getLandscapeAt(where).getType());
-                    return where;
+                    System.out.println(foodLevel);
+                    System.out.println(location.getCol() + ", " +  location.getRow());
             }
-        }
-        return null;
     }
-    
+        
+        private Location scanForOceanTile(Location location) {
+            Field field = getField();
+            List<Location> adjacent = field.getFreeAdjacentLocations(location);
+            for (Location cT : adjacent) {
+                if ((cT.equals(LandscapeType.OCEAN)) || (cT.equals(LandscapeType.SHALLOWS))) {
+                    return cT;
+                }            
+        }
+            return null;
+        }
 }
