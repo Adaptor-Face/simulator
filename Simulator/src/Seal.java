@@ -167,7 +167,7 @@ public class Seal extends Animal {
     }
     
     private void incrementPreg() {
-        pregLevel--;
+        pregLevel = pregLevel--;
     }
 
 }
