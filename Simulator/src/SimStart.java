@@ -11,8 +11,8 @@
 public class SimStart {
 
     public static void main(String[] args) {
-        SimulatorWIP sim = new SimulatorWIP();
-        sim.simulate(10);
+        Simulator sim = new Simulator();
+        sim.simulate(1000);
 //        int middle = 60;
 //        int landscapeSeed = 812;
 //        int number = middle;
