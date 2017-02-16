@@ -45,10 +45,17 @@ public class Field {
         }
         boolean noVariation = landscapeSeed == 0;
         HashMap<Location, Landscape> field = new HashMap<>();
+        boolean inversed = landscapeSeed < 0;
         int middle = Integer.parseInt("" + width / 2);
         for (int y = 0; y <= depth; y++) {
             for (int x = 0; x <= width; x++) {
-                if (x <= middle) {
+                if (!inversed) {
+                    if (x <= middle) {
+                        field.put(new Location(y, x), new Ocean());
+                    } else {
+                        field.put(new Location(y, x), new Land());
+                    }
+                } else if (x >= middle) {
                     field.put(new Location(y, x), new Ocean());
                 } else {
                     field.put(new Location(y, x), new Land());

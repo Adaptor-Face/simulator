@@ -14,7 +14,8 @@ import java.util.HashMap;
 public class SimStart {
 
     public static void main(String[] args) {
-        Simulator sim = new Simulator(-1,-1,0 );
+        Simulator sim = new Simulator(-1,-1, -1223 );
+        sim.runLongSimulation();
 //       HashMap<Integer, String> stuff = new HashMap<>();
 //       stuff.put(1, "value");
 //       stuff.put(1, "value1");

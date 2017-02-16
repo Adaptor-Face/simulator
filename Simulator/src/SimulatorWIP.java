@@ -58,7 +58,7 @@ public class SimulatorWIP  {
         field = new Field(depth, width, seed);
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width, this);
+        view = new SimulatorView(depth, width, null);
         view.setColor(Rabbit.class, Color.ORANGE);
         view.setColor(Fox.class, Color.BLUE);
         view.setColor(Land.class, Color.GREEN);
