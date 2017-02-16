@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * A simple model of a rabbit.
  * Rabbits age, move, breed, and die.
  * 
- * @author David J. Barnes and Michael Kölling
+ * @author Erik
  * @version 2011.07.31
  */
 public class Seal extends Animal {
@@ -46,6 +46,7 @@ public class Seal extends Animal {
     {
         super(field, location);
         age = 0;
+        foodLevel = rand.nextInt(FISH_FOOD_VALUE);
         if(randomAge) {
             age = rand.nextInt(MAX_AGE);
         }
