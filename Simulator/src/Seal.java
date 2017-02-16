@@ -66,11 +66,8 @@ public class Seal extends Animal {
             ls = getField().getLandscapeAt(getLocation());
             giveBirth(newSeals);
             Location newLocation;
-            Location oceanTile = scanForOceanTile(getLocation());
-            if (oceanTile != null) {
-                findFood();
-                newLocation = oceanTile;
-                System.out.println(ls.getType());
+            if (ls.getType().equals(LandscapeType.OCEAN)) {
+                newLocation = findFood();
             } else {
                 newLocation = getField().freeAdjacentLocation(getLocation());
                 System.out.println("I AM HERE: " + getField().getLandscapeAt(newLocation).getType() + "AND IS THIS HUNGRY: " + getFoodLevel());
@@ -169,16 +166,5 @@ public class Seal extends Animal {
         }
         return null;
     }
-        
-        private Location scanForOceanTile(Location location) {
-            Field field = getField();
-            List<Location> adjacent = field.getFreeAdjacentLocations(location);
-            for (Location cT : adjacent) {
-                if ((cT.equals(LandscapeType.OCEAN)) || (cT.equals(LandscapeType.SHALLOWS))) {
-                    return cT;
-                }            
-        }
-            return null;
-        }
     
 }
