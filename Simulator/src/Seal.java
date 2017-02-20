@@ -64,7 +64,8 @@ public class Seal extends Animal {
      */
     public Location act(List<Animal> newSeals) {
         incrementAge();
-        foodLevel = incrementHunger(foodLevel);
+        //foodLevel = incrementHunger(foodLevel);
+        incrementFood();
         double rngLoc = ThreadLocalRandom.current().nextDouble(0, 1);
         
         if (isAlive()) {
@@ -188,10 +189,18 @@ public class Seal extends Animal {
     private boolean setStarved() {
         if (foodLevel == 0) {
             starved = true;
-        } else {
-            starved = false;
         }
         return starved;
+    }
+    
+    private void incrementFood() {
+        setStarved();
+        if (foodLevel == 0 && !starved) {
+            foodLevel = 3;
+        } else {
+            incrementHunger(foodLevel);
+            starved = false;
+        }
     }
     
     
