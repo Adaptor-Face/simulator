@@ -58,24 +58,24 @@ public class PolarBear extends Animal {
      * @param newBears A list to return newly born bears.
      */
     public Location act(List<Animal> newBears) {
-//        incrementAge();
-//        incrementHunger();
-//        if (isAlive()) {
-//            giveBirth(newBears);
-//            // Move towards a source of food if found.
-//            Location newLocation = findFood();
-//            if (newLocation == null) {
-//                // No food found - try to move to a free location.
-//                newLocation = getField().freeAdjacentLocation(getLocation());
-//            }
-//            // See if it was possible to move.
-//            if (newLocation != null) {
-//                setLocation(newLocation);
-//            } else {
-//                // Overcrowding.
-//                setDead();
-//            }
-//        }
+        incrementAge();
+        incrementHunger();
+        if (isAlive()) {
+            giveBirth(newBears);
+            // Move towards a source of food if found.
+            Location newLocation = findFood();
+            if (newLocation == null) {
+                // No food found - try to move to a free location.
+                newLocation = getField().freeAdjacentLocation(getLocation());
+            }
+            // See if it was possible to move.
+            if (newLocation != null) {
+                setLocation(newLocation);
+            } else {
+                // Overcrowding.
+                setDead();
+            }
+        }
         return null;
     }
 
@@ -111,13 +111,17 @@ public class PolarBear extends Animal {
         Iterator<Location> it = adjacent.iterator();
         while (it.hasNext()) {
             Location where = it.next();
-            if (field.getLandscapeAt(where).getType().equals(LandscapeType.LAND)) {
+            if (field.getLandscapeAt(where).getType().equals(LandscapeType.LAND)
+                    || field.getLandscapeAt(where).getType().equals(LandscapeType.SHORE)
+                    || field.getLandscapeAt(where).getType().equals(LandscapeType.SHALLOWS)
+                    || field.getLandscapeAt(where).getType().equals(LandscapeType.OCEAN)) {
                 Object animal = field.getAnimalAt(where);
                 if (animal instanceof Seal) {
-                    Seal rabbit = (Seal) animal;
-                    if (rabbit.isAlive()) {
-                        rabbit.setDead();
+                    Seal seal = (Seal) animal;
+                    if (seal.isAlive()) {
+                        seal.setDead();
                         foodLevel = SEAL_FOOD_VALUE;
+                        System.out.println("A seal was brutally eaten alive");
                         return where;
                     }
                 }

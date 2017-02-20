@@ -23,13 +23,15 @@ public class Seal extends Animal {
     private static final int MAX_LITTER_SIZE = 3;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    private static final int FISH_FOOD_VALUE = 1;
+    private static final int FISH_FOOD_VALUE = 2;
     private static final double FISH_CONSTANT = 0.85;
-    private static final int PREG_PERIOD = 12;
+    private static final int PREG_PERIOD = 27;
+    private static final int STARVATION_PERIOD = 3;
 
     // Individual characteristics (instance fields).
     private int foodLevel;
     private int pregLevel;
+    private boolean starved = false;
 
     private Landscape ls = new Landscape();
 
@@ -62,12 +64,15 @@ public class Seal extends Animal {
      */
     public Location act(List<Animal> newSeals) {
         incrementAge();
-        incrementPreg();
-        foodLevel = incrementHunger(foodLevel);
+        //foodLevel = incrementHunger(foodLevel);
+        incrementFood();
+        double rngLoc = ThreadLocalRandom.current().nextDouble(0, 1);
+        
         if (isAlive()) {
-            ls = getField().getLandscapeAt(getLocation());
             giveBirth(newSeals);
+            ls = getField().getLandscapeAt(getLocation());
             Location newLocation;
+            Location currentLocation = getLocation();
             Location oceanTile = scanForOceanTile(getLocation());
             if (oceanTile != null) {
                 findFood(oceanTile);
@@ -76,12 +81,15 @@ public class Seal extends Animal {
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }
             // Try to move into a free location.
-            if (newLocation != null) {
+            if (newLocation != null && rngLoc >= 0.11) {
                 setLocation(newLocation);
                 return newLocation;
-            } else {
+            } else if (newLocation != null && rngLoc <= 0.10) {
+                newLocation = currentLocation;
+            }
+            else {
                 // Overcrowding.
-                setDead();
+                //setDead();
             }
         }
         return null;
@@ -98,6 +106,7 @@ public class Seal extends Animal {
         age++;
         if (age > MAX_AGE) {
             setDead();
+            System.out.println("AGING");
         }
     }
 
@@ -110,7 +119,7 @@ public class Seal extends Animal {
     private void giveBirth(List<Animal> newSeals) {
         // New rabbits are born into adjacent locations.
         // Get a list of adjacent free locations.
-        if (pregLevel == 0) {
+        if (incrementPreg()) {
             Field field = getField();
             List<Location> free = field.getFreeAdjacentLocations(getLocation());
             int births = breed();
@@ -120,7 +129,6 @@ public class Seal extends Animal {
                 newSeals.add(young);
                 System.out.println("NEGER");
             }
- pregLevel = PREG_PERIOD;
         }
     }
 
@@ -150,9 +158,9 @@ public class Seal extends Animal {
         double min = 0;
         double max = 1;
         double randomFishValue = ThreadLocalRandom.current().nextDouble(min, max);
-            if(randomFishValue <= ls.getFoodDensitiy()) {
-                    foodLevel += FISH_FOOD_VALUE;
-            }
+        if (randomFishValue <= ls.getFoodDensitiy()) {
+            foodLevel += FISH_FOOD_VALUE;
+        }
     }
 
     private Location scanForOceanTile(Location location) {
@@ -167,9 +175,34 @@ public class Seal extends Animal {
         }
         return null;
     }
-    
-    private void incrementPreg() {
-        pregLevel = pregLevel--;
+
+    private boolean incrementPreg() {
+        if (pregLevel == 1) {
+            pregLevel--;
+            return true;
+        } else if (pregLevel == 0) {
+            pregLevel = PREG_PERIOD;
+        }
+        pregLevel--;
+        return false;
     }
+    private boolean setStarved() {
+        if (foodLevel == 0) {
+            starved = true;
+        }
+        return starved;
+    }
+    
+    private void incrementFood() {
+        setStarved();
+        if (foodLevel == 0 && !starved) {
+            foodLevel = 3;
+        } else {
+            incrementHunger(foodLevel);
+            starved = false;
+        }
+    }
+    
+    
 
 }

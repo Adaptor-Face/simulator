@@ -132,11 +132,11 @@ public class SimulatorWIP  {
     private void populate() {
         field.clear();
         Location location = new Location(0, 0);
-        PolarBear fox = new PolarBear(true, field, location);
-        animals.add(fox);
+        PolarBear bear = new PolarBear(true, field, location);
+        animals.add(bear);
         location = new Location(60, 60);
-        Seal rabbit = new Seal(true, field, location);
-        animals.add(rabbit);
+        Seal seal = new Seal(true, field, location);
+        animals.add(seal);
         // else leave the location empty.
 
     }
