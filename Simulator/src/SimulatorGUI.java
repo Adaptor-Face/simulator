@@ -87,7 +87,8 @@ public class SimulatorGUI extends Application {
         });
         Button reset = new Button("Reset");
         reset.setOnAction((ActionEvent event) -> {
-            sim.reset();
+            sim.softReset();
+            showStatus();
         });
         toolBar.getChildren().add(back);
         toolBar.getChildren().add(stepInput);
@@ -115,7 +116,7 @@ public class SimulatorGUI extends Application {
                 Rectangle square = new Rectangle(5, 5, UNKNOWN_COLOR);
                 square.setId(new Location(y, x).toString());
                 square.setOnMouseClicked((MouseEvent event) -> {
-                    System.out.println(primaryStage.getHeight() + ", " + primaryStage.getWidth());
+                    System.out.println(sim.getField().getObjectAt(new Location(square.getId())));
                 });
                 gridPane.add(square, x, y);
                 gridNodes.add(square);
@@ -171,28 +172,29 @@ public class SimulatorGUI extends Application {
 
     private void simulateOneStep() {
         sim.simulateOneStep();
-        Task task = new Task<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        showStatus();
-                    }
-                });
-                System.out.println(Thread.currentThread());
-                showStatus();
-                return true;
-            }
-        };
-        Thread th = new Thread(task);
-        th.setDaemon(true);
-        th.start();
-        try {
-            th.join();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        Task task = new Task<Boolean>() {
+//            @Override
+//            public Boolean call() throws Exception {
+//                Platform.runLater(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        showStatus();
+//                    }
+//                });
+//                System.out.println(Thread.currentThread());
+//                showStatus();
+//                return true;
+//            }
+//        };
+//        Thread th = new Thread(task);
+//        th.setDaemon(true);
+//        th.start();
+//        try {
+//            th.join();
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        showStatus();
     }
 
     private void simulate(int steps) {

@@ -38,6 +38,23 @@ public class Field {
         landscape = new HashMap<>(createLandscape(depth, width, seed));
     }
 
+    private HashMap<Location, Animal> getField() {
+        return field;
+    }
+
+    private HashMap<Location, Landscape> getLandscape() {
+        return landscape;
+    }
+
+    public void resetField(Field field) {
+        this.field.clear();
+        landscape.clear();
+        this.field.putAll(field.getField());
+        this.landscape.putAll(field.getLandscape());
+        System.out.println("Number of animals: "  + this.field.values().size());
+        System.out.println("Tiles: " + this.landscape.values().size());
+    }
+
     private HashMap<Location, Landscape> createLandscape(int depth, int width, int... seed) {
         int landscapeSeed = 812;
         if (seed.length == 1) {
