@@ -2,8 +2,9 @@ import java.util.Random;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.awt.Color;
-import java.awt.Container;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import javafx.scene.paint.Color;
 
 /**
  * A simple predator-prey simulator, based on a rectangular field
@@ -55,20 +56,28 @@ public class Simulator
             width = DEFAULT_WIDTH;
         }
         
-        animals = new ArrayList<Animal>();
+        animals = new ArrayList<>();
         field = new Field(depth, width, seed);
 
         // Create a view of the state of each location in the field.
         view = new SimulatorView(depth, width, this);
-        view.setColor(Seal.class, Color.RED);
-        view.setColor(PolarBear.class, Color.BLUE);
-        view.setColor(Land.class, Color.GREEN);
-        view.setColor(Shallows.class, Color.RED);
-        view.setColor(Shore.class, Color.BLACK);
-        view.setColor(Ocean.class, Color.CYAN);
+        view.setColor(Seal.class, java.awt.Color.RED);
+        view.setColor(PolarBear.class, java.awt.Color.BLUE);
+        view.setColor(Land.class, java.awt.Color.GREEN);
+        view.setColor(Shallows.class, java.awt.Color.RED);
+        view.setColor(Shore.class, java.awt.Color.BLACK);
+        view.setColor(Ocean.class, java.awt.Color.CYAN);
         
         // Setup a valid starting point.
         reset();
+    }
+
+    public List<Animal> getAnimals() {
+        return animals;
+    }
+
+    public Field getField() {
+        return field;
     }
 
     public SimulatorView getView() {

@@ -22,7 +22,7 @@ import javax.swing.JTextField;
 public class SimStart{
 
     public static void main(String[] args) {
-        Simulator sim = new Simulator(-1, -1, -812);
+        Simulator sim = new Simulator();
 //       HashMap<Integer, String> stuff = new HashMap<>();
 //       stuff.put(1, "value");
 //       stuff.put(1, "value1");

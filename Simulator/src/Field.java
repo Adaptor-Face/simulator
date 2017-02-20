@@ -153,6 +153,36 @@ public class Field {
     }
 
     /**
+     * Return the animal at the given location, if any.
+     *
+     * @param row The desired row.
+     * @param col The desired column.
+     * @return The animal at the given location, or null if there is none.
+     */
+    public Object getObjectAt(int row, int col) {
+        Object obj = field.get(new Location(row, col));
+        if (obj == null) {
+            return landscape.get(new Location(row, col));
+        }
+        return obj;
+    }
+
+    /**
+     * Return the landscape at the given location.
+     *
+     * @param row The desired row.
+     * @param col The desired column.
+     * @return The landscape at the given location, or null if there is none.
+     */
+    public Object getObjectAt(Location location) {
+        Object obj = field.get(location);
+        if (obj == null) {
+            return landscape.get(location);
+        }
+        return obj;
+    }
+
+    /**
      * Generate a random location that is adjacent to the given location, or is
      * the same location. The returned location will be within the valid bounds
      * of the field.
