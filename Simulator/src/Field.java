@@ -49,17 +49,7 @@ public class Field {
         int middle = Integer.parseInt("" + width / 2);
         for (int y = 0; y <= depth; y++) {
             for (int x = 0; x <= width; x++) {
-                if (!inversed) {
-                    if (x <= middle) {
-                        field.put(new Location(y, x), new Ocean());
-                    } else {
-                        field.put(new Location(y, x), new Land());
-                    }
-                } else if (x >= middle) {
-                    field.put(new Location(y, x), new Ocean());
-                } else {
-                    field.put(new Location(y, x), new Land());
-                }
+                field.put(new Location(y, x), createLand(x, middle, inversed));
             }
             if (!noVariation) {
                 int number = middle;
@@ -261,5 +251,29 @@ public class Field {
      */
     public int getWidth() {
         return width;
+    }
+
+    private Landscape createLand(int x, int middle, boolean inversed) {
+        Landscape landType = null;
+        if (inversed) {
+            if (x - 8 >= middle) {
+                landType = new Land();
+            } else if (x >= middle) {
+                landType = new Shore();
+            } else if (x + 8 > middle) {
+                landType = new Shallows();
+            } else {
+                landType = new Ocean();
+            }
+        } else if (x + 8 <= middle) {
+            landType = new Ocean();
+        } else if (x <= middle) {
+            landType = new Shallows();
+        } else if (x - 8 > middle) {
+            landType = new Land();
+        } else {
+            landType = new Shore();
+        }
+        return landType;
     }
 }

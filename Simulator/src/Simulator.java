@@ -63,6 +63,8 @@ public class Simulator
         view.setColor(Seal.class, Color.RED);
         view.setColor(PolarBear.class, Color.BLUE);
         view.setColor(Land.class, Color.GREEN);
+        view.setColor(Shallows.class, Color.RED);
+        view.setColor(Shore.class, Color.BLACK);
         view.setColor(Ocean.class, Color.CYAN);
         
         // Setup a valid starting point.

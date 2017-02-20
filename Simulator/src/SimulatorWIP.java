@@ -62,6 +62,8 @@ public class SimulatorWIP  {
         view.setColor(Rabbit.class, Color.ORANGE);
         view.setColor(Fox.class, Color.BLUE);
         view.setColor(Land.class, Color.GREEN);
+        view.setColor(Shallows.class, Color.RED);
+        view.setColor(Shore.class, Color.BLACK);
         view.setColor(Ocean.class, Color.CYAN);
 
         // Setup a valid starting point.
