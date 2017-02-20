@@ -31,6 +31,7 @@ public class Seal extends Animal {
     // Individual characteristics (instance fields).
     private int foodLevel;
     private int pregLevel;
+    private boolean starved = false;
 
     private Landscape ls = new Landscape();
 
@@ -63,7 +64,8 @@ public class Seal extends Animal {
      */
     public Location act(List<Animal> newSeals) {
         incrementAge();
-        foodLevel = incrementHunger(foodLevel);
+        //foodLevel = incrementHunger(foodLevel);
+        incrementFood();
         double rngLoc = ThreadLocalRandom.current().nextDouble(0, 1);
         
         if (isAlive()) {
@@ -87,7 +89,7 @@ public class Seal extends Animal {
             }
             else {
                 // Overcrowding.
-                setDead();
+                //setDead();
             }
         }
         return null;
@@ -184,5 +186,23 @@ public class Seal extends Animal {
         pregLevel--;
         return false;
     }
+    private boolean setStarved() {
+        if (foodLevel == 0) {
+            starved = true;
+        }
+        return starved;
+    }
+    
+    private void incrementFood() {
+        setStarved();
+        if (foodLevel == 0 && !starved) {
+            foodLevel = 3;
+        } else {
+            incrementHunger(foodLevel);
+            starved = false;
+        }
+    }
+    
+    
 
 }
