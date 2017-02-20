@@ -23,7 +23,7 @@ public class Seal extends Animal {
     private static final int MAX_LITTER_SIZE = 3;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    private static final int FISH_FOOD_VALUE = 1;
+    private static final int FISH_FOOD_VALUE = 2;
     private static final double FISH_CONSTANT = 0.85;
     private static final int PREG_PERIOD = 27;
     private static final int STARVATION_PERIOD = 3;
@@ -64,10 +64,13 @@ public class Seal extends Animal {
     public Location act(List<Animal> newSeals) {
         incrementAge();
         foodLevel = incrementHunger(foodLevel);
+        double rngLoc = ThreadLocalRandom.current().nextDouble(0, 1);
+        
         if (isAlive()) {
             giveBirth(newSeals);
             ls = getField().getLandscapeAt(getLocation());
             Location newLocation;
+            Location currentLocation = getLocation();
             Location oceanTile = scanForOceanTile(getLocation());
             if (oceanTile != null) {
                 findFood(oceanTile);
@@ -76,10 +79,13 @@ public class Seal extends Animal {
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }
             // Try to move into a free location.
-            if (newLocation != null) {
+            if (newLocation != null && rngLoc >= 0.11) {
                 setLocation(newLocation);
                 return newLocation;
-            } else {
+            } else if (newLocation != null && rngLoc <= 0.10) {
+                newLocation = currentLocation;
+            }
+            else {
                 // Overcrowding.
                 setDead();
             }
@@ -98,6 +104,7 @@ public class Seal extends Animal {
         age++;
         if (age > MAX_AGE) {
             setDead();
+            System.out.println("AGING");
         }
     }
 
@@ -169,10 +176,10 @@ public class Seal extends Animal {
 
     private boolean incrementPreg() {
         if (pregLevel == 1) {
+            pregLevel--;
             return true;
         } else if (pregLevel == 0) {
             pregLevel = PREG_PERIOD;
-            return false;
         }
         pregLevel--;
         return false;
