@@ -26,7 +26,6 @@ public class SimulatorView extends JFrame {
     private final String POPULATION_PREFIX = "Population: ";
     private JLabel stepLabel, population;
     private FieldView fieldView;
-    private Simulator sim;
 
     // A map for storing colors for participants in the simulation
     private Map<Class, Color> colors;
@@ -39,11 +38,10 @@ public class SimulatorView extends JFrame {
      * @param height The simulation's height.
      * @param width The simulation's width.
      */
-    public SimulatorView(int height, int width, Simulator sim) {
+    public SimulatorView(int height, int width) {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         stats = new FieldStats();
         colors = new LinkedHashMap<>();
-        this.sim = sim;
 
         setTitle("Fox and Rabbit Simulation");
         stepLabel = new JLabel(STEP_PREFIX, JLabel.CENTER);
@@ -54,25 +52,7 @@ public class SimulatorView extends JFrame {
         fieldView = new FieldView(height, width);
 
         Container contents = getContentPane();
-        JPanel topBar = new JPanel();
-        JButton oneStepBtn = new JButton("One Step");
-        oneStepBtn.setMnemonic(KeyEvent.VK_D);
-        oneStepBtn.setActionCommand("ONE_STEP");
-        oneStepBtn.addActionListener((ActionEvent e) -> {
-            sim.simulateOneStep();
-        });
-        JTextField stepTextField = new JTextField("AutoStep");
-        JButton multiStep = new JButton("AutoStep");
-        multiStep.setMnemonic(KeyEvent.VK_D);
-        multiStep.setActionCommand("Auto");
-        multiStep.addActionListener((ActionEvent e) -> {
-            System.out.println("TOSK");
-        });
-        topBar.add(oneStepBtn, BorderLayout.WEST);
-        topBar.add(stepLabel, BorderLayout.NORTH);
-        topBar.add(stepTextField, BorderLayout.EAST);
-        topBar.add(multiStep, BorderLayout.EAST);
-        contents.add(topBar, BorderLayout.NORTH);
+        contents.add(stepLabel, BorderLayout.NORTH);
         contents.add(fieldView, BorderLayout.CENTER);
         contents.add(population, BorderLayout.SOUTH);
         pack();

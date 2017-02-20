@@ -1,4 +1,5 @@
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -95,7 +96,8 @@ public class Seal extends Animal {
         return null;
     }
 
-    public int getFoodLevel() {
+    @Override
+    public Integer getFoodLevel() {
         return foodLevel;
     }
 
@@ -202,7 +204,13 @@ public class Seal extends Animal {
             starved = false;
         }
     }
-    
-    
 
+    @Override
+    public List<String> getAnimalDetails() {
+        List<String> info = new ArrayList<>();
+        info.add("Species: Seal");
+        info.add("Hunger: " + getFoodLevel());
+        info.add("Age: " + age);
+        return info;
+    }
 }

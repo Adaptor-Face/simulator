@@ -65,7 +65,7 @@ public class Simulator {
         field = new Field(depth, width, seed);
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width, this);
+        view = new SimulatorView(depth, width);
         view.setColor(Seal.class, java.awt.Color.RED);
         view.setColor(PolarBear.class, java.awt.Color.BLUE);
         view.setColor(Land.class, java.awt.Color.GREEN);
@@ -106,7 +106,6 @@ public class Simulator {
      * the whole field updating the state of each fox and rabbit.
      */
     public void simulateOneStep() {
-        System.out.println("Old animals: " + animals.size());
         step++;
 
         // Provide space for newborn animals.
@@ -124,7 +123,6 @@ public class Simulator {
         animals.addAll(newAnimals);
 
         view.showStatus(step, field);
-        System.out.println("new Animals: " + animals.size());
     }
 
     /**

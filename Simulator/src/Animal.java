@@ -36,6 +36,17 @@ public abstract class Animal
     abstract public Location act(List<Animal> newAnimals);
 
     /**
+     * Returns the food level of the animal, null if it cant get hungry.
+     * @return the food level of the animal, null if it cant get hungry.
+     */
+    abstract public Integer getFoodLevel();
+    
+    /**
+     * Returns an array with all the info about an animal.
+     * @return an array with all the info about an animal.
+     */
+    abstract public List<String> getAnimalDetails();
+    /**
      * Check whether the animal is alive or not.
      * @return true if the animal is still alive.
      */

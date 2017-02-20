@@ -1,4 +1,5 @@
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Random;
@@ -167,5 +168,19 @@ public class PolarBear extends Animal {
      */
     private boolean canBreed() {
         return age >= BREEDING_AGE;
+    }
+
+    @Override
+    public Integer getFoodLevel() {
+        return foodLevel;
+    }
+
+    @Override
+    public List<String> getAnimalDetails() {
+        List<String> info = new ArrayList<>();
+        info.add("Species: PolarBear");
+        info.add("Hunger: " + getFoodLevel());
+        info.add("Age: " + age);
+        return info;
     }
 }
