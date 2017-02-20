@@ -24,21 +24,6 @@ public class Field {
     private HashMap<Location, Animal> field;
     private HashMap<Location, Landscape> landscape;
 
-    private HashMap<Location, Animal> getField() {
-        return field;
-    }
-
-    private HashMap<Location, Landscape> getLandscape() {
-        return landscape;
-    }
-
-    
-    public Field (Field field){
-        this.depth = field.getDepth();
-        this.field.putAll(field.getField());
-        this.landscape.putAll(field.getLandscape());
-        this.width = field.getWidth();
-    }
     /**
      * Represent a field of the given dimensions.
      *

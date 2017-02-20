@@ -20,12 +20,6 @@ public class Location
         this.row = row;
         this.col = col;
     }
-
-    Location(String location) {
-        String str[] = location.replace(" ", "").split(",");
-        this.row = Integer.parseInt(str[0]);
-        this.col = Integer.parseInt(str[1]);
-     }
     
     /**
      * Implement content equality.
