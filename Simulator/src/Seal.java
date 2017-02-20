@@ -31,6 +31,7 @@ public class Seal extends Animal {
     // Individual characteristics (instance fields).
     private int foodLevel;
     private int pregLevel;
+    private boolean starved = false;
 
     private Landscape ls = new Landscape();
 
@@ -87,7 +88,7 @@ public class Seal extends Animal {
             }
             else {
                 // Overcrowding.
-                setDead();
+                //setDead();
             }
         }
         return null;
@@ -184,5 +185,15 @@ public class Seal extends Animal {
         pregLevel--;
         return false;
     }
+    private boolean setStarved() {
+        if (foodLevel == 0) {
+            starved = true;
+        } else {
+            starved = false;
+        }
+        return starved;
+    }
+    
+    
 
 }
