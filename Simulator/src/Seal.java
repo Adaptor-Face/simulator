@@ -20,12 +20,12 @@ public class Seal extends Animal {
     // The likelihood of a rabbit breeding.
     private static final double BREEDING_PROBABILITY = 0.12;
     // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 1;
+    private static final int MAX_LITTER_SIZE = 3;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     private static final int FISH_FOOD_VALUE = 1;
     private static final double FISH_CONSTANT = 0.85;
-    private static final int PREG_PERIOD = 27;
+    private static final int PREG_PERIOD = 12;
 
     // Individual characteristics (instance fields).
     private int foodLevel;
@@ -118,7 +118,9 @@ public class Seal extends Animal {
                 Location loc = free.remove(0);
                 Seal young = new Seal(false, field, loc);
                 newSeals.add(young);
+                System.out.println("NEGER");
             }
+ pregLevel = PREG_PERIOD;
         }
     }
 
