@@ -11,7 +11,7 @@
 public class Shore extends Landscape{
     
     public Shore (){
-        this(1);
+        this(0.15);
     }
     public Shore (double value){
         setFoodDensitiy(value);
