@@ -46,7 +46,6 @@ public class SimulatorGUI extends Application {
     private int depth = 80;
     private int width = 120;
     private Map<Class, Color> colors = new LinkedHashMap<>();
-    ;
     private ArrayList<Rectangle> gridNodes = new ArrayList<>();
     private static final Color UNKNOWN_COLOR = Color.GREY;
 
@@ -54,9 +53,6 @@ public class SimulatorGUI extends Application {
     public void start(Stage primaryStage) throws Exception {
         this.root = createScene(primaryStage);
         this.sim = new Simulator();
-        Thread ts = new Thread(sim);
-        ts.setDaemon(true);
-        ts.start();
         System.out.println(Thread.currentThread());
         this.primaryStage = primaryStage;
         root.setCenter(createSimulatorWindow(primaryStage));
@@ -196,11 +192,13 @@ public class SimulatorGUI extends Application {
     }
 
     private void showStatus() {
-        gridNodes.forEach((Rectangle square) -> square.setFill(getColor(sim.getField().getObjectAt(new Location(square.getId())).getClass())));
-            synchronized (sim) {
-                System.out.println("UI notifying");
-                sim.notifyAll();
-            }
+        Field someField = new Field(sim.getField().getDepth(), sim.getField().getWidth());
+        someField.resetField(sim.getField());
+        System.out.println(someField.getLandscapeAt(0, 0));
+        gridNodes.forEach((Rectangle square) -> {
+            square.setFill(getColor(someField.getObjectAt(new Location(square.getId())).getClass()));
+            System.out.println(square.getId());
+        });
     }
 
     private void setObjectColors() {
@@ -213,53 +211,11 @@ public class SimulatorGUI extends Application {
     }
 
     private void simulateOneStep() {
-//        Task task = new Task<Boolean>() {
-//            @Override
-//            public Boolean call() throws Exception {
-//                Platform.runLater(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        showStatus();
-//                    }
-//                });
-//                System.out.println(Thread.currentThread());
-//                showStatus();
-//                return true;
-//            }
-//        };
-//        Thread th = new Thread(task);
-//        th.setDaemon(true);
-//        th.start();
-//        try {
-//            th.join();
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        synchronized (sim) {
-            try {
-                sim.setSimulateOnce(true);
-                System.out.println("Waiting for sim");
-                sim.wait();
-                showStatus();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+        sim.simulateOneStep();
+        showStatus();
     }
 
     private void simulate(int steps) {
-//        synchronized (sim) {
-//            for (int i = 0; i < steps; i++) {
-//                try {
-//                    sim.setSimulate(steps);
-//                    System.out.println("waiting");
-//                    sim.wait();
-//                } catch (InterruptedException ex) {
-//                    Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-//            showStatus();
-//        }
         for (int i = 0; i < steps; i++) {
             System.out.println("Step " + i);
             simulateOneStep();

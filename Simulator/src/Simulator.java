@@ -17,7 +17,7 @@ import javafx.scene.paint.Color;
  * @author David J. Barnes and Michael Kölling
  * @version 2011.07.31
  */
-public class Simulator implements Runnable {
+public class Simulator{
 
     // Constants representing configuration information for the simulation.
     // The default width for the grid.
@@ -40,11 +40,7 @@ public class Simulator implements Runnable {
 
     private HashMap<Location, Class> sAnimals;
     private Field sField;
-    private boolean running;
-    private boolean simulate = false;
-    private boolean simulateOnce = false;
-    private long simulateSpeed = 100;
-    private int simulateSteps;
+    private Field finishedField;
 
     /**
      * Construct a simulation field with default size.
@@ -85,7 +81,7 @@ public class Simulator implements Runnable {
     }
 
     public Field getField() {
-        return field;
+        return finishedField;
     }
 
     /**
@@ -128,6 +124,7 @@ public class Simulator implements Runnable {
 
         // Add the newly born foxes and rabbits to the main lists.
         animals.addAll(newAnimals);
+        finishedField.resetField(field);
 
         view.showStatus(step, field);
     }
@@ -140,7 +137,9 @@ public class Simulator implements Runnable {
         animals.clear();
         populate();
         sField = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH);
+        finishedField = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH);
         sField.resetField(field);
+        finishedField.resetField(field);
 
         // Show the starting state in the view.
         view.showStatus(step, field);
@@ -193,69 +192,5 @@ public class Simulator implements Runnable {
                 // else leave the location empty.
             }
         }
-    }
-
-    public void setRunning(boolean running) {
-        this.running = running;
-    }
-
-    public void setSimulate(int steps) {
-        this.simulateSteps = steps;
-        this.simulate = true;
-    }
-
-    public void setSimulateOnce(boolean simulateOnce) {
-        this.simulateOnce = simulateOnce;
-    }
-
-    public void setSimulateSpeed(long simulateSpeed) {
-        this.simulateSpeed = simulateSpeed;
-    }
-
-    public boolean isSimulate() {
-        return simulate;
-    }
-
-    public boolean isSimulateOnce() {
-        return simulateOnce;
-    }
-
-    @Override
-    public void run() {
-        System.out.println(Thread.currentThread());
-        running = true;
-        int steps = 0;
-        while (running) {
-            synchronized (this) {
-                if (simulateSteps > steps) {
-                    simulateOneStep();
-                    steps++;
-                    System.out.println("Step " + steps + " of " + simulateSteps);
-                    notifyAll();
-                    System.out.println("Notified");
-                } else if (simulateSteps == steps && steps != 0) {
-                    System.out.println("Stop");
-                    simulateSteps = 0;
-                    steps = 0;
-                    simulate = false;
-                    notifyAll();
-                    System.out.println("Notified");
-                } else if (simulateOnce) {
-                    System.out.println("One step");
-                    simulateOneStep();
-                    notifyAll();
-                    System.out.println("Notified");
-                    System.out.println("waiting for UI");
-                    try {
-                        this.wait();
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    System.out.println("Not waiting anymore");
-                    simulateOnce = false;
-                }
-            }
-        }
-        System.out.println("stuff");
     }
 }
