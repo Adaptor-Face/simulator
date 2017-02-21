@@ -1,9 +1,11 @@
 
+import com.sun.corba.se.impl.orbutil.graph.Graph;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -11,7 +13,10 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -53,7 +58,6 @@ public class SimulatorGUI extends Application {
     public void start(Stage primaryStage) throws Exception {
         this.root = createScene(primaryStage);
         this.sim = new Simulator();
-        System.out.println(Thread.currentThread());
         this.primaryStage = primaryStage;
         root.setCenter(createSimulatorWindow(primaryStage));
         Scene scene = new Scene(root, 724, 512);
@@ -89,6 +93,9 @@ public class SimulatorGUI extends Application {
         Button multiStep = new Button("Step");
         multiStep.setOnAction((ActionEvent event) -> {
             simulate(Integer.parseInt(stepInput.getText()));
+            while(true){
+                System.out.println("TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK ");
+            }
         });
         Button reset = new Button("Reset");
         reset.setOnAction((ActionEvent event) -> {
@@ -197,7 +204,14 @@ public class SimulatorGUI extends Application {
         System.out.println(someField.getLandscapeAt(0, 0));
         gridNodes.forEach((Rectangle square) -> {
             square.setFill(getColor(someField.getObjectAt(new Location(square.getId())).getClass()));
-            System.out.println(square.getId());
+        });
+    }
+    private void showStatus2() {
+        Field someField = new Field(sim.getField().getDepth(), sim.getField().getWidth());
+        someField.resetField(sim.getField());
+        System.out.println(someField.getLandscapeAt(0, 0));
+        gridNodes.forEach((Rectangle square) -> {
+            square.setFill(getColor(someField.getObjectAt(new Location(square.getId())).getClass()));
         });
     }
 
@@ -212,7 +226,7 @@ public class SimulatorGUI extends Application {
 
     private void simulateOneStep() {
         sim.simulateOneStep();
-        showStatus();
+        showStatus2();
     }
 
     private void simulate(int steps) {
