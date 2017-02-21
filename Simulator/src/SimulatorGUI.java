@@ -39,7 +39,7 @@ import javafx.stage.Stage;
  * @author Kristoffer
  */
 public class SimulatorGUI extends Application {
-    
+
     private BorderPane root;
     private Stage primaryStage;
     private Simulator sim;
@@ -49,23 +49,27 @@ public class SimulatorGUI extends Application {
     ;
     private ArrayList<Rectangle> gridNodes = new ArrayList<>();
     private static final Color UNKNOWN_COLOR = Color.GREY;
-    
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.root = createScene(primaryStage);
         this.sim = new Simulator();
+        Thread ts = new Thread(sim);
+        ts.setDaemon(true);
+        ts.start();
+        System.out.println(Thread.currentThread());
         this.primaryStage = primaryStage;
-//        root.setCenter(createSimulatorWindow(primaryStage));
-//        Scene scene = new Scene(root, 724, 512);
-//        primaryStage.setScene(scene);
-        Scene controlScene = new Scene(root, 500, 75);
-        primaryStage.setScene(controlScene);
+        root.setCenter(createSimulatorWindow(primaryStage));
+        Scene scene = new Scene(root, 724, 512);
+        primaryStage.setScene(scene);
+//        Scene controlScene = new Scene(root, 500, 75);
+//        primaryStage.setScene(controlScene);
         primaryStage.setTitle("Simulator");
         primaryStage.show();
     }
-    
+
     private BorderPane createScene(Stage primaryStage) {
-        
+
         BorderPane borderPane = new BorderPane();
         HBox toolBar = new HBox();
         Button back = new Button("Step");
@@ -107,7 +111,7 @@ public class SimulatorGUI extends Application {
         borderPane.setTop(toolBar);
         return borderPane;
     }
-    
+
     private GridPane createSimulatorWindow(Stage stage) {
         GridPane gridPane = new GridPane();
         gridPane.setVgap(0.7);
@@ -119,7 +123,7 @@ public class SimulatorGUI extends Application {
         createGrid(gridPane, stage);
         return gridPane;
     }
-    
+
     private void createGrid(GridPane gridPane, Stage currentStage) {
         for (int y = 0; y < depth; y++) {
             for (int x = 0; x < width; x++) {
@@ -130,7 +134,7 @@ public class SimulatorGUI extends Application {
                     if (animal != null) {
                         Tooltip tt = new Tooltip();
                         String text = "";
-                        for(String string : animal.getAnimalDetails()){
+                        for (String string : animal.getAnimalDetails()) {
                             text += string + "\n";
                         }
                         tt.setText(text);
@@ -158,12 +162,12 @@ public class SimulatorGUI extends Application {
         }
         showStatus();
     }
-    
+
     @Override
     public void stop() {
         System.exit(0);
     }
-    
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -190,11 +194,15 @@ public class SimulatorGUI extends Application {
             return col;
         }
     }
-    
+
     private void showStatus() {
         gridNodes.forEach((Rectangle square) -> square.setFill(getColor(sim.getField().getObjectAt(new Location(square.getId())).getClass())));
+            synchronized (sim) {
+                System.out.println("UI notifying");
+                sim.notifyAll();
+            }
     }
-    
+
     private void setObjectColors() {
         setColor(Seal.class, Color.RED);
         setColor(PolarBear.class, Color.BLACK);
@@ -203,9 +211,8 @@ public class SimulatorGUI extends Application {
         setColor(Shore.class, Color.LIGHTBLUE);
         setColor(Ocean.class, Color.AQUA);
     }
-    
+
     private void simulateOneStep() {
-        sim.simulateOneStep();
 //        Task task = new Task<Boolean>() {
 //            @Override
 //            public Boolean call() throws Exception {
@@ -228,15 +235,37 @@ public class SimulatorGUI extends Application {
 //        } catch (InterruptedException ex) {
 //            Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
 //        }
-        showStatus();
+        synchronized (sim) {
+            try {
+                sim.setSimulateOnce(true);
+                System.out.println("Waiting for sim");
+                sim.wait();
+                showStatus();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
-    
+
     private void simulate(int steps) {
-        for (int i = 0; i <= steps; i++) {
+//        synchronized (sim) {
+//            for (int i = 0; i < steps; i++) {
+//                try {
+//                    sim.setSimulate(steps);
+//                    System.out.println("waiting");
+//                    sim.wait();
+//                } catch (InterruptedException ex) {
+//                    Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//            }
+//            showStatus();
+//        }
+        for (int i = 0; i < steps; i++) {
+            System.out.println("Step " + i);
             simulateOneStep();
         }
     }
-    
+
     private void checkStatus() {
         Stage statusStage = new Stage();
         GridPane asd = createSimulatorWindow(statusStage);

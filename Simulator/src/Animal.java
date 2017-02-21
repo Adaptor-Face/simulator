@@ -105,7 +105,7 @@ public abstract class Animal
         foodLevel--;
         if(foodLevel <= 0) {
             setDead();
-            System.out.println("HUNGER");
+            //System.out.println("HUNGER");
             return 0;
         }
         return foodLevel;

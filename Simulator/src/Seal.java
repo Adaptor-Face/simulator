@@ -108,7 +108,7 @@ public class Seal extends Animal {
         age++;
         if (age > MAX_AGE) {
             setDead();
-            System.out.println("AGING");
+            //System.out.println("AGING");
         }
     }
 
@@ -129,7 +129,7 @@ public class Seal extends Animal {
                 Location loc = free.remove(0);
                 Seal young = new Seal(false, field, loc);
                 newSeals.add(young);
-                System.out.println("NEGER");
+                //System.out.println("NEGER");
             }
         }
     }

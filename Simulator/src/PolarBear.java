@@ -122,7 +122,7 @@ public class PolarBear extends Animal {
                     if (seal.isAlive()) {
                         seal.setDead();
                         foodLevel = SEAL_FOOD_VALUE;
-                        System.out.println("A seal was brutally eaten alive");
+                        //System.out.println("A seal was brutally eaten alive");
                         return where;
                     }
                 }
