@@ -199,7 +199,7 @@ public class Seal extends Animal {
         setStarved();
         foodLevel = incrementHunger(foodLevel);
         if (foodLevel == 0 && !starved) {
-            foodLevel = STARVATION_PERIOD;
+            foodLevel = STARVATION_PERIOD; 
         } else if (foodLevel == 0) {
             foodLevel = incrementHunger(foodLevel);
         } else {
