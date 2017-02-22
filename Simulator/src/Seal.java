@@ -19,9 +19,9 @@ public class Seal extends Animal {
     // The age to which a rabbit can live.
     private static final int MAX_AGE = 1456;
     // The likelihood of a rabbit breeding.
-    private static final double BREEDING_PROBABILITY = 0.12;
+    private static final double BREEDING_PROBABILITY = 0.50;
     // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 3;
+    private static final int MAX_LITTER_SIZE = 1;  
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     private static final int FISH_FOOD_VALUE = 2;
@@ -197,10 +197,13 @@ public class Seal extends Animal {
     
     private void incrementFood() {
         setStarved();
+        foodLevel = incrementHunger(foodLevel);
         if (foodLevel == 0 && !starved) {
-            foodLevel = 3;
+            foodLevel = STARVATION_PERIOD;
+            System.out.println("STARVING ACTIVATED");
+        } else if (foodLevel == 0) {
+            foodLevel = incrementHunger(foodLevel);
         } else {
-            incrementHunger(foodLevel);
             starved = false;
         }
     }
