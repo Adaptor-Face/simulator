@@ -60,7 +60,7 @@ public class SimulatorGUI extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.root = createScene(primaryStage);
-        this.sim = new Simulator();
+        this.sim = new Simulator(-1, -1, -812);
         this.primaryStage = primaryStage;
         this.stats = new FieldStats();
         root.setCenter(createSimulatorWindow(primaryStage));
@@ -100,7 +100,7 @@ public class SimulatorGUI extends Application {
         });
         Button reset = new Button("Reset");
         reset.setOnAction((ActionEvent event) -> {
-            sim.softReset();
+            reset();
             showStatus();
         });
         toolBar.getChildren().add(back);
@@ -189,8 +189,20 @@ public class SimulatorGUI extends Application {
         }
     }
 
+    private void reset(){
+        step = 0;
+        sim.softReset();
+        stats.reset();
+        gridNodes.forEach((Rectangle square) -> {
+            Object obj = sim.getField().getObjectAt(new Location(square.getId()));
+            stats.incrementCount(obj.getClass());
+            square.setFill(getColor(obj.getClass()));
+        });
+        showStatus();
+        
+    }
     private void showStatus() {
-        Field someField = new Field(sim.getField().getDepth(), sim.getField().getWidth());
+        Field someField = new Field(sim.getField().getDepth(), sim.getField().getWidth(), sim.getField().getSeed());
         someField.resetField(sim.getField());
         stats.reset();
         gridNodes.forEach((Rectangle square) -> {
@@ -198,23 +210,26 @@ public class SimulatorGUI extends Application {
             stats.incrementCount(obj.getClass());
             square.setFill(getColor(obj.getClass()));
         });
+        //updateStats(someField);
     }
 
     private void setObjectColors() {
         setColor(Seal.class, Color.RED);
         setColor(PolarBear.class, Color.BLACK);
-        setColor(Land.class, Color.LIGHTGREEN);
-        setColor(Shallows.class, Color.CORAL);
+        setColor(Land.class, Color.AZURE);
+        setColor(Shallows.class, Color.AQUA);
         setColor(Shore.class, Color.LIGHTBLUE);
-        setColor(Ocean.class, Color.AQUA);
+        setColor(Ocean.class, Color.CORNFLOWERBLUE);
     }
 
     private void simulateOneStep() {
         sim.simulateOneStep();
-        population.setText(stats.getPopulationDetails(sim.getField()));
-        step++;
-        this.steps.setText("Steps: " + step);
         showStatus();
+    }
+    
+    private void updateStats(Field field){
+        population.setText(stats.getPopulationDetails(field));
+        this.steps.setText("Steps: " + step);
     }
 
     private void simulate(int steps) {
@@ -246,8 +261,7 @@ public class SimulatorGUI extends Application {
                     Color col = getColor(obj.getClass());
                     square.setFill(col);
                 });
-                population.setText(stats.getPopulationDetails(field));
-                this.steps.setText("Steps: " + step);
+                updateStats(field);
             }
         });
         new Thread(task).start();

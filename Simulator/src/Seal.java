@@ -21,10 +21,11 @@ public class Seal extends Animal {
     // The likelihood of a rabbit breeding.
     private static final double BREEDING_PROBABILITY = 0.50;
     // The maximum number of births.
-    private static final int MAX_LITTER_SIZE = 1;  
+    private static final int MAX_LITTER_SIZE = 1;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     private static final int FISH_FOOD_VALUE = 2;
+    private static final int LAND_FOOD_VALUE = 1;
     private static final double FISH_CONSTANT = 0.85;
     private static final int PREG_PERIOD = 27;
     private static final int STARVATION_PERIOD = 3;
@@ -55,7 +56,7 @@ public class Seal extends Animal {
         }
         age = 0;
         foodLevel = rand.nextInt(20);
-        if (randomAge) { 
+        if (randomAge) {
             age = rand.nextInt(MAX_AGE);
             foodLevel = rand.nextInt(20);
         }
@@ -72,7 +73,7 @@ public class Seal extends Animal {
         //foodLevel = incrementHunger(foodLevel);
         incrementFood();
         double rngLoc = ThreadLocalRandom.current().nextDouble(0, 1);
-        
+
         if (isAlive()) {
             giveBirth(newSeals);
             ls = getField().getLandscapeAt(getLocation());
@@ -91,8 +92,7 @@ public class Seal extends Animal {
                 return newLocation;
             } else if (newLocation != null && rngLoc <= 0.10) {
                 newLocation = currentLocation;
-            }
-            else {
+            } else {
                 // Overcrowding.
                 //setDead();
             }
@@ -163,9 +163,17 @@ public class Seal extends Animal {
     private void findFood(Location location) {
         double min = 0;
         double max = 1;
+        Field field = getField();
+        Landscape tt = field.getLandscapeAt(location);
         double randomFishValue = ThreadLocalRandom.current().nextDouble(min, max);
-        if (randomFishValue <= ls.getFoodDensitiy()) {
-            foodLevel += FISH_FOOD_VALUE;
+        if (tt.getType().equals(LandscapeType.OCEAN) || tt.getType().equals(LandscapeType.SHALLOWS)) {
+            if (randomFishValue <= ls.getFoodDensitiy()) {
+                foodLevel += FISH_FOOD_VALUE;
+            }
+        } if (tt.getType().equals(LandscapeType.SHORE)) {
+            if (randomFishValue <= ls.getFoodDensitiy()) {
+                foodLevel += LAND_FOOD_VALUE;
+            }
         }
     }
 
@@ -175,7 +183,7 @@ public class Seal extends Animal {
         Landscape tt = null;
         for (Location cT : adjacent) {
             tt = field.getLandscapeAt(cT);
-            if ((tt.getType().equals(LandscapeType.OCEAN)) || (tt.getType().equals(LandscapeType.SHALLOWS))) {
+            if ((tt.getType().equals(LandscapeType.OCEAN)) || (tt.getType().equals(LandscapeType.SHALLOWS) || (tt.getType().equals(LandscapeType.SHORE)))) {
                 return cT;
             }
         }
@@ -192,18 +200,19 @@ public class Seal extends Animal {
         pregLevel--;
         return false;
     }
+
     private boolean setStarved() {
         if (foodLevel == 0) {
             starved = true;
         }
         return starved;
     }
-    
+
     private void incrementFood() {
         setStarved();
         foodLevel = incrementHunger(foodLevel);
         if (foodLevel == 0 && !starved) {
-            foodLevel = STARVATION_PERIOD; 
+            foodLevel = STARVATION_PERIOD;
         } else if (foodLevel == 0) {
             foodLevel = incrementHunger(foodLevel);
         } else {

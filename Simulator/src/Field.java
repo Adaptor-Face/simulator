@@ -48,6 +48,7 @@ public class Field {
     }
 
     public int getSeed() {
+        System.out.println(seed);
         return seed;
     }
 
@@ -60,7 +61,7 @@ public class Field {
         int landscapeSeed = 812;
         if (seed.length == 1) {
             landscapeSeed = seed[0];
-            
+
         }
         this.seed = landscapeSeed;
         boolean noVariation = landscapeSeed == 0;
@@ -306,14 +307,14 @@ public class Field {
     private Landscape createLand(int x, int middle, boolean inversed) {
         Landscape landType = null;
         if (inversed) {
-            if (x - 8 >= middle) {
+            if (x + 8 <= middle) {
                 landType = new Land();
-            } else if (x >= middle) {
+            } else if (x <= middle) {
                 landType = new Shore();
-            } else if (x + 8 > middle) {
-                landType = new Shallows();
-            } else {
+            } else if (x - 8 > middle) {
                 landType = new Ocean();
+            } else {
+                landType = new Shallows();
             }
         } else if (x + 8 <= middle) {
             landType = new Ocean();
