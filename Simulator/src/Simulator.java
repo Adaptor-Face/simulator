@@ -17,7 +17,7 @@ import javafx.scene.paint.Color;
  * @author David J. Barnes and Michael Kölling
  * @version 2011.07.31
  */
-public class Simulator{
+public class Simulator {
 
     // Constants representing configuration information for the simulation.
     // The default width for the grid.
@@ -109,7 +109,6 @@ public class Simulator{
      * the whole field updating the state of each fox and rabbit.
      */
     public void simulateOneStep() {
-        step++;
 
         // Provide space for newborn animals.
         List<Animal> newAnimals = new ArrayList<>();
@@ -127,6 +126,11 @@ public class Simulator{
         finishedField.resetField(field);
 
         view.showStatus(step, field);
+        step++;
+    }
+
+    public int getStep() {
+        return step;
     }
 
     /**
@@ -136,8 +140,8 @@ public class Simulator{
         step = 0;
         animals.clear();
         populate();
-        sField = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH);
-        finishedField = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH);
+        sField = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH, field.getSeed());
+        finishedField = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH, field.getSeed());
         sField.resetField(field);
         finishedField.resetField(field);
 

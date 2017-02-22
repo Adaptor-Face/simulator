@@ -23,6 +23,7 @@ public class Field {
     // Storage for the animals.
     private HashMap<Location, Animal> field;
     private HashMap<Location, Landscape> landscape;
+    private int seed;
 
     /**
      * Represent a field of the given dimensions.
@@ -46,20 +47,22 @@ public class Field {
         return landscape;
     }
 
+    public int getSeed() {
+        return seed;
+    }
+
     public void resetField(Field field) {
         this.field.clear();
-        landscape.clear();
         this.field.putAll(field.getField());
-        this.landscape.putAll(field.getLandscape());
-        System.out.println("Number of animals: "  + this.field.values().size());
-        System.out.println("Tiles: " + this.landscape.values().size());
     }
 
     private HashMap<Location, Landscape> createLandscape(int depth, int width, int... seed) {
         int landscapeSeed = 812;
         if (seed.length == 1) {
             landscapeSeed = seed[0];
+            
         }
+        this.seed = landscapeSeed;
         boolean noVariation = landscapeSeed == 0;
         HashMap<Location, Landscape> field = new HashMap<>();
         boolean inversed = landscapeSeed < 0;

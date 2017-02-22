@@ -137,9 +137,9 @@ public class SimulatorGUI extends Application {
                         for (String string : animal.getAnimalDetails()) {
                             text += string + "\n";
                         }
+                        text += square.getId();
                         tt.setText(text);
                         Tooltip.install(square, tt);
-                        System.out.println(animal.getAnimalDetails());
                     }
                 });
                 square.setOnMouseClicked((MouseEvent event) -> {
@@ -203,6 +203,7 @@ public class SimulatorGUI extends Application {
             square.setFill(getColor(someField.getObjectAt(new Location(square.getId())).getClass()));
         });
     }
+
     private void showStatus2() {
         Field someField = new Field(sim.getField().getDepth(), sim.getField().getWidth());
         someField.resetField(sim.getField());
@@ -227,10 +228,33 @@ public class SimulatorGUI extends Application {
     }
 
     private void simulate(int steps) {
-        for (int i = 0; i < steps; i++) {
-            System.out.println("Step " + i);
-            simulateOneStep();
-        }
+        Task<Integer> task = new Task<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                for (Integer i = 0; i <= steps; i++) {
+                    sim.simulateOneStep();
+                    updateValue(sim.getStep());
+                }
+                return null;
+            }
+        };
+        task.valueProperty().addListener((obs, oldStep, newStep) -> {
+            if(oldStep == null){
+                oldStep = 0;
+            }
+            if(newStep == null){
+                newStep = oldStep +1;
+            }
+                if (oldStep == newStep - 1) {
+                    Field field = sim.getField();
+                    gridNodes.forEach((Rectangle square) -> {
+                        Object obj = field.getObjectAt(new Location(square.getId()));
+                        Color col = getColor(obj.getClass());
+                        square.setFill(col);
+                    });
+                }
+        });
+        new Thread(task).start();
     }
 
     private void checkStatus() {

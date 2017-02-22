@@ -56,7 +56,7 @@ public class SimulatorView extends JFrame {
         contents.add(fieldView, BorderLayout.CENTER);
         contents.add(population, BorderLayout.SOUTH);
         pack();
-        setVisible(true);
+        setVisible(false);
     }
 
     /**
@@ -89,10 +89,6 @@ public class SimulatorView extends JFrame {
      * @param field The field whose status is to be displayed.
      */
     public void showStatus(int step, Field field) {
-        if (!isVisible()) {
-            setVisible(true);
-        }
-
         stepLabel.setText(STEP_PREFIX + step);
         stats.reset();
 
