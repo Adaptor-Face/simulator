@@ -67,7 +67,7 @@ public class FieldStats
     public void incrementCount(Class animalClass)
     {
         Counter count = counters.get(animalClass);
-        if(count == null) {
+        if(count == null ) {
             // We do not have a counter for this species yet.
             // Create one.
             count = new Counter(animalClass.getName());

@@ -248,9 +248,9 @@ public class SimulatorGUI extends Application {
                 });
                 population.setText(stats.getPopulationDetails(field));
                 this.steps.setText("Steps: " + step);
-                showStatus();
             }
         });
         new Thread(task).start();
+        showStatus();
     }
 }
