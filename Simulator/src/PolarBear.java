@@ -23,7 +23,8 @@ public class PolarBear extends Animal {
     private static final int MAX_LITTER_SIZE = 4;
     // The food value of a single seal. In effect, this is the
     // number of steps a bear can go before it has to eat again.
-    private static final int SEAL_FOOD_VALUE = 12;
+    private static final int SEAL_FOOD_VALUE = 21;
+    private static final int PREG_PERIOD = 30;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -31,6 +32,7 @@ public class PolarBear extends Animal {
     private int age;
     // The bear's food level, which is increased by eating seals.
     private int foodLevel;
+    private int pregLevel;
 
     /**
      * Create a bear. A bear can be created as a new born (age zero and not
@@ -90,6 +92,17 @@ public class PolarBear extends Animal {
         }
     }
 
+    private boolean incrementPreg() {
+        if (pregLevel == 1) {
+            pregLevel--;
+            return true;
+        } else if (pregLevel == 0) {
+            pregLevel = PREG_PERIOD;
+        }
+        pregLevel--;
+        return false;
+    }
+
     /**
      * Make this bear more hungry. This could result in the bear's death.
      */
@@ -119,7 +132,7 @@ public class PolarBear extends Animal {
                 Object animal = field.getAnimalAt(where);
                 if (animal instanceof Seal) {
                     Seal seal = (Seal) animal;
-                    if (seal.isAlive()) {
+                    if (seal.isAlive() && foodLevel < 7) {
                         seal.setDead();
                         foodLevel = SEAL_FOOD_VALUE;
                         //System.out.println("A seal was brutally eaten alive");
@@ -140,13 +153,15 @@ public class PolarBear extends Animal {
     private void giveBirth(List<Animal> newBears) {
         // New bears are born into adjacent locations.
         // Get a list of adjacent free locations.
-        Field field = getField();
-        List<Location> free = field.getFreeAdjacentLocations(getLocation());
-        int births = breed();
-        for (int b = 0; b < births && free.size() > 0; b++) {
-            Location loc = free.remove(0);
-            PolarBear young = new PolarBear(false, field, loc);
-            newBears.add(young);
+        if (incrementPreg()) {
+            Field field = getField();
+            List<Location> free = field.getFreeAdjacentLocations(getLocation());
+            int births = breed();
+            for (int b = 0; b < births && free.size() > 0; b++) {
+                Location loc = free.remove(0);
+                PolarBear young = new PolarBear(false, field, loc);
+                newBears.add(young);
+            }
         }
     }
 
