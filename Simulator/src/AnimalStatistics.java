@@ -39,8 +39,8 @@ public class AnimalStatistics {
     public static String getStatistics() {
         String returnString = "";
         for (Class animalClass : MAP.keySet()) {
-            for (String deathCause : SEAL_DEATH.keySet()) {
-                returnString += "" + SEAL_DEATH.get(deathCause) + " " + animalClass.getName() + "s died to " + getCauseAsText(deathCause) + ".\n";
+            for (String deathCause : MAP.get(animalClass).keySet()) {
+                returnString += "" + MAP.get(animalClass).get(deathCause) + " " + animalClass.getName() + "s died to " + getCauseAsText(deathCause) + ".\n";
             }
         }
         return returnString;
