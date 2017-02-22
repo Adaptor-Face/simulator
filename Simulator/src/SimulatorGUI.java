@@ -188,7 +188,7 @@ public class SimulatorGUI extends Application {
         }
     }
 
-    private void reset(){
+    private void reset() {
         step = 0;
         sim.softReset();
         stats.reset();
@@ -199,8 +199,9 @@ public class SimulatorGUI extends Application {
             square.setFill(getColor(obj.getClass()));
         });
         showStatus();
-        
+
     }
+
     private void showStatus() {
         Field someField = new Field(sim.getField().getDepth(), sim.getField().getWidth(), sim.getField().getSeed());
         someField.resetField(sim.getField());
@@ -216,10 +217,10 @@ public class SimulatorGUI extends Application {
     private void setObjectColors() {
         setColor(Seal.class, Color.RED);
         setColor(PolarBear.class, Color.BLACK);
-        setColor(Land.class, Color.LIGHTGREEN);
-        setColor(Shallows.class, Color.CORAL);
+        setColor(Land.class, Color.AZURE);
+        setColor(Shallows.class, Color.AQUA);
         setColor(Shore.class, Color.LIGHTBLUE);
-        setColor(Ocean.class, Color.AQUA);
+        setColor(Ocean.class, Color.CORNFLOWERBLUE);
     }
 
     private void simulateOneStep() {
@@ -227,8 +228,8 @@ public class SimulatorGUI extends Application {
         sim.simulateOneStep();
         showStatus();
     }
-    
-    private void updateStats(Field field){
+
+    private void updateStats(Field field) {
         population.setText(stats.getPopulationDetails(field));
         this.steps.setText("Steps: " + step);
     }
