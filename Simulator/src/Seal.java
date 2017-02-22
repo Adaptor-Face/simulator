@@ -200,7 +200,6 @@ public class Seal extends Animal {
         foodLevel = incrementHunger(foodLevel);
         if (foodLevel == 0 && !starved) {
             foodLevel = STARVATION_PERIOD;
-            System.out.println("STARVING ACTIVATED");
         } else if (foodLevel == 0) {
             foodLevel = incrementHunger(foodLevel);
         } else {
