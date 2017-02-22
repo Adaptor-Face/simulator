@@ -78,7 +78,7 @@ public class SimulatorGUI extends Application {
 
         BorderPane borderPane = new BorderPane();
         HBox toolBar = new HBox();
-        Button back = new Button("Step");
+        Button back = new Button("One Step");
         back.setOnAction((ActionEvent event) -> {
             simulateOneStep();
         });
@@ -104,10 +104,21 @@ public class SimulatorGUI extends Application {
         reset.setOnAction((ActionEvent event) -> {
             reset();
         });
+        Button getStats = new Button("Get death stats");
+        getStats.setOnAction((ActionEvent event) -> {
+            Stage alert = new Stage();
+            VBox vBox = new VBox();
+            Text info = new Text(AnimalStatistics.getStatistics());
+            vBox.getChildren().add(info);
+            alert.setScene(new Scene(vBox, 75, 150));
+            alert.showAndWait();
+
+        });
         toolBar.getChildren().add(back);
         toolBar.getChildren().add(stepInput);
         toolBar.getChildren().add(multiStep);
         toolBar.getChildren().add(reset);
+        toolBar.getChildren().add(getStats);
         borderPane.setTop(toolBar);
         return borderPane;
     }
