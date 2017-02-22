@@ -49,9 +49,13 @@ public class Seal extends Animal {
      */
     public Seal(boolean randomAge, Field field, Location location) {
         super(field, location);
+        double randomSelection = ThreadLocalRandom.current().nextDouble(0, 1);
+        if (randomSelection < 0.21) {
+            pregLevel = rand.nextInt(26);
+        }
         age = 0;
         foodLevel = rand.nextInt(20);
-        if (randomAge) {
+        if (randomAge) { 
             age = rand.nextInt(MAX_AGE);
             foodLevel = rand.nextInt(20);
         }
@@ -108,7 +112,7 @@ public class Seal extends Animal {
         age++;
         if (age > MAX_AGE) {
             setDead();
-            //System.out.println("AGING");
+            //System.out.println("DEATH ACTIVATED");
         }
     }
 
@@ -129,7 +133,7 @@ public class Seal extends Animal {
                 Location loc = free.remove(0);
                 Seal young = new Seal(false, field, loc);
                 newSeals.add(young);
-                //System.out.println("NEGER");
+                //System.out.println("REPRODUCTION ACTIVATED");
             }
         }
     }
