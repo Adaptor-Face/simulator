@@ -93,9 +93,6 @@ public class SimulatorGUI extends Application {
         Button multiStep = new Button("Step");
         multiStep.setOnAction((ActionEvent event) -> {
             simulate(Integer.parseInt(stepInput.getText()));
-            while(true){
-                System.out.println("TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK TOSK ");
-            }
         });
         Button reset = new Button("Reset");
         reset.setOnAction((ActionEvent event) -> {
