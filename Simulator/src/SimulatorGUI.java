@@ -63,6 +63,8 @@ public class SimulatorGUI extends Application {
         this.sim = new Simulator(-1, -1, -812);
         this.primaryStage = primaryStage;
         this.stats = new FieldStats();
+        this.steps = new Text("Steps: " + step);
+        this.population = new Text(stats.getPopulationDetails(sim.getField()));
         root.setCenter(createSimulatorWindow(primaryStage));
         Scene scene = new Scene(root, 724, 542);
         primaryStage.setScene(scene);
@@ -101,7 +103,6 @@ public class SimulatorGUI extends Application {
         Button reset = new Button("Reset");
         reset.setOnAction((ActionEvent event) -> {
             reset();
-            showStatus();
         });
         toolBar.getChildren().add(back);
         toolBar.getChildren().add(stepInput);
@@ -122,8 +123,6 @@ public class SimulatorGUI extends Application {
         gridPane.setMaxWidth(Double.MAX_VALUE);
         createGrid(gridPane, stage);
         borderPane.setCenter(gridPane);
-        steps = new Text("Steps: " + step);
-        population = new Text(stats.getPopulationDetails(sim.getField()));
         borderPane.setBottom(population);
         borderPane.setTop(steps);
         return borderPane;
@@ -189,18 +188,20 @@ public class SimulatorGUI extends Application {
         }
     }
 
-    private void reset(){
+    private void reset() {
         step = 0;
         sim.softReset();
         stats.reset();
+        updateStats(sim.getField());
         gridNodes.forEach((Rectangle square) -> {
             Object obj = sim.getField().getObjectAt(new Location(square.getId()));
             stats.incrementCount(obj.getClass());
             square.setFill(getColor(obj.getClass()));
         });
         showStatus();
-        
+
     }
+
     private void showStatus() {
         Field someField = new Field(sim.getField().getDepth(), sim.getField().getWidth(), sim.getField().getSeed());
         someField.resetField(sim.getField());
@@ -210,7 +211,7 @@ public class SimulatorGUI extends Application {
             stats.incrementCount(obj.getClass());
             square.setFill(getColor(obj.getClass()));
         });
-        //updateStats(someField);
+        updateStats(someField);
     }
 
     private void setObjectColors() {
@@ -223,11 +224,12 @@ public class SimulatorGUI extends Application {
     }
 
     private void simulateOneStep() {
+        step++;
         sim.simulateOneStep();
         showStatus();
     }
-    
-    private void updateStats(Field field){
+
+    private void updateStats(Field field) {
         population.setText(stats.getPopulationDetails(field));
         this.steps.setText("Steps: " + step);
     }

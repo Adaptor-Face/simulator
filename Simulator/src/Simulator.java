@@ -168,6 +168,7 @@ public class Simulator {
         if (sField != null) {
             field.resetField(sField);
         }
+        finishedField.resetField(field);
 
         // Show the starting state in the view.
         view.showStatus(step, field);
