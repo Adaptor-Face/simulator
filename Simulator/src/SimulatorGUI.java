@@ -216,10 +216,10 @@ public class SimulatorGUI extends Application {
     private void setObjectColors() {
         setColor(Seal.class, Color.RED);
         setColor(PolarBear.class, Color.BLACK);
-        setColor(Land.class, Color.LIGHTGREEN);
-        setColor(Shallows.class, Color.CORAL);
+        setColor(Land.class, Color.AZURE);
+        setColor(Shallows.class, Color.AQUA);
         setColor(Shore.class, Color.LIGHTBLUE);
-        setColor(Ocean.class, Color.AQUA);
+        setColor(Ocean.class, Color.CORNFLOWERBLUE);
     }
 
     private void simulateOneStep() {
