@@ -53,6 +53,7 @@ public class SimulatorGUI extends Application {
     private Map<Class, Color> colors = new LinkedHashMap<>();
     private ArrayList<Rectangle> gridNodes = new ArrayList<>();
     private static final Color UNKNOWN_COLOR = Color.GREY;
+    private Text population;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -99,21 +100,17 @@ public class SimulatorGUI extends Application {
             sim.softReset();
             showStatus();
         });
-        Button status = new Button("Check animal status");
-        status.setOnAction((ActionEvent event) -> {
-            checkStatus();
-        });
         toolBar.getChildren().add(back);
         toolBar.getChildren().add(stepInput);
         toolBar.getChildren().add(multiStep);
         toolBar.getChildren().add(reset);
-        toolBar.getChildren().add(status);
         borderPane.setTop(toolBar);
         return borderPane;
     }
 
-    private GridPane createSimulatorWindow(Stage stage) {
+    private BorderPane createSimulatorWindow(Stage stage) {
         GridPane gridPane = new GridPane();
+        BorderPane borderPane = new BorderPane();
         gridPane.setVgap(0.7);
         gridPane.setHgap(0.7);
         gridPane.setAlignment(Pos.CENTER);
@@ -121,7 +118,10 @@ public class SimulatorGUI extends Application {
         gridPane.setMaxHeight(Double.MAX_VALUE);
         gridPane.setMaxWidth(Double.MAX_VALUE);
         createGrid(gridPane, stage);
-        return gridPane;
+        borderPane.setCenter(gridPane);
+        
+        
+        return borderPane;
     }
 
     private void createGrid(GridPane gridPane, Stage currentStage) {
@@ -198,16 +198,6 @@ public class SimulatorGUI extends Application {
     private void showStatus() {
         Field someField = new Field(sim.getField().getDepth(), sim.getField().getWidth());
         someField.resetField(sim.getField());
-        System.out.println(someField.getLandscapeAt(0, 0));
-        gridNodes.forEach((Rectangle square) -> {
-            square.setFill(getColor(someField.getObjectAt(new Location(square.getId())).getClass()));
-        });
-    }
-
-    private void showStatus2() {
-        Field someField = new Field(sim.getField().getDepth(), sim.getField().getWidth());
-        someField.resetField(sim.getField());
-        System.out.println(someField.getLandscapeAt(0, 0));
         gridNodes.forEach((Rectangle square) -> {
             square.setFill(getColor(someField.getObjectAt(new Location(square.getId())).getClass()));
         });
@@ -224,7 +214,7 @@ public class SimulatorGUI extends Application {
 
     private void simulateOneStep() {
         sim.simulateOneStep();
-        showStatus2();
+        showStatus();
     }
 
     private void simulate(int steps) {
@@ -255,12 +245,5 @@ public class SimulatorGUI extends Application {
                 }
         });
         new Thread(task).start();
-    }
-
-    private void checkStatus() {
-        Stage statusStage = new Stage();
-        GridPane asd = createSimulatorWindow(statusStage);
-        statusStage.setScene(new Scene(asd, 400, 400));
-        statusStage.showAndWait();
     }
 }
