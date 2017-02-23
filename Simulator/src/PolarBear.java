@@ -23,7 +23,8 @@ public class PolarBear extends Animal {
     private static final int MAX_LITTER_SIZE = 4;
     // The food value of a single seal. In effect, this is the
     // number of steps a bear can go before it has to eat again.
-    private static final int SEAL_FOOD_VALUE = 21;
+    private static final int SEAL_FOOD_VALUE = 13;
+    private static final int SEAL_FOOD_VALUE_PREG = 30;
     private static final int PREG_PERIOD = 27;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
@@ -126,7 +127,11 @@ public class PolarBear extends Animal {
                     if (seal.isAlive() && foodLevel < 10) {
                         seal.setDead("eaten");
                         AnimalStatistics.addToStats(seal.getClass(), AnimalStatistics.STAT_DEATH_EATEN);
-                        foodLevel = SEAL_FOOD_VALUE;
+                        if (pregLevel > 0) {
+                            foodLevel = SEAL_FOOD_VALUE_PREG;
+                        } else {
+                            foodLevel = SEAL_FOOD_VALUE;
+                        }
                         //System.out.println("A seal was brutally eaten alive");
                         return where;
                     }
@@ -135,13 +140,12 @@ public class PolarBear extends Animal {
         }
         return null;
     }
-    
+
 //    private Location hunt() {
 //        Field field = getField();
 //        List<Location> adjacent = field.adjacentLocations(getLocation());
 //        Iterator
 //    }
-
     /**
      * Check whether or not this bear is to give birth at this step. New births
      * will be made into free adjacent locations.
