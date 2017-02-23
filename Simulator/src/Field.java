@@ -48,7 +48,6 @@ public class Field {
     }
 
     public int getSeed() {
-        System.out.println(seed);
         return seed;
     }
 

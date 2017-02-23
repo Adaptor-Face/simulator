@@ -29,6 +29,7 @@ public class Seal extends Animal {
     private static final double FISH_CONSTANT = 0.85;
     private static final int PREG_PERIOD = 27;
     private static final int STARVATION_PERIOD = 3;
+    private static final int FOOD_LIMIT = 6;
 
     // Individual characteristics (instance fields).
     private int foodLevel;
@@ -55,10 +56,12 @@ public class Seal extends Animal {
             pregLevel = rand.nextInt(26);
         }
         age = 0;
-        foodLevel = rand.nextInt(20);
+        foodLevel = rand.nextInt(7);
         if (randomAge) {
             age = rand.nextInt(MAX_AGE);
             foodLevel = rand.nextInt(20);
+        } else {
+            AnimalStatistics.addToStats(this.getClass(), "birth");
         }
     }
 
@@ -69,6 +72,9 @@ public class Seal extends Animal {
      * @param newSeals A list to return newly born rabbits.
      */
     public Location act(List<Animal> newSeals) {
+        if (foodLevel == FOOD_LIMIT) {
+            foodLevel = FOOD_LIMIT-1;
+        }
         incrementAge();
         //foodLevel = incrementHunger(foodLevel);
         incrementFood();
@@ -111,7 +117,7 @@ public class Seal extends Animal {
     private void incrementAge() {
         age++;
         if (age > MAX_AGE) {
-            setDead();
+            setDead("age");
             //System.out.println("DEATH ACTIVATED");
         }
     }
