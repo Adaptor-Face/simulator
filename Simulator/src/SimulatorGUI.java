@@ -211,7 +211,7 @@ public class SimulatorGUI extends Application {
             VBox vBox = new VBox();
             Text info = new Text(AnimalStatistics.getStatistics());
             vBox.getChildren().add(info);
-            alert.setScene(new Scene(vBox, 300, 150));
+            alert.setScene(new Scene(vBox));
             alert.showAndWait();
 
         });

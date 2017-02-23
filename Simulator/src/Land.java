@@ -11,7 +11,7 @@
 public class Land extends Landscape {
 
     public Land() {
-        this(0);
+        this(LAND_FOOD_DENSITY);
     }
 
     public Land(double value) {
