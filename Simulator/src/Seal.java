@@ -60,6 +60,8 @@ public class Seal extends Animal {
         if (randomAge) {
             age = rand.nextInt(MAX_AGE);
             foodLevel = rand.nextInt(20);
+        } else {
+            AnimalStatistics.addToStats(this.getClass(), "birth");
         }
     }
 
@@ -115,7 +117,7 @@ public class Seal extends Animal {
     private void incrementAge() {
         age++;
         if (age > MAX_AGE) {
-            setDead();
+            setDead("age");
             //System.out.println("DEATH ACTIVATED");
         }
     }

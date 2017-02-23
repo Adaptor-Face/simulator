@@ -62,7 +62,7 @@ public class Rabbit extends Animal
             }
             else {
                 // Overcrowding.
-                setDead();
+                setDead("overcrowding");
             }
         }
         return null;
@@ -76,7 +76,7 @@ public class Rabbit extends Animal
     {
         age++;
         if(age > MAX_AGE) {
-            setDead();
+            setDead("age");
         }
     }
     

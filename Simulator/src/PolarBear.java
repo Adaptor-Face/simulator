@@ -50,6 +50,7 @@ public class PolarBear extends Animal {
         } else {
             age = 0;
             foodLevel = SEAL_FOOD_VALUE;
+            AnimalStatistics.addToStats(this.getClass(), "birth");
         }
     }
 
@@ -62,7 +63,7 @@ public class PolarBear extends Animal {
      */
     public Location act(List<Animal> newBears) {
         incrementAge();
-        incrementHunger();
+        foodLevel = incrementHunger(foodLevel);
         if (isAlive()) {
             giveBirth(newBears);
             // Move towards a source of food if found.
@@ -76,7 +77,7 @@ public class PolarBear extends Animal {
                 setLocation(newLocation);
             } else {
                 // Overcrowding.
-                setDead();
+                //setDead();
             }
         }
         return null;
@@ -88,7 +89,7 @@ public class PolarBear extends Animal {
     private void incrementAge() {
         age++;
         if (age > MAX_AGE) {
-            setDead();
+            setDead("age");
         }
     }
 
@@ -101,16 +102,6 @@ public class PolarBear extends Animal {
         }
         pregLevel--;
         return false;
-    }
-
-    /**
-     * Make this bear more hungry. This could result in the bear's death.
-     */
-    private void incrementHunger() {
-        foodLevel--;
-        if (foodLevel <= 0) {
-            setDead();
-        }
     }
 
     /**
@@ -133,7 +124,8 @@ public class PolarBear extends Animal {
                 if (animal instanceof Seal) {
                     Seal seal = (Seal) animal;
                     if (seal.isAlive() && foodLevel < 10) {
-                        seal.setDead();
+                        seal.setDead("eaten");
+                        AnimalStatistics.addToStats(seal.getClass(), AnimalStatistics.STAT_DEATH_EATEN);
                         foodLevel = SEAL_FOOD_VALUE;
                         //System.out.println("A seal was brutally eaten alive");
                         return where;

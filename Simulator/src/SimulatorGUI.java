@@ -152,13 +152,13 @@ public class SimulatorGUI extends Application {
                         for (String string : animal.getAnimalDetails()) {
                             text += string + "\n";
                         }
-                        text += square.getId();
+                        text +="Location: " +  square.getId();
                         tt.setText(text);
                         Tooltip.install(square, tt);
                     }
                 });
                 square.setOnMouseClicked((MouseEvent event) -> {
-                    System.out.println(primaryStage.getHeight() + ", " + primaryStage.getWidth());
+                    //System.out.println(primaryStage.getHeight() + ", " + primaryStage.getWidth());
                 });
                 gridPane.add(square, x, y);
                 gridNodes.add(square);
