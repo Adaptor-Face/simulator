@@ -39,6 +39,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -116,40 +117,52 @@ public class SimulatorGUI extends Application {
             }
             alert.close();
         });
+        alert.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent w) {
+                System.out.println("daids");
+                gp.setId("close");
+            }
+        });
         start.setOnKeyPressed(new EnterHandler());
         widthInput.setOnKeyPressed(new EnterHandler());
         depthInput.setOnKeyPressed(new EnterHandler());
         seedInput.setOnKeyPressed(new EnterHandler());
-        start.setAlignment(Pos.BOTTOM_RIGHT);
         VBox vBox = new VBox();
+        vBox.setAlignment(Pos.BOTTOM_RIGHT);
         vBox.getChildren().add(gp);
         vBox.getChildren().add(start);
-        alert.setScene(new Scene(vBox));
+        alert.setScene(new Scene(vBox, 250, 120));
         start.requestFocus();
+        alert.setTitle("Simulator");
         alert.showAndWait();
-        this.root = createScene(primaryStage);
-        this.sim = new Simulator(depth, width, seed);
-        this.primaryStage = primaryStage;
-        this.stats = new FieldStats();
-        this.steps = new Text("Steps: " + step);
-        this.population = new Text(stats.getPopulationDetails(sim.getField()));
-        root.setCenter(createSimulatorWindow(primaryStage));
-        obsStep.addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue ov, Number oldValue, Number newValue) {
-                AnimalStatistics.stepLog(newValue.intValue());
-                if (newValue.intValue() <= oldValue.intValue()) {
-                    AnimalStatistics.endLog();
-                } else {
+        if (!gp.getId().equals("close")) {
+            gp.setHgap(5);
+            gp.setVgap(5);
+            this.root = createScene(primaryStage);
+            this.sim = new Simulator(depth, width, seed);
+            this.primaryStage = primaryStage;
+            this.stats = new FieldStats();
+            this.steps = new Text("Steps: " + step);
+            this.population = new Text(stats.getPopulationDetails(sim.getField()));
+            root.setCenter(createSimulatorWindow(primaryStage));
+            obsStep.addListener(new ChangeListener<Number>() {
+                @Override
+                public void changed(ObservableValue ov, Number oldValue, Number newValue) {
+                    AnimalStatistics.stepLog(newValue.intValue());
+                    if (newValue.intValue() <= oldValue.intValue()) {
+                        AnimalStatistics.endLog();
+                    } else {
+                    }
                 }
-            }
-        });
-        Scene scene = new Scene(root);
-        primaryStage.setScene(scene);
+            });
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
 //        Scene controlScene = new Scene(root, 500, 75);
 //        primaryStage.setScene(controlScene);
-        primaryStage.setTitle("Simulator");
-        primaryStage.show();
+            primaryStage.setTitle("Simulator");
+            primaryStage.show();
+        }
     }
 
     private BorderPane createScene(Stage primaryStage) {
