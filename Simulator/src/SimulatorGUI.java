@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -55,6 +57,7 @@ public class SimulatorGUI extends Application {
     private static final Color UNKNOWN_COLOR = Color.GREY;
     private Text population, steps;
     private int step = 0;
+    private SimpleIntegerProperty obsStep = new SimpleIntegerProperty(0);
     private FieldStats stats;
 
     @Override
@@ -66,6 +69,17 @@ public class SimulatorGUI extends Application {
         this.steps = new Text("Steps: " + step);
         this.population = new Text(stats.getPopulationDetails(sim.getField()));
         root.setCenter(createSimulatorWindow(primaryStage));
+        obsStep.addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue ov, Number oldValue, Number newValue) {
+                System.out.println(newValue);
+                AnimalStatistics.stepLog(newValue.intValue());
+                if (newValue.intValue() <= oldValue.intValue()) {
+                    AnimalStatistics.endLog();
+                } else {
+                }
+            }
+        });
         Scene scene = new Scene(root, 724, 542);
         primaryStage.setScene(scene);
 //        Scene controlScene = new Scene(root, 500, 75);
@@ -152,7 +166,7 @@ public class SimulatorGUI extends Application {
                         for (String string : animal.getAnimalDetails()) {
                             text += string + "\n";
                         }
-                        text +="Location: " +  square.getId();
+                        text += "Location: " + square.getId();
                         tt.setText(text);
                         Tooltip.install(square, tt);
                     }
@@ -201,6 +215,8 @@ public class SimulatorGUI extends Application {
 
     private void reset() {
         step = 0;
+        obsStep.set(0);
+        System.out.println(obsStep);
         sim.softReset();
         stats.reset();
         updateStats(sim.getField());
@@ -237,6 +253,7 @@ public class SimulatorGUI extends Application {
     private void simulateOneStep() {
         step++;
         sim.simulateOneStep();
+        obsStep.setValue(step);
         showStatus();
     }
 
@@ -253,6 +270,7 @@ public class SimulatorGUI extends Application {
                     sim.simulateOneStep();
                     updateValue(sim.getStep());
                     step++;
+                    obsStep.setValue(step);
                 }
                 return null;
             }
