@@ -14,7 +14,7 @@ public class Shallows extends Landscape{
         this(SHALLOWS_FOOD_DENSITY);
     }
     public Shallows (double value){
-        setFoodDensitiy(value);
+        setFoodDensity(value);
         setType(SHALLOWS);
     }
 }

@@ -14,7 +14,7 @@ public class Shore extends Landscape{
         this(SHORE_FOOD_DENSITY);
     }
     public Shore (double value){
-        setFoodDensitiy(value);
+        setFoodDensity(value);
         setType(SHORE);
     }
 }

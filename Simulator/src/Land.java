@@ -15,7 +15,7 @@ public class Land extends Landscape {
     }
 
     public Land(double value) {
-        setFoodDensitiy(value);
+        setFoodDensity(value);
         setType(LAND);
     }
 }

@@ -17,7 +17,7 @@ public class Landscape implements LandscapeType{
         return foodDensitiy;
     }
 
-    public final void setFoodDensitiy(double foodDensitiy) {
+    public final void setFoodDensity(double foodDensitiy) {
         this.foodDensitiy = foodDensitiy;
     }
 
