@@ -86,6 +86,7 @@ public class SimulatorGUI extends Application {
         gp.add(widthInput, 1, 0);
         gp.add(depthInput, 1, 1);
         gp.add(seedInput, 1, 2);
+        gp.setId("");
         class EnterHandler implements EventHandler<KeyEvent> {
 
             @Override
