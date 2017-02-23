@@ -90,10 +90,10 @@ public class SimulatorGUI extends Application {
                 width = Integer.parseInt(widthInput.getText());
             }
             if (widthInput.getText().length() > 0) {
-                depth = Integer.parseInt(widthInput.getText());
+                depth = Integer.parseInt(depthInput.getText());
             }
             if (widthInput.getText().length() > 0) {
-                seed = Integer.parseInt(widthInput.getText());
+                seed = Integer.parseInt(seedInput.getText());
             }
             alert.close();
         });
@@ -103,10 +103,10 @@ public class SimulatorGUI extends Application {
                     width = Integer.parseInt(widthInput.getText());
                 }
                 if (widthInput.getText().length() > 0) {
-                    depth = Integer.parseInt(widthInput.getText());
+                    depth = Integer.parseInt(depthInput.getText());
                 }
                 if (widthInput.getText().length() > 0) {
-                    seed = Integer.parseInt(widthInput.getText());
+                    seed = Integer.parseInt(seedInput.getText());
                 }
                 alert.close();
             }
@@ -117,10 +117,10 @@ public class SimulatorGUI extends Application {
                     width = Integer.parseInt(widthInput.getText());
                 }
                 if (widthInput.getText().length() > 0) {
-                    depth = Integer.parseInt(widthInput.getText());
+                    depth = Integer.parseInt(depthInput.getText());
                 }
                 if (widthInput.getText().length() > 0) {
-                    seed = Integer.parseInt(widthInput.getText());
+                    seed = Integer.parseInt(seedInput.getText());
                 }
                 alert.close();
             }
@@ -131,10 +131,10 @@ public class SimulatorGUI extends Application {
                     width = Integer.parseInt(widthInput.getText());
                 }
                 if (widthInput.getText().length() > 0) {
-                    depth = Integer.parseInt(widthInput.getText());
+                    depth = Integer.parseInt(depthInput.getText());
                 }
                 if (widthInput.getText().length() > 0) {
-                    seed = Integer.parseInt(widthInput.getText());
+                    seed = Integer.parseInt(seedInput.getText());
                 }
                 alert.close();
             }
@@ -145,10 +145,10 @@ public class SimulatorGUI extends Application {
                     width = Integer.parseInt(widthInput.getText());
                 }
                 if (widthInput.getText().length() > 0) {
-                    depth = Integer.parseInt(widthInput.getText());
+                    depth = Integer.parseInt(depthInput.getText());
                 }
                 if (widthInput.getText().length() > 0) {
-                    seed = Integer.parseInt(widthInput.getText());
+                    seed = Integer.parseInt(seedInput.getText());
                 }
                 alert.close();
             }
