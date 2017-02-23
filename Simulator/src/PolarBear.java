@@ -135,6 +135,12 @@ public class PolarBear extends Animal {
         }
         return null;
     }
+    
+//    private Location hunt() {
+//        Field field = getField();
+//        List<Location> adjacent = field.adjacentLocations(getLocation());
+//        Iterator
+//    }
 
     /**
      * Check whether or not this bear is to give birth at this step. New births
