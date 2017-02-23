@@ -80,7 +80,7 @@ public class AnimalStatistics {
     }
 
     public static void stepLog(int step) {
-        logToFile(step);
+        //logToFile(step);
 
         for (Class animalClass : STEP_MAP.keySet()) {
             for (String event : STEP_MAP.get(animalClass).keySet()) {
