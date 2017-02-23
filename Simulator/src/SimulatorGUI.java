@@ -23,6 +23,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -72,33 +74,91 @@ public class SimulatorGUI extends Application {
         depthInput.setPromptText("80");
         NumberField seedInput = new NumberField();
         seedInput.setPromptText("-812");
+        
         Text wTxt = new Text("Width");
         Text hTxt = new Text("Height");
         Text sTxt = new Text("Seed");
-        gp.add(wTxt,0,0);
-        gp.add(hTxt,0,1);
-        gp.add(sTxt,0,2);
-        gp.add(widthInput,1,0);
-        gp.add(depthInput,1,1);
-        gp.add(seedInput,1,2);
+        gp.add(wTxt, 0, 0);
+        gp.add(hTxt, 0, 1);
+        gp.add(sTxt, 0, 2);
+        gp.add(widthInput, 1, 0);
+        gp.add(depthInput, 1, 1);
+        gp.add(seedInput, 1, 2);
         Button start = new Button("Start Simulation");
         start.setOnAction((ActionEvent e) -> {
-            if(widthInput.getText().length()>0){
+            if (widthInput.getText().length() > 0) {
                 width = Integer.parseInt(widthInput.getText());
             }
-            if(widthInput.getText().length()>0){
+            if (widthInput.getText().length() > 0) {
                 depth = Integer.parseInt(widthInput.getText());
             }
-            if(widthInput.getText().length()>0){
+            if (widthInput.getText().length() > 0) {
                 seed = Integer.parseInt(widthInput.getText());
             }
             alert.close();
+        });
+        start.setOnKeyPressed((KeyEvent k) -> {
+            if (k.getCode().equals(KeyCode.ENTER)) {
+                if (widthInput.getText().length() > 0) {
+                    width = Integer.parseInt(widthInput.getText());
+                }
+                if (widthInput.getText().length() > 0) {
+                    depth = Integer.parseInt(widthInput.getText());
+                }
+                if (widthInput.getText().length() > 0) {
+                    seed = Integer.parseInt(widthInput.getText());
+                }
+                alert.close();
+            }
+        });
+        widthInput.setOnKeyPressed((KeyEvent k) -> {
+            if (k.getCode().equals(KeyCode.ENTER)) {
+                if (widthInput.getText().length() > 0) {
+                    width = Integer.parseInt(widthInput.getText());
+                }
+                if (widthInput.getText().length() > 0) {
+                    depth = Integer.parseInt(widthInput.getText());
+                }
+                if (widthInput.getText().length() > 0) {
+                    seed = Integer.parseInt(widthInput.getText());
+                }
+                alert.close();
+            }
+        });
+        depthInput.setOnKeyPressed((KeyEvent k) -> {
+            if (k.getCode().equals(KeyCode.ENTER)) {
+                if (widthInput.getText().length() > 0) {
+                    width = Integer.parseInt(widthInput.getText());
+                }
+                if (widthInput.getText().length() > 0) {
+                    depth = Integer.parseInt(widthInput.getText());
+                }
+                if (widthInput.getText().length() > 0) {
+                    seed = Integer.parseInt(widthInput.getText());
+                }
+                alert.close();
+            }
+        });
+        seedInput.setOnKeyPressed((KeyEvent k) -> {
+            if (k.getCode().equals(KeyCode.ENTER)) {
+                if (widthInput.getText().length() > 0) {
+                    width = Integer.parseInt(widthInput.getText());
+                }
+                if (widthInput.getText().length() > 0) {
+                    depth = Integer.parseInt(widthInput.getText());
+                }
+                if (widthInput.getText().length() > 0) {
+                    seed = Integer.parseInt(widthInput.getText());
+                }
+                alert.close();
+            }
         });
         start.setAlignment(Pos.BOTTOM_RIGHT);
         VBox vBox = new VBox();
         vBox.getChildren().add(gp);
         vBox.getChildren().add(start);
         alert.setScene(new Scene(vBox));
+        start.requestFocus();
         alert.showAndWait();
         this.root = createScene(primaryStage);
         this.sim = new Simulator(depth, width, seed);
