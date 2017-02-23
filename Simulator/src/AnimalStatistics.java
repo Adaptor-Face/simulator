@@ -62,7 +62,7 @@ public class AnimalStatistics {
                     returnString += "" + MAP.get(animalClass).get(event) + " " + animalClass.getName() + "s " + getAction(event) + " " + getCauseAsText(event) + ".\n";
                 }
             }
-            returnString += "           ";
+            returnString += "\n";
         }
         return returnString;
     }
@@ -73,7 +73,7 @@ public class AnimalStatistics {
             for (String event : STEP_MAP.get(animalClass).keySet()) {
                 returnString += "" + STEP_MAP.get(animalClass).get(event) + ", " + animalClass.getName() + ", " + event + ". ";
             }
-            returnString += "\n";
+            returnString += "           ";
         }
         return returnString;
 

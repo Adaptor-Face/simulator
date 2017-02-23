@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.ObservableValueBase;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -52,6 +53,7 @@ public class SimulatorGUI extends Application {
     private Simulator sim;
     private int depth = 80;
     private int width = 120;
+    private int seed = -812;
     private Map<Class, Color> colors = new LinkedHashMap<>();
     private ArrayList<Rectangle> gridNodes = new ArrayList<>();
     private static final Color UNKNOWN_COLOR = Color.GREY;
@@ -62,8 +64,44 @@ public class SimulatorGUI extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Stage alert = new Stage();
+        GridPane gp = new GridPane();
+        NumberField widthInput = new NumberField();
+        widthInput.setPromptText("120");
+        NumberField depthInput = new NumberField();
+        depthInput.setPromptText("80");
+        NumberField seedInput = new NumberField();
+        seedInput.setPromptText("-812");
+        Text wTxt = new Text("Width");
+        Text hTxt = new Text("Height");
+        Text sTxt = new Text("Seed");
+        gp.add(wTxt,0,0);
+        gp.add(hTxt,0,1);
+        gp.add(sTxt,0,2);
+        gp.add(widthInput,1,0);
+        gp.add(depthInput,1,1);
+        gp.add(seedInput,1,2);
+        Button start = new Button("Start Simulation");
+        start.setOnAction((ActionEvent e) -> {
+            if(widthInput.getText().length()>0){
+                width = Integer.parseInt(widthInput.getText());
+            }
+            if(widthInput.getText().length()>0){
+                depth = Integer.parseInt(widthInput.getText());
+            }
+            if(widthInput.getText().length()>0){
+                seed = Integer.parseInt(widthInput.getText());
+            }
+            alert.close();
+        });
+        start.setAlignment(Pos.BOTTOM_RIGHT);
+        VBox vBox = new VBox();
+        vBox.getChildren().add(gp);
+        vBox.getChildren().add(start);
+        alert.setScene(new Scene(vBox));
+        alert.showAndWait();
         this.root = createScene(primaryStage);
-        this.sim = new Simulator(-1, -1, -812);
+        this.sim = new Simulator(depth, width, seed);
         this.primaryStage = primaryStage;
         this.stats = new FieldStats();
         this.steps = new Text("Steps: " + step);
@@ -72,7 +110,6 @@ public class SimulatorGUI extends Application {
         obsStep.addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue ov, Number oldValue, Number newValue) {
-                System.out.println(newValue);
                 AnimalStatistics.stepLog(newValue.intValue());
                 if (newValue.intValue() <= oldValue.intValue()) {
                     AnimalStatistics.endLog();
@@ -80,7 +117,7 @@ public class SimulatorGUI extends Application {
                 }
             }
         });
-        Scene scene = new Scene(root, 724, 542);
+        Scene scene = new Scene(root);
         primaryStage.setScene(scene);
 //        Scene controlScene = new Scene(root, 500, 75);
 //        primaryStage.setScene(controlScene);
@@ -96,35 +133,25 @@ public class SimulatorGUI extends Application {
         back.setOnAction((ActionEvent event) -> {
             simulateOneStep();
         });
-        TextField stepInput = new TextField();
-        stepInput.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            try {
-                if (newValue.length() > 0 && newValue.length() <= 8) {
-                    Integer.parseInt(newValue);
-                } else if (newValue.length() == 0) {
-                    stepInput.setText("");
-                } else {
-                    stepInput.setText(oldValue);
-                }
-            } catch (NumberFormatException e) {
-                stepInput.setText(oldValue);
-            }
-        });
+        NumberField stepInput = new NumberField();
+        stepInput.setPromptText("Steps");
         Button multiStep = new Button("Step");
         multiStep.setOnAction((ActionEvent event) -> {
-            simulate(Integer.parseInt(stepInput.getText()));
+            if (stepInput.getText().length() > 0) {
+                simulate(Integer.parseInt(stepInput.getText()));
+            }
         });
         Button reset = new Button("Reset");
         reset.setOnAction((ActionEvent event) -> {
             reset();
         });
-        Button getStats = new Button("Get death stats");
+        Button getStats = new Button("Get stats");
         getStats.setOnAction((ActionEvent event) -> {
             Stage alert = new Stage();
             VBox vBox = new VBox();
             Text info = new Text(AnimalStatistics.getStatistics());
             vBox.getChildren().add(info);
-            alert.setScene(new Scene(vBox, 75, 150));
+            alert.setScene(new Scene(vBox, 300, 150));
             alert.showAndWait();
 
         });
@@ -297,5 +324,25 @@ public class SimulatorGUI extends Application {
         });
         new Thread(task).start();
         showStatus();
+    }
+
+    private class NumberField extends TextField {
+
+        public NumberField() {
+            super();
+            this.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+                try {
+                    if (newValue.length() > 0 && newValue.length() <= 8) {
+                        Integer.parseInt(newValue);
+                    } else if (newValue.length() == 0) {
+                        this.setText("");
+                    } else {
+                        this.setText(oldValue);
+                    }
+                } catch (NumberFormatException e) {
+                    this.setText(oldValue);
+                }
+            });
+        }
     }
 }

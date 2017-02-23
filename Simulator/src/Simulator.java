@@ -41,6 +41,8 @@ public class Simulator {
     private HashMap<Location, Class> sAnimals;
     private Field sField;
     private Field finishedField;
+    private int depth;
+    private int width;
 
     /**
      * Construct a simulation field with default size.
@@ -62,6 +64,8 @@ public class Simulator {
             depth = DEFAULT_DEPTH;
             width = DEFAULT_WIDTH;
         }
+        this.depth = depth;
+        this.width = width;
 
         animals = new ArrayList<>();
         sAnimals = new HashMap<>();
@@ -140,8 +144,8 @@ public class Simulator {
         step = 0;
         animals.clear();
         populate();
-        sField = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH, field.getSeed());
-        finishedField = new Field(DEFAULT_DEPTH, DEFAULT_WIDTH, field.getSeed());
+        sField = new Field(depth, width, field.getSeed());
+        finishedField = new Field(depth, width, field.getSeed());
         sField.resetField(field);
         finishedField.resetField(field);
 
