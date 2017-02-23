@@ -76,7 +76,7 @@ public class PolarBear extends Animal {
                 setLocation(newLocation);
             } else {
                 // Overcrowding.
-                setDead();
+                //setDead();
             }
         }
         return null;
@@ -132,7 +132,7 @@ public class PolarBear extends Animal {
                 Object animal = field.getAnimalAt(where);
                 if (animal instanceof Seal) {
                     Seal seal = (Seal) animal;
-                    if (seal.isAlive() && foodLevel < 10) {
+                    if (seal.isAlive() && foodLevel < 11) {
                         seal.setDead();
                         foodLevel = SEAL_FOOD_VALUE;
                         //System.out.println("A seal was brutally eaten alive");
@@ -143,6 +143,12 @@ public class PolarBear extends Animal {
         }
         return null;
     }
+    
+//    private Location hunt() {
+//        Field field = getField();
+//        List<Location> adjacent = field.adjacentLocations(getLocation());
+//        Iterator
+//    }
 
     /**
      * Check whether or not this bear is to give birth at this step. New births
