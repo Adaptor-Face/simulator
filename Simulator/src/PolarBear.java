@@ -8,7 +8,7 @@ import java.util.Random;
  * A simple model of a polar bear. Bears age, move, eat seals, and die.
  *
  * @author Anders
- * @version 2017.02.15
+ * @version 2017.02.24
  */
 public class PolarBear extends Animal {
     // Characteristics shared by all bears (class variables).
@@ -24,7 +24,7 @@ public class PolarBear extends Animal {
     // The food value of a single seal. In effect, this is the
     // number of steps a bear can go before it has to eat again.
     private static final int SEAL_FOOD_VALUE = 13;
-    private static final int SEAL_FOOD_VALUE_PREG = 30;
+    private static final int SEAL_FOOD_VALUE_PREG = 36;
     private static final int PREG_PERIOD = 27;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
@@ -143,16 +143,28 @@ public class PolarBear extends Animal {
 
 //    private Location hunt() {
 //        Field field = getField();
-//        List<Location> adjacent = field.adjacentLocations(getLocation());
-//        Iterator
+//        List<Location> adjacent = field.adjacentLocationsRadius(getLocation(), 5);
+//        Iterator<Location> it = adjacent.iterator();
+//        while (it.hasNext()) {
+//            Location where = it.next();
+//            if (field.getLandscapeAt(where).getType().equals(LandscapeType.LAND)
+//                    || field.getLandscapeAt(where).getType().equals(LandscapeType.SHORE)
+//                    || field.getLandscapeAt(where).getType().equals(LandscapeType.SHALLOWS)
+//                    || field.getLandscapeAt(where).getType().equals(LandscapeType.OCEAN)) {
+//                Object animal = field.getAnimalAt(where);
+//                             
+//            }
+//        }
 //    }
-    /**
-     * Check whether or not this bear is to give birth at this step. New births
-     * will be made into free adjacent locations.
-     *
-     * @param newBears A list to return newly born bears.
-     */
-    private void giveBirth(List<Animal> newBears) {
+
+
+/**
+ * Check whether or not this bear is to give birth at this step. New births will
+ * be made into free adjacent locations.
+ *
+ * @param newBears A list to return newly born bears.
+ */
+private void giveBirth(List<Animal> newBears) {
         // New bears are born into adjacent locations.
         // Get a list of adjacent free locations.
         if (incrementPreg()) {
@@ -188,12 +200,12 @@ public class PolarBear extends Animal {
     }
 
     @Override
-    public Integer getFoodLevel() {
+        public Integer getFoodLevel() {
         return foodLevel;
     }
 
     @Override
-    public List<String> getAnimalDetails() {
+        public List<String> getAnimalDetails() {
         List<String> info = new ArrayList<>();
         info.add("Species: PolarBear");
         info.add("Hunger: " + getFoodLevel());
