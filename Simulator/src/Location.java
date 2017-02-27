@@ -43,7 +43,7 @@ public class Location {
     public Integer distanceBetween(Location loc){
         Integer distX = Math.abs(loc.col - this.col); 
         Integer distY = Math.abs(loc.row - this.row);
-        if(distY<distX){
+        if(distY>distX){
             return distY;
         }
         return distX;
