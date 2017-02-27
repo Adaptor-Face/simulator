@@ -15,19 +15,20 @@ public class Seal extends Animal {
     // Characteristics shared by all rabbits (class variables).
 
     // The age at which a rabbit can start to breed.
-    private static final int BREEDING_AGE = 286;
+    private static final int BREEDING_AGE = 1602;
     // The age to which a rabbit can live.
-    private static final int MAX_AGE = 1456;
+    private static final int MAX_AGE = 9790;
     // The likelihood of a rabbit breeding.
-    private static final double BREEDING_PROBABILITY = 0.40;
+    private static final double BREEDING_PROBABILITY = 0.12;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 1;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    private static final int FISH_FOOD_VALUE = 2;
+    private static final int FISH_FOOD_VALUE = 1;
+    
     private static final int LAND_FOOD_VALUE = 1;
     private static final double FISH_CONSTANT = 0.85;
-    private static final int PREG_PERIOD = 27;
+    private static final int PREG_PERIOD = 90;
     private static final int STARVATION_PERIOD = 3;
     private static final int FOOD_LIMIT = 13;
 
