@@ -36,6 +36,7 @@ public class Seal extends Animal {
     private int foodLevel;
     private int pregLevel;
     private boolean starved = false;
+    private Location lastLocation;
 
     private Landscape ls = new Landscape();
 
@@ -80,7 +81,7 @@ public class Seal extends Animal {
         incrementAge();
         foodLevel = incrementHunger(foodLevel);
         double rngLoc = ThreadLocalRandom.current().nextDouble(0, 1);
-
+        lastLocation = getLocation();
         if (isAlive()) {
             giveBirth(newSeals);
             ls = getField().getLandscapeAt(getLocation());
@@ -249,16 +250,35 @@ public class Seal extends Animal {
         Field field = getField();
         Location where = getLocation();
         Location location = null;
-        int 
+        int xCord = where.getCol();
+        int yCord = where.getRow();
+        int distance;
         if (foodLevel > 12) {
             location = field.lookFor(where, Shore.class, "N S E W");
-            where.;
+            try {
+            distance = where.distanceBetween(location);
+            } catch (NullPointerException ex) {
+                location = itsDangerousToGoAlone();
+            }
             
-            
-            
+            if (distance > 8) {
+                return lastLocation;
+            }
         }
     }
-    private void itsDangerousToGoAlone() {
-        
+    private Location itsDangerousToGoAlone() {
+        Field field = getField();
+        Location where = getLocation();
+        Location location = field.lookFor(where, Seal.class, "N S E W");
+        int distance = where.distanceBetween(location);
+        int xCord = where.getCol();
+        int yCord = where.getRow();
+        List<Location> locs = field.getFreeAdjacentLocations(location);
+        for(Location lc : locs) {
+            if(((xCord == lc.getCol()) || (yCord == lc.getRow())) &! (xCord == lc.getCol() && yCord == lc.getRow())) {
+                return lc;
+            }
+        }
+        return where;
     }
 }
