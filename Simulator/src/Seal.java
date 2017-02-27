@@ -73,12 +73,12 @@ public class Seal extends Animal {
      * @param newSeals A list to return newly born rabbits.
      */
     public Location act(List<Animal> newSeals) {
-                incrementFood();
+                //incrementFood();
         if (foodLevel >= FOOD_LIMIT) {
             foodLevel = FOOD_LIMIT-1;
         }
         incrementAge();
-        //foodLevel = incrementHunger(foodLevel);
+        foodLevel = incrementHunger(foodLevel);
         double rngLoc = ThreadLocalRandom.current().nextDouble(0, 1);
 
         if (isAlive()) {
@@ -223,8 +223,6 @@ public class Seal extends Animal {
             foodLevel = STARVATION_PERIOD;
         } else if (foodLevel == 1) {
             foodLevel = incrementHunger(foodLevel);
-        } else if (foodLevel < 12) {
-            starved = false;
         }
     }
 
