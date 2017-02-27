@@ -119,6 +119,52 @@ public class Field {
         place(animal, new Location(row, col));
     }
 
+    public Location lookFor(Location source, Class toLookFor, String direction) {
+        String str[] = direction.toLowerCase().split("");
+        Location loc = null;
+        boolean found = false;
+        for (String dir : str) {
+            for (int y = 1; y <= 8; y++) {
+                for (int x = 1; x <= y * 2 + 1; x++) {
+                    if (!found) {
+                        int sourceY = source.getRow();
+                        int sourceX = source.getCol();
+                        if ("ew".contains(dir)) {
+                            if (dir.equals("w")) {
+                                sourceX -= y;
+                            } else {
+                                sourceX += y;
+                            }
+                            if (x % 2 == 0) {
+                                sourceY -= x / 2;
+                            } else {
+                                sourceY += x / 2;
+                            }
+                        } else {
+                            if (dir.equals("n")) {
+                                sourceY -= y;
+                            } else {
+                                sourceY += y;
+                            }
+                            if (x % 2 == 0) {
+                                sourceX -= x / 2;
+                            } else {
+                                sourceX += x / 2;
+                            }
+                        }
+                        Object obj = getObjectAt(sourceY, sourceX);
+                        System.out.println("Location: " + new Location(sourceY, sourceX));
+                        if (obj != null && obj.getClass().equals(toLookFor)) {
+                            loc = new Location(sourceY, sourceX);
+                            //found = true;
+                        }
+                    }
+                }
+            }
+        }
+        return loc;
+    }
+
     /**
      * Place an animal at the given location. If there is already an animal at
      * the location it will be lost.
@@ -284,18 +330,18 @@ public class Field {
         }
         return locations;
     }
-    
-        public List<Location> adjacentLocationsRadius(Location location, int radius) {
+
+    public List<Location> adjacentLocationsRadius(Location location, int radius) {
         assert location != null : "Null location passed to adjacentLocations";
         // The list of locations to be returned.
         List<Location> locations = new LinkedList<Location>();
         if (location != null) {
             int row = location.getRow();
             int col = location.getCol();
-            for (int roffset = - radius; roffset <= radius; roffset++) {
+            for (int roffset = -radius; roffset <= radius; roffset++) {
                 int nextRow = row + roffset;
                 if (nextRow >= 0 && nextRow < depth) {
-                    for (int coffset = - radius; coffset <= radius; coffset++) {
+                    for (int coffset = -radius; coffset <= radius; coffset++) {
                         int nextCol = col + coffset;
                         // Exclude invalid locations and the original location.
                         if (nextCol >= 0 && nextCol < width && (roffset != 0 || coffset != 0)) {

@@ -172,6 +172,7 @@ public class SimulatorGUI extends Application {
         Button back = new Button("One Step");
         back.setOnAction((ActionEvent event) -> {
             simulateOneStep();
+            System.out.println(sim.getField().lookFor(new Location(15,67), Shallows.class, "W"));
         });
         NumberField stepInput = new NumberField();
         stepInput.setPromptText("Steps");
@@ -239,7 +240,7 @@ public class SimulatorGUI extends Application {
                     }
                 });
                 square.setOnMouseClicked((MouseEvent event) -> {
-                    //System.out.println(primaryStage.getHeight() + ", " + primaryStage.getWidth());
+                    System.out.println(square.getId());
                 });
                 gridPane.add(square, x, y);
                 gridNodes.add(square);
