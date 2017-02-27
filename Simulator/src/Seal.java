@@ -245,8 +245,18 @@ public class Seal extends Animal {
         return false;
     }
     
-    private void chillinOnTheBeach() {
-        
+    private Location chillinOnTheBeach() {
+        Field field = getField();
+        Location where = getLocation();
+        Location location = null;
+        int 
+        if (foodLevel > 12) {
+            location = field.lookFor(where, Shore.class, "N S E W");
+            where.;
+            
+            
+            
+        }
     }
     private void itsDangerousToGoAlone() {
         
