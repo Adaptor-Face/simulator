@@ -19,7 +19,7 @@ public class Seal extends Animal {
     // The age to which a rabbit can live.
     private static final int MAX_AGE = 1456;
     // The likelihood of a rabbit breeding.
-    private static final double BREEDING_PROBABILITY = 0.50;
+    private static final double BREEDING_PROBABILITY = 0.40;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 1;
     // A shared random number generator to control breeding.
@@ -29,7 +29,7 @@ public class Seal extends Animal {
     private static final double FISH_CONSTANT = 0.85;
     private static final int PREG_PERIOD = 27;
     private static final int STARVATION_PERIOD = 3;
-    private static final int FOOD_LIMIT = 6;
+    private static final int FOOD_LIMIT = 13;
 
     // Individual characteristics (instance fields).
     private int foodLevel;
@@ -72,12 +72,12 @@ public class Seal extends Animal {
      * @param newSeals A list to return newly born rabbits.
      */
     public Location act(List<Animal> newSeals) {
+                incrementFood();
         if (foodLevel == FOOD_LIMIT) {
             foodLevel = FOOD_LIMIT-1;
         }
         incrementAge();
         //foodLevel = incrementHunger(foodLevel);
-        incrementFood();
         double rngLoc = ThreadLocalRandom.current().nextDouble(0, 1);
 
         if (isAlive()) {
