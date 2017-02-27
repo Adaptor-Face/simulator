@@ -149,7 +149,7 @@ public class SimulatorGUI extends Application {
             obsStep.addListener(new ChangeListener<Number>() {
                 @Override
                 public void changed(ObservableValue ov, Number oldValue, Number newValue) {
-                    AnimalStatistics.stepLog(newValue.intValue());
+                    AnimalStatistics.stepLog();
                     if (newValue.intValue() <= oldValue.intValue()) {
                         AnimalStatistics.endLog();
                     } else {
@@ -172,7 +172,6 @@ public class SimulatorGUI extends Application {
         Button back = new Button("One Step");
         back.setOnAction((ActionEvent event) -> {
             simulateOneStep();
-            System.out.println(sim.getField().lookFor(new Location(15,67), Shallows.class, "W"));
         });
         NumberField stepInput = new NumberField();
         stepInput.setPromptText("Steps");

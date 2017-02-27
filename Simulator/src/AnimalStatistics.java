@@ -28,6 +28,7 @@ public class AnimalStatistics {
     private static final HashMap<String, Integer> DEFAULT_MAP;
     private static boolean newFile = true;
     private static File log;
+    private static String logString = "";
 
     static {
         DEFAULT_MAP = new HashMap<String, Integer>();
@@ -71,16 +72,16 @@ public class AnimalStatistics {
         String returnString = "";
         for (Class animalClass : STEP_MAP.keySet()) {
             for (String event : STEP_MAP.get(animalClass).keySet()) {
-                returnString += "" + STEP_MAP.get(animalClass).get(event) + ", " + animalClass.getName() + ", " + event + ". ";
+                returnString += "" + STEP_MAP.get(animalClass).get(event) + ", ";// + animalClass.getName() + ", " + event + ". ";
+                logString += event +"_" + animalClass.getName() + ", ";
             }
-            returnString += "           ";
         }
         return returnString;
 
     }
 
-    public static void stepLog(int step) {
-        //logToFile(step);
+    public static void stepLog() {
+        logToFile();
 
         for (Class animalClass : STEP_MAP.keySet()) {
             for (String event : STEP_MAP.get(animalClass).keySet()) {
@@ -94,22 +95,26 @@ public class AnimalStatistics {
         newFile = true;
     }
 
-    private static void logToFile(int step) {
+    private static void logToFile() {
         if (newFile) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd HH_mm_ss");
             Date date = new Date();
             log = new File("C:/SosLogs/Log_" + dateFormat.format(date) + ".txt");
-            newFile = false;
-        }
-        try {
-            log.createNewFile();
-        } catch (IOException ex) {
-            Logger.getLogger(AnimalStatistics.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                log.createNewFile();
+            } catch (IOException ex) {
+                Logger.getLogger(AnimalStatistics.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         try {
             FileWriter writer = new FileWriter(log.getAbsolutePath(), true);
             PrintWriter print = new PrintWriter(writer);
-            print.println("Step: " + step + "   " + getLogStatistics());
+            if (newFile) {
+                getLogStatistics();
+                print.println(logString);
+                newFile = false;
+            }
+            print.println(getLogStatistics());
             print.close();
         } catch (IOException ex) {
             Logger.getLogger(AnimalStatistics.class.getName()).log(Level.SEVERE, null, ex);
