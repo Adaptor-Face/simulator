@@ -153,10 +153,9 @@ public class Field {
                             }
                         }
                         Object obj = getObjectAt(sourceY, sourceX);
-                        System.out.println("Location: " + new Location(sourceY, sourceX));
                         if (obj != null && obj.getClass().equals(toLookFor)) {
                             loc = new Location(sourceY, sourceX);
-                            //found = true;
+                            found = true;
                         }
                     }
                 }
