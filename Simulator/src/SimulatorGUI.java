@@ -95,10 +95,10 @@ public class SimulatorGUI extends Application {
                     if (widthInput.getText().length() > 0) {
                         width = Integer.parseInt(widthInput.getText());
                     }
-                    if (widthInput.getText().length() > 0) {
+                    if (depthInput.getText().length() > 0) {
                         depth = Integer.parseInt(depthInput.getText());
                     }
-                    if (widthInput.getText().length() > 0) {
+                    if (seedInput.getText().length() > 0) {
                         seed = Integer.parseInt(seedInput.getText());
                     }
                     alert.close();
@@ -110,10 +110,10 @@ public class SimulatorGUI extends Application {
             if (widthInput.getText().length() > 0) {
                 width = Integer.parseInt(widthInput.getText());
             }
-            if (widthInput.getText().length() > 0) {
+            if (depthInput.getText().length() > 0) {
                 depth = Integer.parseInt(depthInput.getText());
             }
-            if (widthInput.getText().length() > 0) {
+            if (seedInput.getText().length() > 0) {
                 seed = Integer.parseInt(seedInput.getText());
             }
             alert.close();
@@ -121,7 +121,6 @@ public class SimulatorGUI extends Application {
         alert.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent w) {
-                System.out.println("daids");
                 gp.setId("close");
             }
         });
@@ -224,7 +223,7 @@ public class SimulatorGUI extends Application {
     private void createGrid(GridPane gridPane, Stage currentStage) {
         for (int y = 0; y < depth; y++) {
             for (int x = 0; x < width; x++) {
-                Rectangle square = new Rectangle(5, 5, UNKNOWN_COLOR);
+                Rectangle square = new Rectangle(8, 8, UNKNOWN_COLOR);
                 square.setId(new Location(y, x).toString());
                 square.setOnMouseEntered((MouseEvent event) -> {
                     Animal animal = sim.getField().getAnimalAt(new Location(square.getId()));
