@@ -119,16 +119,25 @@ public class Field {
         place(animal, new Location(row, col));
     }
 
-    public Location lookFor(Location source, Class toLookFor, String direction) {
+
+    /**
+     * Searches in a cone in the direction(s) specified for the specified length tiles and returns the location if it finds a match.
+     * @param currentLocation the location to search from
+     * @param toLookFor what class to look for
+     * @param direction what direction to look in, "new" searches in north, east and west. "se" searches in south and east.
+     * @param distance the number of tiles to search
+     * @return returns the closest found location that matches the class you were looking for, null if nothing was found
+     */
+    public Location lookFor(Location currentLocation, Class toLookFor, String direction, int distance) {
         String str[] = direction.toLowerCase().split("");
         Location loc = null;
         boolean found = false;
         for (String dir : str) {
-            for (int y = 1; y <= 8; y++) {
+            for (int y = 1; y <= distance; y++) {
                 for (int x = 1; x <= y * 2 + 1; x++) {
                     if (!found) {
-                        int sourceY = source.getRow();
-                        int sourceX = source.getCol();
+                        int sourceY = currentLocation.getRow();
+                        int sourceX = currentLocation.getCol();
                         if ("ew".contains(dir)) {
                             if (dir.equals("w")) {
                                 sourceX -= y;
@@ -162,6 +171,17 @@ public class Field {
             }
         }
         return loc;
+    }
+
+    /**
+     * Searches in a cone in the direction(s) specified for 8 tiles and returns the location if it finds a match.
+     * @param currentLocation the location to search from
+     * @param toLookFor what class to look for
+     * @param direction what direction to look in, "new" searches in north, east and west. "se" searches in south and east.
+     * @return returns the closest found location that matches the class you were looking for, null if nothing was found
+     */
+    public Location lookFor(Location currentLocation, Class toLookFor, String direction) {
+        return lookFor(currentLocation, toLookFor, direction, 8);
     }
 
     /**
