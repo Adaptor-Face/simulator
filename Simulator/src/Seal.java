@@ -24,12 +24,12 @@ public class Seal extends Animal {
     private static final int MAX_LITTER_SIZE = 1;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
-    private static final int FISH_FOOD_VALUE = 1;
+    private static final int FISH_FOOD_VALUE = 2;
     
     private static final int LAND_FOOD_VALUE = 1;
     private static final double FISH_CONSTANT = 0.85;
     private static final int PREG_PERIOD = 90;
-    private static final int STARVATION_PERIOD = 3;
+    private static final int STARVATION_PERIOD = 5;
     private static final int FOOD_LIMIT = 13;
 
     // Individual characteristics (instance fields).
@@ -74,7 +74,7 @@ public class Seal extends Animal {
      */
     public Location act(List<Animal> newSeals) {
                 incrementFood();
-        if (foodLevel == FOOD_LIMIT) {
+        if (foodLevel >= FOOD_LIMIT) {
             foodLevel = FOOD_LIMIT-1;
         }
         incrementAge();
@@ -198,10 +198,11 @@ public class Seal extends Animal {
     }
 
     private boolean incrementPreg() {
+        Field field = getField();
         if (pregLevel == 1) {
             pregLevel--;
             return true;
-        } else if (pregLevel == 0) {
+        } else if (pregLevel == 0 && findSeal(field.adjacentLocations(getLocation()))) {
             pregLevel = PREG_PERIOD;
         }
         pregLevel--;
@@ -218,11 +219,11 @@ public class Seal extends Animal {
     private void incrementFood() {
         setStarved();
         foodLevel = incrementHunger(foodLevel);
-        if (foodLevel == 0 && !starved) {
+        if (foodLevel == 1 && !starved) {
             foodLevel = STARVATION_PERIOD;
-        } else if (foodLevel == 0) {
+        } else if (foodLevel == 1) {
             foodLevel = incrementHunger(foodLevel);
-        } else {
+        } else if (foodLevel < 12) {
             starved = false;
         }
     }
@@ -234,5 +235,22 @@ public class Seal extends Animal {
         info.add("Hunger: " + getFoodLevel());
         info.add("Age: " + age);
         return info;
+    }
+    
+    private boolean findSeal(List<Location> locations) {
+        Field field = getField();
+        for(Location where : locations) {
+            if (field.getAnimalAt(where) instanceof Seal) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private void chillinOnTheBeach() {
+        
+    }
+    private void itsDangerousToGoAlone() {
+        
     }
 }
