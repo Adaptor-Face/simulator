@@ -39,6 +39,15 @@ public class Location {
             return false;
         }
     }
+    
+    public Integer distanceBetween(Location loc){
+        Integer distX = Math.abs(loc.col - this.col); 
+        Integer distY = Math.abs(loc.row - this.row);
+        if(distY>distX){
+            return distY;
+        }
+        return distX;
+    }
 
     /**
      * Return a string of the form row,column
