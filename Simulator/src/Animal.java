@@ -57,6 +57,8 @@ public abstract class Animal {
     protected boolean isAlive() {
         return alive;
     }
+    
+    abstract public int getAge();
 
     /**
      * Indicate that the animal is no longer alive. It is removed from the
@@ -64,6 +66,7 @@ public abstract class Animal {
      */
     protected void setDead(String cause) {
         alive = false;
+        AnimalStatistics.logSingleEvent(this.getClass(), cause, getAge());
         AnimalStatistics.addToStats(this.getClass(), cause);
         if (location != null) {
             field.clear(location);

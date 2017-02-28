@@ -212,4 +212,9 @@ private void giveBirth(List<Animal> newBears) {
         info.add("Age: " + age);
         return info;
     }
+
+    @Override
+    public int getAge() {
+        return age;
+    }
 }

@@ -298,4 +298,9 @@ public class Seal extends Animal {
             
         }
     }
+
+    @Override
+    public int getAge() {
+        return age;
+    }
 }
