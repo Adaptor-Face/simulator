@@ -25,7 +25,7 @@ public class Seal extends Animal {
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
     private static final int FISH_FOOD_VALUE = 2;
-    
+
     private static final int LAND_FOOD_VALUE = 1;
     private static final double FISH_CONSTANT = 0.85;
     private static final int PREG_PERIOD = 90;
@@ -74,9 +74,9 @@ public class Seal extends Animal {
      * @param newSeals A list to return newly born rabbits.
      */
     public Location act(List<Animal> newSeals) {
-                //incrementFood();
+        //incrementFood();
         if (foodLevel >= FOOD_LIMIT) {
-            foodLevel = FOOD_LIMIT-1;
+            foodLevel = FOOD_LIMIT - 1;
         }
         incrementAge();
         foodLevel = incrementHunger(foodLevel);
@@ -95,7 +95,10 @@ public class Seal extends Animal {
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }
             // Try to move into a free location.
-            if (newLocation != null && rngLoc >= 0.11) {
+            if (foodLevel > 10) {
+                chillinOnTheBeach();
+            }
+            else if (newLocation != null && rngLoc >= 0.11) {
                 setLocation(newLocation);
                 return newLocation;
             } else if (newLocation != null && rngLoc <= 0.10) {
@@ -178,7 +181,8 @@ public class Seal extends Animal {
             if (randomFishValue <= ls.getFoodDensitiy()) {
                 foodLevel += FISH_FOOD_VALUE;
             }
-        } if (tt.getType().equals(LandscapeType.SHORE)) {
+        }
+        if (tt.getType().equals(LandscapeType.SHORE)) {
             if (randomFishValue <= ls.getFoodDensitiy()) {
                 foodLevel += LAND_FOOD_VALUE;
             }
@@ -235,50 +239,60 @@ public class Seal extends Animal {
         info.add("Age: " + age);
         return info;
     }
-    
+
     private boolean findSeal(List<Location> locations) {
         Field field = getField();
-        for(Location where : locations) {
+        for (Location where : locations) {
             if (field.getAnimalAt(where) instanceof Seal) {
                 return true;
             }
         }
         return false;
     }
-    
+
     private Location chillinOnTheBeach() {
         Field field = getField();
         Location where = getLocation();
         Location location = null;
         int xCord = where.getCol();
         int yCord = where.getRow();
-        int distance;
-        if (foodLevel > 12) {
-            location = field.lookFor(where, Shore.class, "N S E W");
-            try {
-            distance = where.distanceBetween(location);
-            } catch (NullPointerException ex) {
-                location = itsDangerousToGoAlone();
-            }
-            
-            if (distance > 8) {
-                return lastLocation;
-            }
+        location = field.lookFor(where, Shore.class, "N S E W");
+        if (location != null) {
+            moveTowards(location, where);
+        } else {
+            itsDangerousToGoAlone();
         }
+        return location;
     }
-    private Location itsDangerousToGoAlone() {
+
+    private void itsDangerousToGoAlone() {
         Field field = getField();
         Location where = getLocation();
         Location location = field.lookFor(where, Seal.class, "N S E W");
-        int distance = where.distanceBetween(location);
         int xCord = where.getCol();
         int yCord = where.getRow();
         List<Location> locs = field.getFreeAdjacentLocations(location);
-        for(Location lc : locs) {
-            if(((xCord == lc.getCol()) || (yCord == lc.getRow())) &! (xCord == lc.getCol() && yCord == lc.getRow())) {
-                return lc;
+        for (Location lc : locs) {
+            if (((xCord == lc.getCol()) || (yCord == lc.getRow())) & !(xCord == lc.getCol() && yCord == lc.getRow())) {
+                moveTowards(lc, where);
+            } else {
+                setLocation(getLocation());
             }
         }
-        return where;
+    }
+    
+    private void moveTowards(Location location, Location where) {
+        Field field = getField();
+        where = where;
+        location = location;
+        int distance = where.distanceBetween(location);
+        for (int i = 1; i == distance; i++) {
+            if (where.getCol() == location.getCol()) {
+                setLocation(new Location(location.getRow() - distance + i, location.getCol()));
+            } else if (where.getRow() == location.getRow()) {
+                setLocation(new Location(location.getRow(), location.getCol() - distance + i));                
+            }
+            
+        }
     }
 }
