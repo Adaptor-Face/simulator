@@ -176,14 +176,14 @@ public class Seal extends Animal {
         Field field = getField();
         Landscape tt = field.getLandscapeAt(location);
         double randomFishValue = ThreadLocalRandom.current().nextDouble(min, max);
-        if (ls != null) {
+        if (tt != null) {
             if (tt.getType().equals(LandscapeType.OCEAN) || tt.getType().equals(LandscapeType.SHALLOWS)) {
-                if (randomFishValue <= ls.getFoodDensitiy()) {
+                if (randomFishValue <= tt.getFoodDensitiy()) {
                     foodLevel += FISH_FOOD_VALUE;
                 }
             }
             if (tt.getType().equals(LandscapeType.SHORE)) {
-                if (randomFishValue <= ls.getFoodDensitiy()) {
+                if (randomFishValue <= tt.getFoodDensitiy()) {
                     foodLevel += LAND_FOOD_VALUE;
                 }
             }
