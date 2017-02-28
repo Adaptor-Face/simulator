@@ -119,51 +119,61 @@ public class Field {
         place(animal, new Location(row, col));
     }
 
-
     /**
-     * Searches in a cone in the direction(s) specified for the specified length tiles and returns the location if it finds a match.
+     * Searches in a cone in the direction(s) specified for the specified length
+     * tiles and returns the location if it finds a match.
+     *
      * @param currentLocation the location to search from
      * @param toLookFor what class to look for
-     * @param direction what direction to look in, "new" searches in north, east and west. "se" searches in south and east.
+     * @param direction what direction to look in, "new" searches in north, east
+     * and west. "se" searches in south and east.
      * @param distance the number of tiles to search
-     * @return returns the closest found location that matches the class you were looking for, null if nothing was found
+     * @return returns the closest found location that matches the class you
+     * were looking for, null if nothing was found
      */
     public Location lookFor(Location currentLocation, Class toLookFor, String direction, int distance) {
+        char ch[] = "abcdfghijklmopqrtuvxyz".toCharArray();
+        direction = direction.toLowerCase();
+        for(char letter : ch){
+        direction = direction.replace(letter, ' ');
+        }
+        direction = direction.replace(" ", "");
         String str[] = direction.toLowerCase().split("");
         Location loc = null;
         boolean found = false;
-        for (String dir : str) {
-            for (int y = 1; y <= distance; y++) {
-                for (int x = 1; x <= y * 2 + 1; x++) {
-                    if (!found) {
-                        int sourceY = currentLocation.getRow();
-                        int sourceX = currentLocation.getCol();
+        for (int y = 1; y <= distance; y++) {
+            for (int x = 1; x <= y * 2 + 1; x++) {
+                if (!found) {
+                    for (String dir : str) {
+                        int row = currentLocation.getRow();
+                        int col = currentLocation.getCol();
                         if ("ew".contains(dir)) {
                             if (dir.equals("w")) {
-                                sourceX -= y;
+                                col -= y;
                             } else {
-                                sourceX += y;
+                                col += y;
                             }
                             if (x % 2 == 0) {
-                                sourceY -= x / 2;
+                                row -= x / 2;
                             } else {
-                                sourceY += x / 2;
+                                row += x / 2;
                             }
                         } else {
                             if (dir.equals("n")) {
-                                sourceY -= y;
+                                row -= y;
                             } else {
-                                sourceY += y;
+                                row += y;
                             }
                             if (x % 2 == 0) {
-                                sourceX -= x / 2;
+                                col -= x / 2;
                             } else {
-                                sourceX += x / 2;
+                                col += x / 2;
                             }
                         }
-                        Object obj = getObjectAt(sourceY, sourceX);
+                        Object obj = getObjectAt(row, col);
+                        System.out.println("Location: " + new Location(row, col));
                         if (obj != null && obj.getClass().equals(toLookFor)) {
-                            loc = new Location(sourceY, sourceX);
+                            loc = new Location(row, col);
                             found = true;
                         }
                     }
@@ -174,11 +184,15 @@ public class Field {
     }
 
     /**
-     * Searches in a cone in the direction(s) specified for 8 tiles and returns the location if it finds a match.
+     * Searches in a cone in the direction(s) specified for 8 tiles and returns
+     * the location if it finds a match.
+     *
      * @param currentLocation the location to search from
      * @param toLookFor what class to look for
-     * @param direction what direction to look in, "new" searches in north, east and west. "se" searches in south and east.
-     * @return returns the closest found location that matches the class you were looking for, null if nothing was found
+     * @param direction what direction to look in, "new" searches in north, east
+     * and west. "se" searches in south and east.
+     * @return returns the closest found location that matches the class you
+     * were looking for, null if nothing was found
      */
     public Location lookFor(Location currentLocation, Class toLookFor, String direction) {
         return lookFor(currentLocation, toLookFor, direction, 8);

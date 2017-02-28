@@ -172,6 +172,7 @@ public class SimulatorGUI extends Application {
         Button back = new Button("One Step");
         back.setOnAction((ActionEvent event) -> {
             simulateOneStep();
+//            System.out.println(sim.getField().lookFor(new Location(15, 67), Shallows.class, "NSEW"));
         });
         NumberField stepInput = new NumberField();
         stepInput.setPromptText("Steps");
