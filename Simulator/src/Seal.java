@@ -273,10 +273,13 @@ public class Seal extends Animal {
         int yCord = where.getRow();
         List<Location> locs = field.getFreeAdjacentLocations(location);
         for (Location lc : locs) {
-            if (((xCord == lc.getCol()) || (yCord == lc.getRow())) & !(xCord == lc.getCol() && yCord == lc.getRow())) {
+            if (((xCord == lc.getCol()) || (yCord == lc.getRow())) &!(xCord == lc.getCol() && yCord == lc.getRow())) {
                 moveTowards(lc, where);
             } else {
-                setLocation(getLocation());
+                List<Location> randomLocs = field.getFreeAdjacentLocations(where);
+                for (Location lcc : randomLocs) {
+                    setLocation(lcc);
+                }
             }
         }
     }
