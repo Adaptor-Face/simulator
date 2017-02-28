@@ -132,11 +132,11 @@ public class Field {
      * were looking for, null if nothing was found
      */
     public Location lookFor(Location currentLocation, Class toLookFor, String direction, int distance) {
-        char ch[] = "abcdfghijklmopqrtuvxyz".toCharArray();
         direction = direction.toLowerCase();
-        for(char letter : ch){
-        direction = direction.replace(letter, ' ');
-        }
+//        char ch[] = "abcdfghijklmopqrtuvxyz".toCharArray();
+//        for(char letter : ch){
+//        direction = direction.replace(letter, ' ');
+//        }
         direction = direction.replace(" ", "");
         String str[] = direction.toLowerCase().split("");
         Location loc = null;
@@ -171,7 +171,7 @@ public class Field {
                             }
                         }
                         Object obj = getObjectAt(row, col);
-                        System.out.println("Location: " + new Location(row, col));
+//                        System.out.println("Location: " + new Location(row, col));
                         if (obj != null && obj.getClass().equals(toLookFor)) {
                             loc = new Location(row, col);
                             found = true;
