@@ -88,16 +88,18 @@ public class Seal extends Animal {
             Location currentLocation = getLocation();
             Location oceanTile = scanForOceanTile(getLocation());
             if (oceanTile != null && (lastLocation != getLocation())) {
-                findFood(oceanTile);
                 newLocation = oceanTile;
             } else {
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }
             // Try to move into a free location.
-            if (foodLevel > 16 &! (foodLevel < 5)) {
+            if (foodLevel > 10 &! (foodLevel < 5)) {
                 newLocation = chillinOnTheBeach();
             } else if (newLocation != null) {
                 lastLocation = getLocation();
+                if ((newLocation == oceanTile) && (oceanTile != null)) {
+                    findFood(oceanTile);
+                }
                 setLocation(newLocation);
             } else {
                 // Overcrowding.
