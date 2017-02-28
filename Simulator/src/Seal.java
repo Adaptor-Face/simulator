@@ -28,7 +28,7 @@ public class Seal extends Animal {
 
     private static final int LAND_FOOD_VALUE = 1;
     private static final double FISH_CONSTANT = 0.85;
-    private static final int PREG_PERIOD = 90;
+    private static final int PREG_PERIOD = 9 * 27;
     private static final int STARVATION_PERIOD = 5;
     private static final int FOOD_LIMIT = 13;
 
@@ -97,8 +97,7 @@ public class Seal extends Animal {
             // Try to move into a free location.
             if (foodLevel > 10) {
                 chillinOnTheBeach();
-            }
-            else if (newLocation != null && rngLoc >= 0.11) {
+            } else if (newLocation != null && rngLoc >= 0.11) {
                 setLocation(newLocation);
                 return newLocation;
             } else if (newLocation != null && rngLoc <= 0.10) {
@@ -177,15 +176,19 @@ public class Seal extends Animal {
         Field field = getField();
         Landscape tt = field.getLandscapeAt(location);
         double randomFishValue = ThreadLocalRandom.current().nextDouble(min, max);
-        if (tt.getType().equals(LandscapeType.OCEAN) || tt.getType().equals(LandscapeType.SHALLOWS)) {
-            if (randomFishValue <= ls.getFoodDensitiy()) {
-                foodLevel += FISH_FOOD_VALUE;
+        if (ls != null) {
+            if (tt.getType().equals(LandscapeType.OCEAN) || tt.getType().equals(LandscapeType.SHALLOWS)) {
+                if (randomFishValue <= ls.getFoodDensitiy()) {
+                    foodLevel += FISH_FOOD_VALUE;
+                }
             }
-        }
-        if (tt.getType().equals(LandscapeType.SHORE)) {
-            if (randomFishValue <= ls.getFoodDensitiy()) {
-                foodLevel += LAND_FOOD_VALUE;
+            if (tt.getType().equals(LandscapeType.SHORE)) {
+                if (randomFishValue <= ls.getFoodDensitiy()) {
+                    foodLevel += LAND_FOOD_VALUE;
+                }
             }
+        } else {
+            System.out.println("ls = null" + location);
         }
     }
 
@@ -273,7 +276,7 @@ public class Seal extends Animal {
         int yCord = where.getRow();
         List<Location> locs = field.getFreeAdjacentLocations(location);
         for (Location lc : locs) {
-            if (((xCord == lc.getCol()) || (yCord == lc.getRow())) &!(xCord == lc.getCol() && yCord == lc.getRow())) {
+            if (((xCord == lc.getCol()) || (yCord == lc.getRow())) & !(xCord == lc.getCol() && yCord == lc.getRow())) {
                 moveTowards(lc, where);
             } else {
                 List<Location> randomLocs = field.getFreeAdjacentLocations(where);
@@ -283,19 +286,20 @@ public class Seal extends Animal {
             }
         }
     }
-    
+
     private void moveTowards(Location location, Location where) {
         Field field = getField();
         where = where;
         location = location;
         int distance = where.distanceBetween(location);
-        for (int i = 1; i == distance; i++) {
-            if (where.getCol() == location.getCol()) {
-                setLocation(new Location(location.getRow() - distance + i, location.getCol()));
-            } else if (where.getRow() == location.getRow()) {
-                setLocation(new Location(location.getRow(), location.getCol() - distance + i));                
-            }
-            
+        int i = 1;
+        //for (int i = 1; i > distance; i++) {
+        if (where.getCol() == location.getCol()) {
+            setLocation(new Location(location.getRow() - distance + i, location.getCol()));
+        } else if (where.getRow() == location.getRow()) {
+            setLocation(new Location(location.getRow(), location.getCol() - distance + i));
         }
+
+        //}
     }
 }
