@@ -24,10 +24,10 @@ public class PolarBear extends Animal {
     private static final int MAX_LITTER_SIZE = 4;
     // The food value of a single seal. In effect, this is the
     // number of steps a bear can go before it has to eat again.
-    private static final int SEAL_FOOD_VALUE = 13;
-    private static final int SEAL_FOOD_VALUE_PREG = 36;
+    private static final int SEAL_FOOD_VALUE = 90;
+    private static final int SEAL_FOOD_VALUE_PREG = 3 * SEAL_FOOD_VALUE;
     private static final int PREG_PERIOD = 27 * 9;
-    private static final int MAX_FOOD_VALUE = 130;
+    private static final int MAX_FOOD_VALUE = 13 * SEAL_FOOD_VALUE;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -36,6 +36,7 @@ public class PolarBear extends Animal {
     // The bear's food level, which is increased by eating seals.
     private int foodLevel;
     private int pregLevel;
+    private int panicing = 0;
 
     /**
      * Create a bear. A bear can be created as a new born (age zero and not
@@ -67,11 +68,27 @@ public class PolarBear extends Animal {
     public Location act(List<Animal> newBears) {
         incrementAge();
         foodLevel = incrementHunger(foodLevel);
+        if(panicing>0){
+            foodLevel -= panicing;
+        }
         if (isAlive()) {
             giveBirth(newBears);
             // Move towards a source of food if found.
 //            Location newLocation = findFood();
-            Location newLocation = hunt();
+            Location newLocation;
+            boolean canFindLand = getField().lookFor(getLocation(), Shallows.class, "nswe", 12) != null;
+            if (!canFindLand || panicing > 0) {
+                panicing++;
+                newLocation = panic();
+                if (newLocation != null) {
+                    newLocation = moveTo(newLocation);
+                    if (getField().getLandscapeAt(newLocation).getType().equals(LandscapeType.SHALLOWS)) {
+                        panicing = 0;
+                    }
+                }
+            } else {
+                newLocation = hunt();
+            }
             if (newLocation == null) {
                 // No food found - try to move to a free location.
                 newLocation = getField().freeAdjacentLocation(getLocation());
@@ -251,11 +268,17 @@ public class PolarBear extends Animal {
             }
         } else {
             Location loc = field.lookFor(getLocation(), Shore.class, "nesw");
-            if(loc == null){
+            if (loc == null) {
                 return findFood();
             }
             moveLocation = moveTo(loc);
         }
         return moveLocation;
+    }
+
+    private Location panic() {
+        Location newLocation = getField().lookFor(getLocation(), Shallows.class, "nswe", 30);
+
+        return newLocation;
     }
 }
