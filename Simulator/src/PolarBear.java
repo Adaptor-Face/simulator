@@ -67,10 +67,11 @@ public class PolarBear extends Animal {
      */
     public Location act(List<Animal> newBears) {
         incrementAge();
-        foodLevel = incrementHunger(foodLevel);
-        if(panicing>0){
+        if (panicing > 0) {
             foodLevel -= panicing;
+            System.out.println("IM PANICING, foodLevel = " + foodLevel + ", PanicLevel = " + panicing);
         }
+        foodLevel = incrementHunger(foodLevel);
         if (isAlive()) {
             giveBirth(newBears);
             // Move towards a source of food if found.
