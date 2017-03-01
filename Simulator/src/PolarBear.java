@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A simple model of a polar bear. Bears age, move, eat seals, and die.
@@ -26,6 +27,7 @@ public class PolarBear extends Animal {
     private static final int SEAL_FOOD_VALUE = 13;
     private static final int SEAL_FOOD_VALUE_PREG = 36;
     private static final int PREG_PERIOD = 27 * 9;
+    private static final int MAX_FOOD_VALUE = 130;
     // A shared random number generator to control breeding.
     private static final Random rand = Randomizer.getRandom();
 
@@ -47,10 +49,10 @@ public class PolarBear extends Animal {
         super(field, location);
         if (randomAge) {
             age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(SEAL_FOOD_VALUE);
+            foodLevel = rand.nextInt(MAX_FOOD_VALUE);
         } else {
             age = 0;
-            foodLevel = SEAL_FOOD_VALUE;
+            foodLevel = 2 * SEAL_FOOD_VALUE;
             AnimalStatistics.addToStats(this.getClass(), "birth");
         }
     }
@@ -68,7 +70,8 @@ public class PolarBear extends Animal {
         if (isAlive()) {
             giveBirth(newBears);
             // Move towards a source of food if found.
-            Location newLocation = findFood();
+//            Location newLocation = findFood();
+            Location newLocation = hunt();
             if (newLocation == null) {
                 // No food found - try to move to a free location.
                 newLocation = getField().freeAdjacentLocation(getLocation());
@@ -156,15 +159,13 @@ public class PolarBear extends Animal {
 //            }
 //        }
 //    }
-
-
-/**
- * Check whether or not this bear is to give birth at this step. New births will
- * be made into free adjacent locations.
- *
- * @param newBears A list to return newly born bears.
- */
-private void giveBirth(List<Animal> newBears) {
+    /**
+     * Check whether or not this bear is to give birth at this step. New births
+     * will be made into free adjacent locations.
+     *
+     * @param newBears A list to return newly born bears.
+     */
+    private void giveBirth(List<Animal> newBears) {
         // New bears are born into adjacent locations.
         // Get a list of adjacent free locations.
         if (incrementPreg()) {
@@ -200,21 +201,85 @@ private void giveBirth(List<Animal> newBears) {
     }
 
     @Override
-        public Integer getFoodLevel() {
+    public Integer getFoodLevel() {
         return foodLevel;
     }
 
     @Override
-        public List<String> getAnimalDetails() {
+    public List<String> getAnimalDetails() {
         List<String> info = new ArrayList<>();
         info.add("Species: PolarBear");
         info.add("Hunger: " + getFoodLevel());
         info.add("Age: " + age);
+        info.add("Location: " + getLocation());
         return info;
     }
 
     @Override
     public int getAge() {
         return age;
+    }
+
+    private Location hunt() {
+        Field field = getField();
+        Location sealLocation = field.lookFor(getLocation(), Seal.class, "nswe");
+        if (sealLocation == null) {
+            return findFood();
+        }
+        if (ThreadLocalRandom.current().nextInt(0, MAX_FOOD_VALUE) < getFoodLevel()) {
+            return findFood();
+        }
+        Location moveLocation = moveTo(sealLocation);
+        boolean fearless = true;
+        if (field.getLandscapeAt(moveLocation).getType().equals(LandscapeType.OCEAN)) {
+            fearless = ThreadLocalRandom.current().nextDouble(0, 1) < 0.25;
+        }
+        if (fearless) {
+            Animal animal = field.getAnimalAt(moveLocation);
+            if (animal instanceof Seal) {
+                Seal seal = (Seal) animal;
+                if (seal.isAlive() && foodLevel < 10) {
+                    seal.setDead("eaten");
+                    AnimalStatistics.addToStats(seal.getClass(), AnimalStatistics.STAT_DEATH_EATEN);
+                    if (pregLevel > 0) {
+                        foodLevel = SEAL_FOOD_VALUE_PREG;
+                    } else {
+                        foodLevel = SEAL_FOOD_VALUE;
+                    }
+                    //System.out.println("A seal was brutally eaten alive");
+                }
+            }
+        } else {
+            Location loc = field.lookFor(getLocation(), Shore.class, "nesw");
+            if(loc == null){
+                return findFood();
+            }
+            moveLocation = moveTo(loc);
+        }
+        return moveLocation;
+    }
+    
+    private Location moveTo(Location location){
+        int x = location.getCol() - getLocation().getCol();
+        int y = location.getRow() - getLocation().getRow();
+        int difference = Math.abs(x - y);
+        int numX = 1;
+        int numY = 1;
+        if (x < 0) {
+            numX = -1;
+        }
+        if (y < 0) {
+            numY = -1;
+        }
+        Location moveLocation = null;
+
+        if (x > y && (x / 2 + numX) >= difference) {
+            moveLocation = new Location(getLocation().getRow(), getLocation().getCol() + numX);
+        } else if (y > x && (y / 2 + numY) >= difference) {
+            moveLocation = new Location(getLocation().getRow() + numY, getLocation().getCol());
+        } else {
+            moveLocation = new Location(getLocation().getRow() + numY, getLocation().getCol() + numX);
+        }
+        return moveLocation;
     }
 }
