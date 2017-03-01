@@ -258,28 +258,4 @@ public class PolarBear extends Animal {
         }
         return moveLocation;
     }
-    
-    private Location moveTo(Location location){
-        int x = location.getCol() - getLocation().getCol();
-        int y = location.getRow() - getLocation().getRow();
-        int difference = Math.abs(x - y);
-        int numX = 1;
-        int numY = 1;
-        if (x < 0) {
-            numX = -1;
-        }
-        if (y < 0) {
-            numY = -1;
-        }
-        Location moveLocation = null;
-
-        if (x > y && (x / 2 + numX) >= difference) {
-            moveLocation = new Location(getLocation().getRow(), getLocation().getCol() + numX);
-        } else if (y > x && (y / 2 + numY) >= difference) {
-            moveLocation = new Location(getLocation().getRow() + numY, getLocation().getCol());
-        } else {
-            moveLocation = new Location(getLocation().getRow() + numY, getLocation().getCol() + numX);
-        }
-        return moveLocation;
-    }
 }
