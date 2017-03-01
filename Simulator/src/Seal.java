@@ -19,7 +19,7 @@ public class Seal extends Animal {
     // The age to which a rabbit can live.
     private static final int MAX_AGE = 9790;
     // The likelihood of a rabbit breeding.
-    private static final double BREEDING_PROBABILITY = 0.30;
+    private static final double BREEDING_PROBABILITY = 1;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 1;
     // A shared random number generator to control breeding.
@@ -37,6 +37,7 @@ public class Seal extends Animal {
     private int pregLevel;
     private boolean starved = false;
     private Location lastLocation;
+    private boolean huntMode = true;
 
     private Landscape ls = new Landscape();
 
@@ -74,13 +75,16 @@ public class Seal extends Animal {
      * @param newSeals A list to return newly born rabbits.
      */
     public Location act(List<Animal> newSeals) {
+        Field field = getField();
+        if (foodLevel > 17) {
+            huntMode = false;
+        }
         //incrementFood();
         if (foodLevel >= FOOD_LIMIT) {
             foodLevel = FOOD_LIMIT - 1;
         }
         incrementAge();
         foodLevel = incrementHunger(foodLevel);
-        double rngLoc = ThreadLocalRandom.current().nextDouble(0, 1);
         if (isAlive()) {
             giveBirth(newSeals);
             ls = getField().getLandscapeAt(getLocation());
@@ -93,11 +97,14 @@ public class Seal extends Animal {
                 newLocation = getField().freeAdjacentLocation(getLocation());
             }
             // Try to move into a free location.
-            if (foodLevel > 10 &! (foodLevel < 5)) {
+            if (!huntMode) {
                 newLocation = chillinOnTheBeach();
+                if (foodLevel <= 5) {
+                    huntMode = true;
+                }
             } else if (newLocation != null) {
                 lastLocation = getLocation();
-                if ((newLocation == oceanTile) && (oceanTile != null)) {
+                if (((newLocation == oceanTile) && (oceanTile != null))) {
                     findFood(oceanTile);
                 }
                 setLocation(newLocation);
@@ -260,14 +267,14 @@ public class Seal extends Animal {
         int yCord = where.getRow();
         location = field.lookFor(where, Shore.class, "N S E W");
         if (location != null) {
-            moveTowards(location, where);
+            location = moveTowards(location, where);
         } else {
-            itsDangerousToGoAlone();
+            location = itsDangerousToGoAlone();
         }
         return location;
     }
 
-    private void itsDangerousToGoAlone() {
+    private Location itsDangerousToGoAlone() {
         Field field = getField();
         Location where = getLocation();
         Location location = field.lookFor(where, Seal.class, "N S E W");
@@ -276,14 +283,17 @@ public class Seal extends Animal {
         List<Location> locs = field.getFreeAdjacentLocations(location);
         for (Location lc : locs) {
             if (((xCord == lc.getCol()) || (yCord == lc.getRow())) & !(xCord == lc.getCol() && yCord == lc.getRow())) {
-                moveTowards(lc, where);
+                location = moveTowards(lc, where);
+                return location;
             } else {
                 List<Location> randomLocs = field.getFreeAdjacentLocations(where);
                 for (Location lcc : randomLocs) {
-                    setLocation(lcc);
+                    location = lcc;
+                    return location;
                 }
             }
         }
+        return null;
     }
 
     private Location moveTowards(Location location, Location where) {
@@ -294,18 +304,21 @@ public class Seal extends Animal {
         int distance = where.distanceBetween(location);
         int i = 1;
         if (location.getRow() > location.getCol()) {
-            newLocation = (new Location(location.getRow() - distance + 1, location.getCol()));
+            newLocation = (new Location(location.getRow() - distance + i, location.getCol()));
         } else if (location.getRow() < location.getCol()) {
-            newLocation = (new Location(location.getRow(), location.getCol() - distance + 1));
-        } else {
-            newLocation = (new Location(location.getRow(), location.getCol() - distance + 1));
+            newLocation = (new Location(location.getRow(), location.getCol() - distance + i));
+        } else if (field.getLandscapeAt(getLocation()).getType().equals(LandscapeType.LAND)) {
+            newLocation = (new Location(location.getRow(), location.getCol() - distance - i));
+        }
+        else {
+            newLocation = (new Location(location.getRow(), location.getCol() - distance + i));
         }
         
         /*
         if (where.getCol() == location.getCol()) {
-            setLocation(new Location(location.getRow() - distance + i, location.getCol()));
+            newLocation = (new Location(location.getRow() - distance + i, location.getCol()));
         } else if (where.getRow() == location.getRow()) {
-            setLocation(new Location(location.getRow(), location.getCol() - distance + i));
+            newLocation = (new Location(location.getRow(), location.getCol() - distance + i));
         } */
         return newLocation;
     }
