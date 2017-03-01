@@ -29,14 +29,14 @@ public class PolarBear extends Animal {
     private static final int PREG_PERIOD = 27 * 9;
     private static final int MAX_FOOD_VALUE = 13 * SEAL_FOOD_VALUE;
     // A shared random number generator to control breeding.
-    private static final Random rand = Randomizer.getRandom();
+    private static final Random RAND = Randomizer.getRandom();
 
     // Individual characteristics (instance fields).
     private int age;
     // The bear's food level, which is increased by eating seals.
     private int foodLevel;
     private int pregLevel;
-    private int panicing = 0;
+    private int panicLevel;
 
     /**
      * Create a bear. A bear can be created as a new born (age zero and not
@@ -48,9 +48,10 @@ public class PolarBear extends Animal {
      */
     public PolarBear(boolean randomAge, Field field, Location location) {
         super(field, location);
+        this.panicLevel = 0;
         if (randomAge) {
-            age = rand.nextInt(MAX_AGE);
-            foodLevel = rand.nextInt(MAX_FOOD_VALUE);
+            age = RAND.nextInt(MAX_AGE);
+            foodLevel = RAND.nextInt(MAX_FOOD_VALUE);
         } else {
             age = 0;
             foodLevel = 2 * SEAL_FOOD_VALUE;
@@ -62,14 +63,15 @@ public class PolarBear extends Animal {
      * This is what the bear does most of the time: it hunts for seals. In the
      * process, it might breed, die of hunger, or die of old age.
      *
-     * @param field The field currently occupied.
      * @param newBears A list to return newly born bears.
+     * @return the location the animal moved to
      */
+    @Override
     public Location act(List<Animal> newBears) {
         incrementAge();
-        if (panicing > 0) {
-            foodLevel -= panicing;
-            System.out.println("IM PANICING, foodLevel = " + foodLevel + ", PanicLevel = " + panicing);
+        if (panicLevel > 0) {
+            foodLevel -= panicLevel;
+        } else {
         }
         foodLevel = incrementHunger(foodLevel);
         if (isAlive()) {
@@ -77,14 +79,14 @@ public class PolarBear extends Animal {
             // Move towards a source of food if found.
 //            Location newLocation = findFood();
             Location newLocation;
-            boolean canFindLand = getField().lookFor(getLocation(), Shallows.class, "nswe", 12) != null;
-            if (!canFindLand || panicing > 0) {
-                panicing++;
+            boolean canFindLand = getField().lookFor(getLocation(), Shore.class, "nswe", 12) != null;
+            if (!canFindLand || panicLevel > 0) {
+                panicLevel++;
                 newLocation = panic();
                 if (newLocation != null) {
                     newLocation = moveTo(newLocation);
                     if (getField().getLandscapeAt(newLocation).getType().equals(LandscapeType.SHALLOWS)) {
-                        panicing = 0;
+                        panicLevel = 0;
                     }
                 }
             } else {
@@ -205,8 +207,8 @@ public class PolarBear extends Animal {
      */
     private int breed() {
         int births = 0;
-        if (canBreed() && rand.nextDouble() <= BREEDING_PROBABILITY) {
-            births = rand.nextInt(MAX_LITTER_SIZE) + 1;
+        if (canBreed() && RAND.nextDouble() <= BREEDING_PROBABILITY) {
+            births = RAND.nextInt(MAX_LITTER_SIZE) + 1;
         }
         return births;
     }
@@ -245,7 +247,7 @@ public class PolarBear extends Animal {
             return findFood();
         }
         if (ThreadLocalRandom.current().nextInt(0, MAX_FOOD_VALUE) < getFoodLevel()) {
-            return findFood();
+            return getLocation();
         }
         Location moveLocation = moveTo(sealLocation);
         boolean fearless = true;
@@ -278,7 +280,7 @@ public class PolarBear extends Animal {
     }
 
     private Location panic() {
-        Location newLocation = getField().lookFor(getLocation(), Shallows.class, "nswe", 30);
+        Location newLocation = getField().lookFor(getLocation(), Shore.class, "nswe", 16);
 
         return newLocation;
     }
