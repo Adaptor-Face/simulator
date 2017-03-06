@@ -103,9 +103,17 @@ public class AnimalStatistics {
 
     }
 
-    public static void stepLog() {
+    public static void stepLog(String populationInfo) {
         step++;
-        logToFile();
+        String str[] = populationInfo.replace(":", ",").replace(" ", "").split(",");
+        HashMap<String, Number> popMap = new HashMap<>();
+        for (int i = 0; i < str.length; i++) {
+            if (str[i].matches("[0-9]+")) {
+                int number = Integer.parseInt(str[i]);
+                popMap.put(str[i - 1], number);
+            }
+        }
+        logToFile(popMap);
         for (Class animalClass : STEP_MAP.keySet()) {
             for (String event : STEP_MAP.get(animalClass).keySet()) {
                 STEP_MAP.get(animalClass).put(event, 0);
@@ -119,7 +127,7 @@ public class AnimalStatistics {
         step = 0;
     }
 
-    private static void logToFile() {
+    private static void logToFile(HashMap<String, Number> popMap) {
         if (newFile) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd HH_mm_ss");
             Date date = new Date();
@@ -143,18 +151,25 @@ public class AnimalStatistics {
             PrintWriter polarBearPrint = new PrintWriter(polarBearWriter);
             if (newFile) {
                 getLogStatistics();
+                for(String name : popMap.keySet()){
+                    logString += name + ", ";
+                }
                 stepPrint.println(logString);
                 sealPrint.println("DeathCause, age, step");
                 polarBearPrint.println("DeathCause, age, step");
                 newFile = false;
             }
-            for(String line : sealEventLog){
+            for (String line : sealEventLog) {
                 sealPrint.println(line);
             }
-            for(String line : polarBearEventLog){
+            for (String line : polarBearEventLog) {
                 polarBearPrint.println(line);
             }
-            stepPrint.println(getLogStatistics());
+            String log = getLogStatistics();
+            for(String name : popMap.keySet()){
+                log += popMap.get(name) + ", ";
+            }
+            stepPrint.println(log);
             stepPrint.close();
             sealPrint.close();
             sealEventLog.clear();

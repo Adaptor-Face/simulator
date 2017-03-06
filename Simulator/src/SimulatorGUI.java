@@ -135,7 +135,7 @@ public class SimulatorGUI extends Application {
             obsStep.addListener(new ChangeListener<Number>() {
                 @Override
                 public void changed(ObservableValue ov, Number oldValue, Number newValue) {
-                    AnimalStatistics.stepLog();
+                    AnimalStatistics.stepLog(population.getText());
                     if (newValue.intValue() <= oldValue.intValue()) {
                         AnimalStatistics.endLog();
                     } else {

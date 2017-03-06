@@ -251,8 +251,8 @@ public class PolarBear extends Animal {
         }
         Location moveLocation = moveTo(sealLocation);
         boolean fearless = true;
-        if (field.getLandscapeAt(moveLocation).getType().equals(LandscapeType.OCEAN)) {
-            fearless = ThreadLocalRandom.current().nextDouble(0, 1) < 0.25;
+        if (field.getLandscapeAt(moveLocation).getType().equals(LandscapeType.SHALLOWS)) {
+            //fearless = ThreadLocalRandom.current().nextDouble(0, 1) < 0.25;
         }
         if (fearless) {
             Animal animal = field.getAnimalAt(moveLocation);

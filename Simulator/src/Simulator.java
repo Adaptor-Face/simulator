@@ -36,7 +36,7 @@ public class Simulator {
     // The current step of the simulation.
     private int step;
     // A graphical view of the simulation.
-    private SimulatorView view;
+    //private SimulatorView view;
 
     private HashMap<Location, Class> sAnimals;
     private Field sField;
@@ -72,13 +72,13 @@ public class Simulator {
         field = new Field(depth, width, seed);
 
         // Create a view of the state of each location in the field.
-        view = new SimulatorView(depth, width);
-        view.setColor(Seal.class, java.awt.Color.RED);
-        view.setColor(PolarBear.class, java.awt.Color.BLUE);
-        view.setColor(Land.class, java.awt.Color.GREEN);
-        view.setColor(Shallows.class, java.awt.Color.RED);
-        view.setColor(Shore.class, java.awt.Color.BLACK);
-        view.setColor(Ocean.class, java.awt.Color.CYAN);
+//        view = new SimulatorView(depth, width);
+//        view.setColor(Seal.class, java.awt.Color.RED);
+//        view.setColor(PolarBear.class, java.awt.Color.BLUE);
+//        view.setColor(Land.class, java.awt.Color.GREEN);
+//        view.setColor(Shallows.class, java.awt.Color.RED);
+//        view.setColor(Shore.class, java.awt.Color.BLACK);
+//        view.setColor(Ocean.class, java.awt.Color.CYAN);
 
         // Setup a valid starting point.
         reset();
@@ -103,7 +103,7 @@ public class Simulator {
      * @param numSteps The number of steps to run for.
      */
     public void simulate(int numSteps) {
-        for (int step = 1; step <= numSteps && view.isViable(field); step++) {
+        for (int step = 1; step <= numSteps; step++) {
             simulateOneStep();
         }
     }
@@ -129,7 +129,7 @@ public class Simulator {
         animals.addAll(newAnimals);
         finishedField.resetField(field);
 
-        view.showStatus(step, field);
+//        view.showStatus(step, field);
         step++;
     }
 
@@ -150,7 +150,7 @@ public class Simulator {
         finishedField.resetField(field);
 
         // Show the starting state in the view.
-        view.showStatus(step, field);
+//        view.showStatus(step, field);
     }
 
     public void softReset() {
@@ -175,7 +175,7 @@ public class Simulator {
         finishedField.resetField(field);
 
         // Show the starting state in the view.
-        view.showStatus(step, field);
+//        view.showStatus(step, field);
     }
 
     /**
