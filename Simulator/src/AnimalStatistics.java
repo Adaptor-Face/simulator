@@ -29,7 +29,7 @@ public class AnimalStatistics {
     private static final HashMap<String, Integer> DEFAULT_MAP;
     private static boolean newFile = true;
     private static File stepLog;
-    private static String logString = "";
+    private static String logString = "starvation_Seal, birth_Seal, eaten_Seal, age_Seal, starvation_PolarBear, birth_PolarBear, eaten_PolarBear, age_PolarBear, PolarBear, Seal, ";
     private static int step = 0;
 
     private static final HashMap<String, Integer> DEATH_CAUSE_VALUE;
@@ -96,7 +96,15 @@ public class AnimalStatistics {
         for (Class animalClass : STEP_MAP.keySet()) {
             for (String event : STEP_MAP.get(animalClass).keySet()) {
                 returnString += "" + STEP_MAP.get(animalClass).get(event) + ", ";// + animalClass.getName() + ", " + event + ". ";
-                logString += event + "_" + animalClass.getName() + ", ";
+            }
+        }
+        if(STEP_MAP.keySet().size() == 1){
+            for(Class c : STEP_MAP.keySet()){
+                if (c.equals(Seal.class)){
+                    returnString += "0, 0, 0, 0, ";
+                } else if (c.equals(PolarBear.class)){
+                    returnString = "0, 0, 0, 0, " + returnString;
+                }
             }
         }
         return returnString;
