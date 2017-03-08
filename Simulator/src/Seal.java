@@ -99,10 +99,6 @@ public class Seal extends Animal {
             // Try to move into a free location.
             if (!huntMode) {
                 newLocation = chillinOnTheBeach();
-                if (newLocation == null) {
-                    newLocation = getField().freeAdjacentLocation(getLocation());
-                }
-                setLocation(newLocation);
                 if (foodLevel <= 10) {
                     huntMode = true;
                 }
@@ -111,11 +107,14 @@ public class Seal extends Animal {
                 if (((newLocation == oceanTile) && (oceanTile != null))) {
                     findFood(oceanTile);
                 }
-                setLocation(newLocation);
             } else {
                 // Overcrowding.
                 //setDead();
             }
+            if (newLocation == null) {
+                newLocation = getField().freeAdjacentLocation(getLocation());
+            }
+            setLocation(newLocation);
         }
         return null;
     }
@@ -216,7 +215,7 @@ public class Seal extends Animal {
 
     private boolean incrementPreg() {
         pregLevel--;
-        if(pregLevel == 0){
+        if (pregLevel == 0) {
             pregLevel = PREG_PERIOD;
             return true;
         }
@@ -263,11 +262,9 @@ public class Seal extends Animal {
         Field field = getField();
         Location where = getLocation();
         Location location = null;
-        int xCord = where.getCol();
-        int yCord = where.getRow();
         location = field.lookFor(where, Shore.class, "N S E W");
         if (location != null) {
-            location = moveTowards(location, where);
+            location = moveTo(location);
         } else {
             location = itsDangerousToGoAlone();
         }
