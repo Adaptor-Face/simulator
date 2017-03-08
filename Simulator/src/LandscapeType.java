@@ -17,7 +17,7 @@ public interface LandscapeType {
     public static double LAND_FOOD_DENSITY = 0.05;
     public static double SHORE_FOOD_DENSITY = 0.2;
     public static double SHALLOWS_FOOD_DENSITY = 0.45;
-    public static double OCEAN_FOOD_DENSITY = 0.765;
+    public static double OCEAN_FOOD_DENSITY = 1;
     
     public void setType(String typeId);
     public String getType();

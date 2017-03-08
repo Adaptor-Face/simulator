@@ -19,7 +19,7 @@ public class PolarBear extends Animal {
     // The age to which a bear can live.
     private static final int MAX_AGE = 356 * 30;
     // The likelihood of a bear breeding.
-    private static final double BREEDING_PROBABILITY = 0.10;
+    private static final double BREEDING_PROBABILITY = 0.40;
     // The maximum number of births.
     private static final int MAX_LITTER_SIZE = 4;
     // The food value of a single seal. In effect, this is the

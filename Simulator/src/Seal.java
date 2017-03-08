@@ -28,9 +28,9 @@ public class Seal extends Animal {
 
     private static final int LAND_FOOD_VALUE = 1;
     private static final double FISH_CONSTANT = 0.85;
-    private static final int PREG_PERIOD = 9 * 27;
+    private static final int PREG_PERIOD = 3 * 27;
     private static final int STARVATION_PERIOD = 5;
-    private static final int FOOD_LIMIT = 18;
+    private static final int FOOD_LIMIT = 28;
 
     // Individual characteristics (instance fields).
     private int foodLevel;
@@ -43,6 +43,7 @@ public class Seal extends Animal {
 
     // The rabbit's age.
     private int age;
+    private static int sealBorn = 0;
 
     /**
      * Create a new rabbit. A rabbit may be created with age zero (a new born)
@@ -99,7 +100,11 @@ public class Seal extends Animal {
             // Try to move into a free location.
             if (!huntMode) {
                 newLocation = chillinOnTheBeach();
-                if (foodLevel <= 5) {
+                if (newLocation == null) {
+                    newLocation = getField().freeAdjacentLocation(getLocation());
+                }
+                setLocation(newLocation);
+                if (foodLevel <= 10) {
                     huntMode = true;
                 }
             } else if (newLocation != null) {
@@ -149,7 +154,8 @@ public class Seal extends Animal {
                 Location loc = free.remove(0);
                 Seal young = new Seal(false, field, loc);
                 newSeals.add(young);
-                //System.out.println("REPRODUCTION ACTIVATED");
+                sealBorn++;
+                System.out.println(sealBorn);
             }
         }
     }
@@ -212,14 +218,11 @@ public class Seal extends Animal {
     }
 
     private boolean incrementPreg() {
-        Field field = getField();
-        if (pregLevel == 1) {
-            pregLevel--;
-            return true;
-        } else if (pregLevel == 0 && findSeal(field.adjacentLocations(getLocation()))) {
-            pregLevel = PREG_PERIOD;
-        }
         pregLevel--;
+        if(pregLevel == 0){
+            pregLevel = PREG_PERIOD;
+            return true;
+        }
         return false;
     }
 
@@ -309,11 +312,10 @@ public class Seal extends Animal {
             newLocation = (new Location(location.getRow(), location.getCol() - distance + i));
         } else if (field.getLandscapeAt(getLocation()).getType().equals(LandscapeType.LAND)) {
             newLocation = (new Location(location.getRow(), location.getCol() - distance - i));
-        }
-        else {
+        } else {
             newLocation = (new Location(location.getRow(), location.getCol() - distance + i));
         }
-        
+
         /*
         if (where.getCol() == location.getCol()) {
             newLocation = (new Location(location.getRow() - distance + i, location.getCol()));
