@@ -28,7 +28,7 @@ public class Seal extends Animal {
 
     private static final int LAND_FOOD_VALUE = 1;
     private static final double FISH_CONSTANT = 0.85;
-    private static final int PREG_PERIOD = 3 * 27;
+    private static final int PREG_PERIOD = 1 * 27;
     private static final int STARVATION_PERIOD = 5;
     private static final int FOOD_LIMIT = 28;
 
@@ -43,7 +43,6 @@ public class Seal extends Animal {
 
     // The rabbit's age.
     private int age;
-    private static int sealBorn = 0;
 
     /**
      * Create a new rabbit. A rabbit may be created with age zero (a new born)
@@ -154,8 +153,6 @@ public class Seal extends Animal {
                 Location loc = free.remove(0);
                 Seal young = new Seal(false, field, loc);
                 newSeals.add(young);
-                sealBorn++;
-                System.out.println(sealBorn);
             }
         }
     }
