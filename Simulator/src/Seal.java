@@ -59,7 +59,7 @@ public class Seal extends Animal {
             pregLevel = rand.nextInt(26);
         }
         age = 0;
-        foodLevel = rand.nextInt(7);
+        foodLevel = FOOD_LIMIT;
         if (randomAge) {
             age = rand.nextInt(MAX_AGE);
             foodLevel = rand.nextInt(20);

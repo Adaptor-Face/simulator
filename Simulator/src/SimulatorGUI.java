@@ -160,6 +160,9 @@ public class SimulatorGUI extends Application {
             simulateOneStep();
 //            System.out.println(sim.getField().lookFor(new Location(15, 67), Shallows.class, "NSEW"));
         });
+        back.setOnKeyPressed((KeyEvent event) -> {
+            simulateOneStep();
+        });
         NumberField stepInput = new NumberField();
         stepInput.setPromptText("Steps");
         Button multiStep = new Button("Step");

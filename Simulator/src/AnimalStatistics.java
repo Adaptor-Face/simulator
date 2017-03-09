@@ -31,7 +31,6 @@ public class AnimalStatistics {
     private static File stepLog;
     private static String logString = "starvation_Seal, birth_Seal, eaten_Seal, age_Seal, starvation_PolarBear, birth_PolarBear, eaten_PolarBear, age_PolarBear, PolarBear, Seal, ";
     private static int step = 0;
-    private static final ArrayList<Object> UNIQUE_CHECK = new ArrayList<>();
 
     private static final HashMap<String, Integer> DEATH_CAUSE_VALUE;
     private static File sealLog;
@@ -84,11 +83,11 @@ public class AnimalStatistics {
 
     }
 
-    public static void logSingleEvent(Class animalClass, String deathCause, int age) {
+    public static void logSingleEvent(Class animalClass, String deathCause, int age, int foodLevel) {
         if (animalClass.equals(Seal.class)) {
-            sealEventLog.add(DEATH_CAUSE_VALUE.get(deathCause) + ", " + age + ", " + step);
+            sealEventLog.add(DEATH_CAUSE_VALUE.get(deathCause) + ", " + age + ", " + foodLevel + ", " + step);
         } else if (animalClass.equals(PolarBear.class)) {
-            polarBearEventLog.add(DEATH_CAUSE_VALUE.get(deathCause) + ", " + age + ", " + step);
+            polarBearEventLog.add(DEATH_CAUSE_VALUE.get(deathCause) + ", " + age + ", " + foodLevel + ", " + step);
         }
     }
 
@@ -193,8 +192,8 @@ public class AnimalStatistics {
             if (newFile) {
                 getLogStatistics();
                 stepPrint.println(logString);
-                sealPrint.println("DeathCause, age, step");
-                polarBearPrint.println("DeathCause, age, step");
+                sealPrint.println("DeathCause, age, foodLevel, step");
+                polarBearPrint.println("DeathCause, age, foodLevel, step");
                 newFile = false;
             }
             for (String line : sealEventLog) {
