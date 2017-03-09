@@ -82,6 +82,9 @@ public class Simulator {
 
         // Setup a valid starting point.
         reset();
+        for(Animal an : animals){
+            AnimalStatistics.addToTotal(an);
+        }
     }
 
     public Field getField() {
@@ -128,6 +131,9 @@ public class Simulator {
         // Add the newly born foxes and rabbits to the main lists.
         animals.addAll(newAnimals);
         finishedField.resetField(field);
+        for(Animal an : newAnimals){
+            AnimalStatistics.addToTotal(an);
+        }
 
 //        view.showStatus(step, field);
         step++;

@@ -31,10 +31,19 @@ public class AnimalStatistics {
     private static File stepLog;
     private static String logString = "starvation_Seal, birth_Seal, eaten_Seal, age_Seal, starvation_PolarBear, birth_PolarBear, eaten_PolarBear, age_PolarBear, PolarBear, Seal, ";
     private static int step = 0;
+    private static final ArrayList<Object> UNIQUE_CHECK = new ArrayList<>();
 
     private static final HashMap<String, Integer> DEATH_CAUSE_VALUE;
     private static File sealLog;
     private static File polarBearLog;
+    private static File totalLog;
+    private static final HashMap<Class, Number> TOTAL_MAP;
+
+    static {
+        TOTAL_MAP = new HashMap<>();
+        TOTAL_MAP.put(Seal.class, 0);
+        TOTAL_MAP.put(PolarBear.class, 0);
+    }
 
     static {
         DEATH_CAUSE_VALUE = new HashMap<>();
@@ -51,6 +60,11 @@ public class AnimalStatistics {
         DEFAULT_MAP.put(STAT_BIRTH, 0);
     }
     private static final HashMap<Class, HashMap<String, Integer>> MAP = new HashMap<>();
+
+    static {
+        MAP.put(Seal.class, DEFAULT_MAP);
+        MAP.put(PolarBear.class, DEFAULT_MAP);
+    }
     private static HashMap<Class, HashMap<String, Integer>> STEP_MAP = new HashMap<>();
     private static ArrayList<String> sealEventLog = new ArrayList<>();
     private static ArrayList<String> polarBearEventLog = new ArrayList<>();
@@ -91,6 +105,10 @@ public class AnimalStatistics {
         return returnString;
     }
 
+    public static void addToTotal(Object obj) {
+        TOTAL_MAP.put(obj.getClass(), TOTAL_MAP.get(obj.getClass()).intValue() + 1);
+    }
+
     private static String getLogStatistics() {
         String returnString = "";
         for (Class animalClass : STEP_MAP.keySet()) {
@@ -98,11 +116,11 @@ public class AnimalStatistics {
                 returnString += "" + STEP_MAP.get(animalClass).get(event) + ", ";// + animalClass.getName() + ", " + event + ". ";
             }
         }
-        if(STEP_MAP.keySet().size() == 1){
-            for(Class c : STEP_MAP.keySet()){
-                if (c.equals(Seal.class)){
+        if (STEP_MAP.keySet().size() == 1) {
+            for (Class c : STEP_MAP.keySet()) {
+                if (c.equals(Seal.class)) {
                     returnString += "0, 0, 0, 0, ";
-                } else if (c.equals(PolarBear.class)){
+                } else if (c.equals(PolarBear.class)) {
                     returnString = "0, 0, 0, 0, " + returnString;
                 }
             }
@@ -135,6 +153,14 @@ public class AnimalStatistics {
         step = 0;
     }
 
+    private static String getTotal() {
+        String rString = "";
+        for (Class c : TOTAL_MAP.keySet()) {
+            rString += c.getName() + ": " + TOTAL_MAP.get(c) + "   ";
+        }
+        return rString;
+    }
+
     private static void logToFile(HashMap<String, Number> popMap) {
         if (newFile) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd HH_mm_ss");
@@ -142,6 +168,7 @@ public class AnimalStatistics {
             stepLog = new File("C:/SosLogs/stepLog_" + dateFormat.format(date) + ".txt");
             sealLog = new File("C:/SosLogs/sealLog_" + dateFormat.format(date) + ".txt");
             polarBearLog = new File("C:/SosLogs/polarBearLog_" + dateFormat.format(date) + ".txt");
+            totalLog = new File("C:/SosLogs/totalLog_" + dateFormat.format(date) + ".txt");
             try {
                 stepLog.createNewFile();
                 sealLog.createNewFile();
@@ -154,14 +181,17 @@ public class AnimalStatistics {
             FileWriter stepWriter = new FileWriter(stepLog.getAbsolutePath(), true);
             FileWriter sealWriter = new FileWriter(sealLog.getAbsolutePath(), true);
             FileWriter polarBearWriter = new FileWriter(polarBearLog.getAbsolutePath(), true);
+            if(totalLog.exists()){
+                totalLog.delete();
+            }
+            FileWriter totalWriter = new FileWriter(totalLog.getAbsolutePath(), true);
             PrintWriter stepPrint = new PrintWriter(stepWriter);
             PrintWriter sealPrint = new PrintWriter(sealWriter);
             PrintWriter polarBearPrint = new PrintWriter(polarBearWriter);
+            PrintWriter totalPrint = new PrintWriter(totalWriter);
+            totalLog.createNewFile();
             if (newFile) {
                 getLogStatistics();
-                for(String name : popMap.keySet()){
-                    logString += name + ", ";
-                }
                 stepPrint.println(logString);
                 sealPrint.println("DeathCause, age, step");
                 polarBearPrint.println("DeathCause, age, step");
@@ -174,9 +204,11 @@ public class AnimalStatistics {
                 polarBearPrint.println(line);
             }
             String log = getLogStatistics();
-            for(String name : popMap.keySet()){
+            for (String name : popMap.keySet()) {
                 log += popMap.get(name) + ", ";
             }
+            totalPrint.println(getTotal());
+            totalPrint.close();
             stepPrint.println(log);
             stepPrint.close();
             sealPrint.close();
