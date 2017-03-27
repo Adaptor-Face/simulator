@@ -15,6 +15,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
@@ -30,6 +32,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -49,16 +52,18 @@ public class SimulatorGUI extends Application {
     private BorderPane root;
     private Stage primaryStage;
     private DiffusjonSimulator sim;
-    private int heigth = 80;
-    private int width = 120;
+    private int heigth = 1;
+    private int width = 1;
     private int depth = 1;
+    private int size = 20;
     private HashMap<String, StackPane> gridNodes = new HashMap<>();
+    private HashMap<StackPane, Text> gridText = new HashMap<>();
     private ArrayList<GridPane> thirdDimention = new ArrayList<>();
-    private static final Color UNKNOWN_COLOR = Color.GREY;
     private Text steps;
     private int step = 0;
     private SimpleIntegerProperty obsStep = new SimpleIntegerProperty(0);
     private Stats stats;
+    private ScrollPane centerContent = new ScrollPane();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -66,34 +71,51 @@ public class SimulatorGUI extends Application {
         GridPane gp = new GridPane();
         NumberField widthInput = new NumberField();
         widthInput.setPromptText("120");
-        NumberField heigthInput = new NumberField();
-        heigthInput.setPromptText("80");
-        NumberField depthInput = new NumberField();
-        depthInput.setPromptText("1");
-
+        NumberField squareSize = new NumberField();
+        squareSize.setPromptText("20");
+        CheckBox oneD = new CheckBox();
+        oneD.setSelected(true);
+        CheckBox twoD = new CheckBox();
+        twoD.setSelected(false);
+        CheckBox threeD = new CheckBox();
+        threeD.setSelected(false);
         Text wTxt = new Text("Width");
-        Text hTxt = new Text("Height");
-        Text sTxt = new Text("Depth");
+        Text oneDTxt = new Text("First Dimention");
+        Text twoDTxt = new Text("Second Dimention");
+        Text threeDTxt = new Text("Third Dimention");
+        Text sqrSizeTxt = new Text("Square size");
         gp.add(wTxt, 0, 0);
-        gp.add(hTxt, 0, 1);
-        gp.add(sTxt, 0, 2);
+        gp.add(oneDTxt, 0, 1);
+        gp.add(twoDTxt, 0, 2);
+        gp.add(threeDTxt, 0, 3);
+        gp.add(sqrSizeTxt, 0, 4);
         gp.add(widthInput, 1, 0);
-        gp.add(heigthInput, 1, 1);
-        gp.add(depthInput, 1, 2);
+        gp.add(oneD, 1, 1);
+        gp.add(twoD, 1, 2);
+        gp.add(threeD, 1, 3);
+        gp.add(squareSize, 1, 4);
         gp.setId("");
         class EnterHandler implements EventHandler<KeyEvent> {
 
             @Override
             public void handle(KeyEvent k) {
                 if (k.getCode().equals(KeyCode.ENTER)) {
-                    if (widthInput.getText().length() > 0) {
-                        width = Integer.parseInt(widthInput.getText());
+                    int number = 120;
+                    try {
+                        number = Integer.parseInt(widthInput.getText());
+                    } catch (NumberFormatException ex) {
                     }
-                    if (heigthInput.getText().length() > 0) {
-                        heigth = Integer.parseInt(heigthInput.getText());
+                    if (oneD.selectedProperty().getValue()) {
+                        width = number;
                     }
-                    if (depthInput.getText().length() > 0) {
-                        depth = Integer.parseInt(depthInput.getText());
+                    if (twoD.selectedProperty().getValue()) {
+                        heigth = number;
+                    }
+                    if (threeD.selectedProperty().getValue()) {
+                        depth = number;
+                    }
+                    if (!squareSize.getText().isEmpty()) {
+                        size = Integer.parseInt(squareSize.getText());
                     }
                     alert.close();
                 }
@@ -101,14 +123,22 @@ public class SimulatorGUI extends Application {
         }
         Button start = new Button("Start Simulation");
         start.setOnAction((ActionEvent e) -> {
-            if (widthInput.getText().length() > 0) {
-                width = Integer.parseInt(widthInput.getText());
+            int number = 120;
+            try {
+                number = Integer.parseInt(widthInput.getText());
+            } catch (NumberFormatException ex) {
             }
-            if (heigthInput.getText().length() > 0) {
-                heigth = Integer.parseInt(heigthInput.getText());
+            if (oneD.selectedProperty().getValue()) {
+                width = number;
             }
-            if (depthInput.getText().length() > 0) {
-                depth = Integer.parseInt(depthInput.getText());
+            if (twoD.selectedProperty().getValue()) {
+                heigth = number;
+            }
+            if (threeD.selectedProperty().getValue()) {
+                depth = number;
+            }
+            if (!squareSize.getText().isEmpty()) {
+                size = Integer.parseInt(squareSize.getText());
             }
             alert.close();
         });
@@ -120,8 +150,6 @@ public class SimulatorGUI extends Application {
         });
         start.setOnKeyPressed(new EnterHandler());
         widthInput.setOnKeyPressed(new EnterHandler());
-        heigthInput.setOnKeyPressed(new EnterHandler());
-        depthInput.setOnKeyPressed(new EnterHandler());
         VBox vBox = new VBox();
         vBox.setAlignment(Pos.BOTTOM_RIGHT);
         vBox.getChildren().add(gp);
@@ -180,52 +208,67 @@ public class SimulatorGUI extends Application {
         reset.setOnAction((ActionEvent event) -> {
             reset();
         });
-        Button getStats = new Button("Get stats");
-        getStats.setOnAction((ActionEvent event) -> {
-            Stage alert = new Stage();
-            VBox vBox = new VBox();
-            Text info = new Text("SOME TEXT");
-            vBox.getChildren().add(info);
-            alert.setScene(new Scene(vBox));
-            alert.showAndWait();
-
+        NumberField plane = new NumberField();
+        plane.setPromptText("Plane");
+        Button planeSwap = new Button("Swap plane");
+        planeSwap.setOnAction((ActionEvent event) -> {
+            if (planeSwap.getText().length() > 0) {
+                centerContent.setContent(thirdDimention.get(Integer.parseInt(plane.getText())));
+            } else {
+            }
         });
         toolBar.getChildren().add(back);
         toolBar.getChildren().add(stepInput);
         toolBar.getChildren().add(multiStep);
         toolBar.getChildren().add(reset);
-        toolBar.getChildren().add(getStats);
+        toolBar.getChildren().add(plane);
+        toolBar.getChildren().add(planeSwap);
         borderPane.setTop(toolBar);
         return borderPane;
     }
 
     private BorderPane createSimulatorWindow(Stage stage) {
-        GridPane gridPane = new GridPane();
         BorderPane borderPane = new BorderPane();
-        gridPane.setVgap(0.7);
-        gridPane.setHgap(0.7);
-        gridPane.setAlignment(Pos.CENTER);
-        gridPane.setMaxHeight(Double.MAX_VALUE);
-        gridPane.setMaxWidth(Double.MAX_VALUE);
-        createGrid(gridPane, stage);
-        borderPane.setCenter(gridPane);
+        createGrid();
+        System.out.println(thirdDimention.size());
+        System.out.println(thirdDimention.size() / 2);
+        centerContent.setContent(thirdDimention.get(thirdDimention.size() / 2));
+        centerContent.setMinHeight(400);
+        centerContent.setMaxHeight(800);
+        centerContent.setMinWidth(600);
+        centerContent.setMaxWidth(1200);
+        borderPane.setCenter(centerContent);
         borderPane.setTop(steps);
         return borderPane;
     }
 
-    private void createGrid(GridPane gridPane, Stage currentStage) {
-        for (int y = 0; y < heigth; y++) {
-            for (int x = 0; x < width; x++) {
-                StackPane square = new StackPane();
-                square.setMinHeight(4);
-                square.setMinWidth(4);
-                GridPane.setHgrow(square, Priority.ALWAYS);
-                GridPane.setVgrow(square, Priority.ALWAYS);
-                gridPane.add(square, x, y);
-                gridNodes.put(x + "," + y, square);
+    private void createGrid() {
+        for (int z = 0; z < depth; z++) {
+            GridPane gridPane = new GridPane();
+            gridPane.setVgap(0.7);
+            gridPane.setHgap(0.7);
+            gridPane.setAlignment(Pos.CENTER);
+            gridPane.setMaxHeight(Double.MAX_VALUE);
+            gridPane.setMaxWidth(Double.MAX_VALUE);
+            gridPane.setBackground(new Background(new BackgroundFill(Color.web("#000000"), CornerRadii.EMPTY, Insets.EMPTY)));
+            for (int y = 0; y < heigth; y++) {
+                for (int x = 0; x < width; x++) {
+                    StackPane square = new StackPane();
+                    Text txt = new Text("" + z);
+                    txt.setFill(Color.WHITE);
+                    square.getChildren().add(txt);
+                    square.setMinHeight(size);
+                    square.setMinWidth(size / 2);
+                    GridPane.setHgrow(square, Priority.ALWAYS);
+                    GridPane.setVgrow(square, Priority.ALWAYS);
+                    gridPane.add(square, x, y);
+                    gridNodes.put(x + "," + y + "," + z, square);
+                    gridText.put(square, txt);
+                }
             }
+            thirdDimention.add(gridPane);
         }
-        gridPane.setBackground(new Background(new BackgroundFill(Color.web("#000000"), CornerRadii.EMPTY, Insets.EMPTY)));
+
         showStatus();
     }
 
@@ -242,13 +285,13 @@ public class SimulatorGUI extends Application {
         step = 0;
         obsStep.set(0);
         System.out.println(obsStep);
-        setParticleColor("#222222");
+        setParticleColor("#444444");
         showStatus();
 
     }
 
     private void showStatus() {
-        setParticleColor("#222222");
+        setParticleColor("#444444");
         this.steps.setText("Steps: " + step);
     }
 
@@ -288,7 +331,7 @@ public class SimulatorGUI extends Application {
                 newStep = oldStep + 1;
             }
             if (oldStep == newStep - 1) {
-                setParticleColor("#222222");
+                setParticleColor("#444444");
             }
         });
         new Thread(task).start();
