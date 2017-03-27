@@ -1,7 +1,7 @@
 package Diffusjon;
 
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javafx.application.Application;
@@ -11,6 +11,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -19,9 +20,14 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -42,17 +48,17 @@ public class SimulatorGUI extends Application {
 
     private BorderPane root;
     private Stage primaryStage;
-    private Simulator sim;
+    private DiffusjonSimulator sim;
     private int depth = 80;
     private int width = 120;
     private int seed = -812;
     private Map<Class, Color> colors = new LinkedHashMap<>();
-    private ArrayList<Rectangle> gridNodes = new ArrayList<>();
+    private HashMap<String, StackPane> gridNodes = new HashMap<>();
     private static final Color UNKNOWN_COLOR = Color.GREY;
-    private Text population, steps;
+    private Text steps;
     private int step = 0;
     private SimpleIntegerProperty obsStep = new SimpleIntegerProperty(0);
-    private FieldStats stats;
+    private Stats stats;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -128,20 +134,17 @@ public class SimulatorGUI extends Application {
             gp.setHgap(5);
             gp.setVgap(5);
             this.root = createScene(primaryStage);
-            this.sim = new Simulator(depth, width, seed);
             this.primaryStage = primaryStage;
-            this.stats = new FieldStats();
             this.steps = new Text("Steps: " + step);
-            this.population = new Text(stats.getPopulationDetails(sim.getField()));
             root.setCenter(createSimulatorWindow(primaryStage));
             obsStep.addListener(new ChangeListener<Number>() {
                 @Override
                 public void changed(ObservableValue ov, Number oldValue, Number newValue) {
-                    AnimalStatistics.stepLog(population.getText());
-                    if (newValue.intValue() <= oldValue.intValue()) {
-                        AnimalStatistics.endLog();
-                    } else {
-                    }
+//                    Stats.stepLog(population.getText());
+//                    if (newValue.intValue() <= oldValue.intValue()) {
+//                        Stats.endLog();
+//                    } else {
+//                    }
                 }
             });
             Scene scene = new Scene(root);
@@ -181,7 +184,7 @@ public class SimulatorGUI extends Application {
         getStats.setOnAction((ActionEvent event) -> {
             Stage alert = new Stage();
             VBox vBox = new VBox();
-            Text info = new Text(AnimalStatistics.getStatistics());
+            Text info = new Text("SOME TEXT");
             vBox.getChildren().add(info);
             alert.setScene(new Scene(vBox));
             alert.showAndWait();
@@ -202,12 +205,10 @@ public class SimulatorGUI extends Application {
         gridPane.setVgap(0.7);
         gridPane.setHgap(0.7);
         gridPane.setAlignment(Pos.CENTER);
-        setObjectColors();
         gridPane.setMaxHeight(Double.MAX_VALUE);
         gridPane.setMaxWidth(Double.MAX_VALUE);
         createGrid(gridPane, stage);
         borderPane.setCenter(gridPane);
-        borderPane.setBottom(population);
         borderPane.setTop(steps);
         return borderPane;
     }
@@ -215,28 +216,16 @@ public class SimulatorGUI extends Application {
     private void createGrid(GridPane gridPane, Stage currentStage) {
         for (int y = 0; y < depth; y++) {
             for (int x = 0; x < width; x++) {
-                Rectangle square = new Rectangle(8, 8, UNKNOWN_COLOR);
-                square.setId(new Location(y, x).toString());
-                square.setOnMouseEntered((MouseEvent event) -> {
-                    Animal animal = sim.getField().getAnimalAt(new Location(square.getId()));
-                    if (animal != null) {
-                        Tooltip tt = new Tooltip();
-                        String text = "";
-                        for (String string : animal.getAnimalDetails()) {
-                            text += string + "\n";
-                        }
-                        text += "Location: " + square.getId();
-                        tt.setText(text);
-                        Tooltip.install(square, tt);
-                    }
-                });
-                square.setOnMouseClicked((MouseEvent event) -> {
-                    System.out.println(square.getId());
-                });
+                StackPane square = new StackPane();
+                square.setMinHeight(4);
+                square.setMinWidth(4);
+                GridPane.setHgrow(square, Priority.ALWAYS);
+                GridPane.setVgrow(square, Priority.ALWAYS);
                 gridPane.add(square, x, y);
-                gridNodes.add(square);
+                gridNodes.put(x + "," + y, square);
             }
         }
+        gridPane.setBackground(new Background(new BackgroundFill(Color.web("#000000"), CornerRadii.EMPTY, Insets.EMPTY)));
         showStatus();
     }
 
@@ -276,49 +265,29 @@ public class SimulatorGUI extends Application {
         step = 0;
         obsStep.set(0);
         System.out.println(obsStep);
-        sim.softReset();
-        stats.reset();
-        updateStats(sim.getField());
-        gridNodes.forEach((Rectangle square) -> {
-            Object obj = sim.getField().getObjectAt(new Location(square.getId()));
-            stats.incrementCount(obj.getClass());
-            square.setFill(getColor(obj.getClass()));
-        });
+        setParticleColor("#222222");
         showStatus();
 
     }
 
     private void showStatus() {
-        Field someField = new Field(sim.getField().getDepth(), sim.getField().getWidth(), sim.getField().getSeed());
-        someField.resetField(sim.getField());
-        stats.reset();
-        gridNodes.forEach((Rectangle square) -> {
-            Object obj = someField.getObjectAt(new Location(square.getId()));
-            stats.incrementCount(obj.getClass());
-            square.setFill(getColor(obj.getClass()));
-        });
-        updateStats(someField);
+        setParticleColor("#222222");
+        this.steps.setText("Steps: " + step);
     }
 
-    private void setObjectColors() {
-        setColor(Seal.class, Color.RED);
-        setColor(PolarBear.class, Color.BLACK);
-        setColor(Land.class, Color.AZURE);
-        setColor(Shallows.class, Color.AQUA);
-        setColor(Shore.class, Color.LIGHTBLUE);
-        setColor(Ocean.class, Color.CORNFLOWERBLUE);
-    }
-
+//    private void setObjectColors() {
+//        setColor(Seal.class, Color.RED);
+//        setColor(PolarBear.class, Color.BLACK);
+//        setColor(Land.class, Color.AZURE);
+//        setColor(Shallows.class, Color.AQUA);
+//        setColor(Shore.class, Color.LIGHTBLUE);
+//        setColor(Ocean.class, Color.CORNFLOWERBLUE);
+//    }
     private void simulateOneStep() {
         step++;
-        sim.simulateOneStep();
+//        sim.simulateOneStep();
         obsStep.setValue(step);
         showStatus();
-    }
-
-    private void updateStats(Field field) {
-        population.setText(stats.getPopulationDetails(field));
-        this.steps.setText("Steps: " + step);
     }
 
     private void simulate(int steps) {
@@ -326,8 +295,8 @@ public class SimulatorGUI extends Application {
             @Override
             public Integer call() throws Exception {
                 for (Integer i = 0; i < steps; i++) {
-                    sim.simulateOneStep();
-                    updateValue(sim.getStep());
+//                    sim.simulateOneStep();
+//                    updateValue(sim.getStep());
                     step++;
                     obsStep.setValue(step);
                 }
@@ -342,20 +311,17 @@ public class SimulatorGUI extends Application {
                 newStep = oldStep + 1;
             }
             if (oldStep == newStep - 1) {
-                Field field = sim.getField();
-                stats.reset();
-                gridNodes.forEach((Rectangle square) -> {
-                    Object obj = field.getObjectAt(new Location(square.getId()));
-                    stats.incrementCount(obj.getClass());
-
-                    Color col = getColor(obj.getClass());
-                    square.setFill(col);
-                });
-                updateStats(field);
+                setParticleColor("#222222");
             }
         });
         new Thread(task).start();
         showStatus();
+    }
+
+    private void setParticleColor(String hexColor) {
+        gridNodes.values().forEach((StackPane square) -> {
+            square.setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
+        });
     }
 
     private class NumberField extends TextField {
