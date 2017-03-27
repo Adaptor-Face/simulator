@@ -243,9 +243,9 @@ public class SimulatorGUI extends Application {
         System.exit(0);
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+//    public static void main(String[] args) {
+//        launch(args);
+//    }
 
     /**
      * Define a color to be used for a given class of animal.

@@ -66,20 +66,20 @@ public class SimulatorGUI extends Application {
         GridPane gp = new GridPane();
         NumberField widthInput = new NumberField();
         widthInput.setPromptText("120");
+        NumberField heigthInput = new NumberField();
+        heigthInput.setPromptText("80");
         NumberField depthInput = new NumberField();
-        depthInput.setPromptText("80");
-        NumberField seedInput = new NumberField();
-        seedInput.setPromptText("-812");
+        depthInput.setPromptText("1");
 
         Text wTxt = new Text("Width");
         Text hTxt = new Text("Height");
-        Text sTxt = new Text("Seed");
+        Text sTxt = new Text("Depth");
         gp.add(wTxt, 0, 0);
         gp.add(hTxt, 0, 1);
         gp.add(sTxt, 0, 2);
         gp.add(widthInput, 1, 0);
-        gp.add(depthInput, 1, 1);
-        gp.add(seedInput, 1, 2);
+        gp.add(heigthInput, 1, 1);
+        gp.add(depthInput, 1, 2);
         gp.setId("");
         class EnterHandler implements EventHandler<KeyEvent> {
 
@@ -89,11 +89,11 @@ public class SimulatorGUI extends Application {
                     if (widthInput.getText().length() > 0) {
                         width = Integer.parseInt(widthInput.getText());
                     }
-                    if (depthInput.getText().length() > 0) {
-                        depth = Integer.parseInt(depthInput.getText());
+                    if (heigthInput.getText().length() > 0) {
+                        depth = Integer.parseInt(heigthInput.getText());
                     }
-                    if (seedInput.getText().length() > 0) {
-                        seed = Integer.parseInt(seedInput.getText());
+                    if (depthInput.getText().length() > 0) {
+                        seed = Integer.parseInt(depthInput.getText());
                     }
                     alert.close();
                 }
@@ -104,11 +104,11 @@ public class SimulatorGUI extends Application {
             if (widthInput.getText().length() > 0) {
                 width = Integer.parseInt(widthInput.getText());
             }
-            if (depthInput.getText().length() > 0) {
-                depth = Integer.parseInt(depthInput.getText());
+            if (heigthInput.getText().length() > 0) {
+                depth = Integer.parseInt(heigthInput.getText());
             }
-            if (seedInput.getText().length() > 0) {
-                seed = Integer.parseInt(seedInput.getText());
+            if (depthInput.getText().length() > 0) {
+                seed = Integer.parseInt(depthInput.getText());
             }
             alert.close();
         });
@@ -120,8 +120,8 @@ public class SimulatorGUI extends Application {
         });
         start.setOnKeyPressed(new EnterHandler());
         widthInput.setOnKeyPressed(new EnterHandler());
+        heigthInput.setOnKeyPressed(new EnterHandler());
         depthInput.setOnKeyPressed(new EnterHandler());
-        seedInput.setOnKeyPressed(new EnterHandler());
         VBox vBox = new VBox();
         vBox.setAlignment(Pos.BOTTOM_RIGHT);
         vBox.getChildren().add(gp);
