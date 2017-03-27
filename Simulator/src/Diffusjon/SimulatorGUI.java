@@ -49,11 +49,11 @@ public class SimulatorGUI extends Application {
     private BorderPane root;
     private Stage primaryStage;
     private DiffusjonSimulator sim;
-    private int depth = 80;
+    private int heigth = 80;
     private int width = 120;
-    private int seed = -812;
-    private Map<Class, Color> colors = new LinkedHashMap<>();
+    private int depth = 1;
     private HashMap<String, StackPane> gridNodes = new HashMap<>();
+    private ArrayList<GridPane> thirdDimention = new ArrayList<>();
     private static final Color UNKNOWN_COLOR = Color.GREY;
     private Text steps;
     private int step = 0;
@@ -90,10 +90,10 @@ public class SimulatorGUI extends Application {
                         width = Integer.parseInt(widthInput.getText());
                     }
                     if (heigthInput.getText().length() > 0) {
-                        depth = Integer.parseInt(heigthInput.getText());
+                        heigth = Integer.parseInt(heigthInput.getText());
                     }
                     if (depthInput.getText().length() > 0) {
-                        seed = Integer.parseInt(depthInput.getText());
+                        depth = Integer.parseInt(depthInput.getText());
                     }
                     alert.close();
                 }
@@ -105,10 +105,10 @@ public class SimulatorGUI extends Application {
                 width = Integer.parseInt(widthInput.getText());
             }
             if (heigthInput.getText().length() > 0) {
-                depth = Integer.parseInt(heigthInput.getText());
+                heigth = Integer.parseInt(heigthInput.getText());
             }
             if (depthInput.getText().length() > 0) {
-                seed = Integer.parseInt(depthInput.getText());
+                depth = Integer.parseInt(depthInput.getText());
             }
             alert.close();
         });
@@ -214,7 +214,7 @@ public class SimulatorGUI extends Application {
     }
 
     private void createGrid(GridPane gridPane, Stage currentStage) {
-        for (int y = 0; y < depth; y++) {
+        for (int y = 0; y < heigth; y++) {
             for (int x = 0; x < width; x++) {
                 StackPane square = new StackPane();
                 square.setMinHeight(4);
@@ -236,29 +236,6 @@ public class SimulatorGUI extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    /**
-     * Define a color to be used for a given class of animal.
-     *
-     * @param animalClass The animal's Class object.
-     * @param color The color to be used for the given class.
-     */
-    public final void setColor(Class animalClass, Color color) {
-        colors.put(animalClass, color);
-    }
-
-    /**
-     * @return The color to be used for a given class of animal.
-     */
-    private Color getColor(Class objClass) {
-        Color col = colors.get(objClass);
-        if (col == null) {
-            // no color defined for this class
-            return UNKNOWN_COLOR;
-        } else {
-            return col;
-        }
     }
 
     private void reset() {
