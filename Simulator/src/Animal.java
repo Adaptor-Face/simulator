@@ -57,7 +57,7 @@ public abstract class Animal {
     protected boolean isAlive() {
         return alive;
     }
-
+    
     abstract public int getAge();
 
     /**
@@ -107,15 +107,15 @@ public abstract class Animal {
     }
 
     protected int incrementHunger(int foodLevel) {
+        foodLevel--;
         if (foodLevel <= 0) {
             setDead("starvation");
             return 0;
         }
-        foodLevel--;
         return foodLevel;
     }
-
-    protected Location moveTo(Location location) {
+    
+    protected Location moveTo(Location location){
         int x = location.getCol() - getLocation().getCol();
         int y = location.getRow() - getLocation().getRow();
         int difference = Math.abs(x - y);
