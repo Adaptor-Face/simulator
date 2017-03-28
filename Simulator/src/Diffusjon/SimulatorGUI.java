@@ -53,7 +53,7 @@ import javafx.stage.WindowEvent;
  * @author Kristoffer
  */
 public class SimulatorGUI extends Application {
-    
+
     private BorderPane root;
     private Stage primaryStage;
     private DiffusjonSimulator sim;
@@ -77,195 +77,18 @@ public class SimulatorGUI extends Application {
     private IntegerProperty currentPlane;
     private ArrayList<IntegerProperty> takenPlanes = new ArrayList<>();
     private boolean heatMap = false;
-    
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Stage alert = new Stage();
-        GridPane gp = new GridPane();
-        NumberField widthInput = new NumberField();
-        widthInput.setPromptText("" + defaultValue);
-        NumberField squareSize = new NumberField();
-        squareSize.setPromptText("20");
-        NumberField textSize = new NumberField();
-        textSize.setPromptText("12");
-        NumberField particles = new NumberField();
-        particles.setPromptText("1");
-        CheckBox oneD = new CheckBox();
-        oneD.setSelected(true);
-        CheckBox twoD = new CheckBox();
-        twoD.setSelected(false);
-        CheckBox threeD = new CheckBox();
-        threeD.setSelected(false);
-        HBox choiceBox = new HBox();
-        ToggleGroup choice = new ToggleGroup();
-        RadioButton color = new RadioButton();
-        color.setToggleGroup(choice);
-        color.setSelected(true);
-        color.setText("Color");
-        color.setId("0");
-        RadioButton count = new RadioButton();
-        count.setToggleGroup(choice);
-        count.setText("Count");
-        count.setId("1");
-        RadioButton decimal = new RadioButton();
-        decimal.setToggleGroup(choice);
-        decimal.setText("Decimal");
-        decimal.setId("2");
-        choiceBox.getChildren().add(color);
-        choiceBox.getChildren().add(count);
-        choiceBox.getChildren().add(decimal);
-        Text wTxt = new Text("Width");
-        Text oneDTxt = new Text("First Dimention");
-        Text twoDTxt = new Text("Second Dimention");
-        Text threeDTxt = new Text("Third Dimention");
-        Text sqrSizeTxt = new Text("Square size");
-        Text textSizeTxt = new Text("Text size");
-        Text particlesTxt = new Text("Number of particles");
-        Text choiceText = new Text("Visual type");
-        gp.add(wTxt, 0, 0);
-        gp.add(particlesTxt, 0, 1);
-        gp.add(oneDTxt, 0, 2);
-        gp.add(twoDTxt, 0, 3);
-        gp.add(threeDTxt, 0, 4);
-        gp.add(sqrSizeTxt, 0, 5);
-        gp.add(textSizeTxt, 0, 6);
-        gp.add(choiceText, 0, 7);
-        gp.add(widthInput, 1, 0);
-        gp.add(particles, 1, 1);
-        gp.add(oneD, 1, 2);
-        gp.add(twoD, 1, 3);
-        gp.add(threeD, 1, 4);
-        gp.add(squareSize, 1, 5);
-        gp.add(textSize, 1, 6);
-        gp.add(choiceBox, 1, 7);
-        gp.setId("");
-        class EnterHandler implements EventHandler<KeyEvent> {
-            
-            @Override
-            public void handle(KeyEvent k) {
-                if (k.getCode().equals(KeyCode.ENTER)) {
-                    int number = defaultValue;
-                    try {
-                        number = Integer.parseInt(widthInput.getText());
-                    } catch (NumberFormatException ex) {
-                    }
-                    if (oneD.selectedProperty().getValue()) {
-                        dimentions++;
-                    }
-                    if (twoD.selectedProperty().getValue()) {
-                        dimentions++;
-                    }
-                    if (threeD.selectedProperty().getValue()) {
-                        dimentions++;
-                        
-                    }
-                    if (dimentions >= 1) {
-                        height = number;
-                        width = number;
-                        depth = number;
-                    }
-                    if (dimentions >= 2) {
-                        width = number;
-                    }
-                    if (dimentions >= 3) {
-                        depth = number;
-                    }
-                    if (!squareSize.getText().isEmpty()) {
-                        size = Integer.parseInt(squareSize.getText());
-                    }
-                    if (!textSize.getText().isEmpty()) {
-                        txtSize = Integer.parseInt(textSize.getText());
-                    }
-                    if (!particles.getText().isEmpty()) {
-                        particleNum = Integer.parseInt(particles.getText());
-                    }
-                    alert.close();
-                }
-            }
-        }
-        Button start = new Button("Start Simulation");
-        start.setOnAction((ActionEvent e) -> {
-            int number = defaultValue;
-            try {
-                number = Integer.parseInt(widthInput.getText());
-            } catch (NumberFormatException ex) {
-            }
-            if (oneD.selectedProperty().getValue()) {
-                dimentions++;
-            }
-            if (twoD.selectedProperty().getValue()) {
-                dimentions++;
-            }
-            if (threeD.selectedProperty().getValue()) {
-                dimentions++;
-                
-            }
-            if (dimentions >= 1) {
-                width = number;
-            }
-            if (dimentions >= 2) {
-                height = number;
-            }
-            if (dimentions >= 3) {
-                depth = number;
-            }
-            if (!squareSize.getText().isEmpty()) {
-                size = Integer.parseInt(squareSize.getText());
-            }
-            if (!textSize.getText().isEmpty()) {
-                txtSize = Integer.parseInt(textSize.getText());
-            }
-            if (!particles.getText().isEmpty()) {
-                particleNum = Integer.parseInt(particles.getText());
-            }
-            alert.close();
-        });
-        alert.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent w) {
-                gp.setId("close");
-            }
-        });
-        start.setOnKeyPressed(new EnterHandler());
-        widthInput.setOnKeyPressed(new EnterHandler());
-        VBox vBox = new VBox();
-        vBox.setAlignment(Pos.BOTTOM_RIGHT);
-        vBox.getChildren().add(gp);
-        vBox.getChildren().add(start);
-        alert.setScene(new Scene(vBox, 300, 200));
-        start.requestFocus();
-        alert.setTitle("Simulator");
-        alert.showAndWait();
+        this.primaryStage = primaryStage;
+        GridPane gp = createStartupAlert();
         if (!gp.getId().equals("close")) {
-            visualType = Integer.parseInt(((RadioButton) choice.getSelectedToggle()).getId());
-            sim = new DiffusjonSimulator(particleNum, width / 2, dimentions);
-            gp.setHgap(5);
-            gp.setVgap(5);
-            this.root = createScene(primaryStage);
-            this.primaryStage = primaryStage;
-            this.steps = new Text("Steps: " + step);
-            root.setCenter(createSimulatorWindow(primaryStage));
-            obsStep.addListener(new ChangeListener<Number>() {
-                @Override
-                public void changed(ObservableValue ov, Number oldValue, Number newValue) {
-//                    Stats.stepLog(population.getText());
-//                    if (newValue.intValue() <= oldValue.intValue()) {
-//                        Stats.endLog();
-//                    } else {
-//                    }
-                }
-            });
-            Scene scene = new Scene(root);
-            primaryStage.setScene(scene);
-//        Scene controlScene = new Scene(root, 500, 75);
-//        primaryStage.setScene(controlScene);
-            primaryStage.setTitle("Simulator");
-            primaryStage.show();
+            createMainWindow();
         }
     }
-    
+
     private BorderPane createScene(Stage primaryStage) {
-        
+
         BorderPane borderPane = new BorderPane();
         HBox toolBar = new HBox();
         Button back = new Button("One Step");
@@ -396,6 +219,22 @@ public class SimulatorGUI extends Application {
                 alert.showAndWait();
             }
         });
+        Button newSim = new Button("Restart");
+        newSim.setOnAction((ActionEvent event) -> {
+            primaryStage.close();
+            dimentions = 0;
+            gridNodes.clear();
+            gridText.clear();
+            takenPlanes.clear();
+            thirdDimention.clear();
+            GridPane gp = createStartupAlert();
+            if (!gp.getId().equals("close")) {
+                createMainWindow();
+                System.out.println(depth);
+                System.out.println(thirdDimention.size());
+            }
+        });
+        newSim.setAlignment(Pos.BASELINE_RIGHT);
         if (depth == 1) {
             plane.setDisable(true);
             planeSwap.setDisable(true);
@@ -412,11 +251,12 @@ public class SimulatorGUI extends Application {
         toolBar.getChildren().add(planeUp);
         toolBar.getChildren().add(planeDown);
         toolBar.getChildren().add(planeView);
-        
+        toolBar.getChildren().add(newSim);
+
         borderPane.setTop(toolBar);
         return borderPane;
     }
-    
+
     private BorderPane createSimulatorWindow(Stage stage) {
         HBox subToolBar = new HBox();
         subToolBar.setSpacing(15);
@@ -470,7 +310,7 @@ public class SimulatorGUI extends Application {
         borderPane.setTop(subToolBar);
         return borderPane;
     }
-    
+
     private void createGrid() {
         for (int z = 0; z < depth; z++) {
             GridPane gridPane = new GridPane();
@@ -498,28 +338,28 @@ public class SimulatorGUI extends Application {
             }
             thirdDimention.add(gridPane);
         }
-        
+
         showStatus();
     }
-    
+
     @Override
     public void stop() {
         System.exit(0);
     }
-    
+
     public static void main(String[] args) {
         launch(args);
     }
-    
+
     private void reset() {
         sim.reset();
         step = 0;
         obsStep.set(0);
         setSqauresColor(40, 40, 40);
         showStatus();
-        
+
     }
-    
+
     private void showStatus() {
         if (visualType > 0) {
             gridText.values().forEach((Text txt) -> {
@@ -551,7 +391,7 @@ public class SimulatorGUI extends Application {
         obsStep.setValue(step);
         showStatus();
     }
-    
+
     private void simulate(int steps) {
         Task<Integer> task = new Task<Integer>() {
             @Override
@@ -585,7 +425,7 @@ public class SimulatorGUI extends Application {
         t1.start();
         showStatus();
     }
-    
+
     private void updateVisuals(String location, String hexColor) {
         if (visualType == 0) {
             gridNodes.get(location).setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -600,7 +440,7 @@ public class SimulatorGUI extends Application {
             gridText.get(gridNodes.get(location)).setText("" + num);
         }
     }
-    
+
     private void setSqauresColor(int r, int g, int b) {
         gridNodes.keySet().forEach((String loc) -> {
             StackPane square = gridNodes.get(loc);
@@ -612,7 +452,7 @@ public class SimulatorGUI extends Application {
                 int num1 = Math.abs(Integer.parseInt(str[0]) - middle.getX());
                 int num2 = Math.abs(Integer.parseInt(str[1]) - middle.getY());
                 int num3 = Math.abs(Integer.parseInt(str[2]) - middle.getZ());
-                bFinished = 255 - ((num1 + num2 + num3) * 6);
+                bFinished = 255 - ((num1 + num2 + num3) * (300/width));
                 if (bFinished < 40) {
                     bFinished = 40;
                 }
@@ -624,9 +464,201 @@ public class SimulatorGUI extends Application {
             square.setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
         });
     }
-    
+
+    private GridPane createStartupAlert() {
+        Stage alert = new Stage();
+        GridPane gp = new GridPane();
+        NumberField widthInput = new NumberField();
+        widthInput.setPromptText("" + defaultValue);
+        NumberField squareSize = new NumberField();
+        squareSize.setPromptText("20");
+        NumberField textSize = new NumberField();
+        textSize.setPromptText("12");
+        NumberField particles = new NumberField();
+        particles.setPromptText("1");
+        CheckBox oneD = new CheckBox();
+        oneD.setSelected(true);
+        CheckBox twoD = new CheckBox();
+        twoD.setSelected(false);
+        CheckBox threeD = new CheckBox();
+        threeD.setSelected(false);
+        HBox choiceBox = new HBox();
+        ToggleGroup choice = new ToggleGroup();
+        RadioButton color = new RadioButton();
+        color.setToggleGroup(choice);
+        color.setSelected(true);
+        color.setText("Color");
+        color.setId("0");
+        RadioButton count = new RadioButton();
+        count.setToggleGroup(choice);
+        count.setText("Count");
+        count.setId("1");
+        RadioButton decimal = new RadioButton();
+        decimal.setToggleGroup(choice);
+        decimal.setText("Decimal");
+        decimal.setId("2");
+        choiceBox.getChildren().add(color);
+        choiceBox.getChildren().add(count);
+        choiceBox.getChildren().add(decimal);
+        Text wTxt = new Text("Width");
+        Text oneDTxt = new Text("First Dimention");
+        Text twoDTxt = new Text("Second Dimention");
+        Text threeDTxt = new Text("Third Dimention");
+        Text sqrSizeTxt = new Text("Square size");
+        Text textSizeTxt = new Text("Text size");
+        Text particlesTxt = new Text("Number of particles");
+        Text choiceText = new Text("Visual type");
+        gp.add(wTxt, 0, 0);
+        gp.add(particlesTxt, 0, 1);
+        gp.add(oneDTxt, 0, 2);
+        gp.add(twoDTxt, 0, 3);
+        gp.add(threeDTxt, 0, 4);
+        gp.add(sqrSizeTxt, 0, 5);
+        gp.add(textSizeTxt, 0, 6);
+        gp.add(choiceText, 0, 7);
+        gp.add(widthInput, 1, 0);
+        gp.add(particles, 1, 1);
+        gp.add(oneD, 1, 2);
+        gp.add(twoD, 1, 3);
+        gp.add(threeD, 1, 4);
+        gp.add(squareSize, 1, 5);
+        gp.add(textSize, 1, 6);
+        gp.add(choiceBox, 1, 7);
+        gp.setId("");
+        class EnterHandler implements EventHandler<KeyEvent> {
+
+            @Override
+            public void handle(KeyEvent k) {
+                if (k.getCode().equals(KeyCode.ENTER)) {
+                    int number = defaultValue;
+                    try {
+                        number = Integer.parseInt(widthInput.getText());
+                    } catch (NumberFormatException ex) {
+                    }
+                    if (oneD.selectedProperty().getValue()) {
+                        dimentions++;
+                    }
+                    if (twoD.selectedProperty().getValue()) {
+                        dimentions++;
+                    }
+                    if (threeD.selectedProperty().getValue()) {
+                        dimentions++;
+
+                    }
+                    if (dimentions >= 1) {
+                        width = number;
+                    }
+                    if (dimentions >= 2) {
+                        height = number;
+                    } else {
+                        height = 1;
+                    }
+                    if (dimentions >= 3) {
+                        depth = number;
+                    } else {
+                        depth = 1;
+                    }
+                    if (!squareSize.getText().isEmpty()) {
+                        size = Integer.parseInt(squareSize.getText());
+                    }
+                    if (!textSize.getText().isEmpty()) {
+                        txtSize = Integer.parseInt(textSize.getText());
+                    }
+                    if (!particles.getText().isEmpty()) {
+                        particleNum = Integer.parseInt(particles.getText());
+                    }
+                    alert.close();
+                }
+            }
+        }
+        Button start = new Button("Start Simulation");
+        start.setOnAction((ActionEvent e) -> {
+            int number = defaultValue;
+            try {
+                number = Integer.parseInt(widthInput.getText());
+            } catch (NumberFormatException ex) {
+            }
+            if (oneD.selectedProperty().getValue()) {
+                dimentions++;
+            }
+            if (twoD.selectedProperty().getValue()) {
+                dimentions++;
+            }
+            if (threeD.selectedProperty().getValue()) {
+                dimentions++;
+
+            }
+            if (dimentions >= 1) {
+                width = number;
+            }
+            if (dimentions >= 2) {
+                height = number;
+            } else {
+                height = 1;
+            }
+            if (dimentions >= 3) {
+                depth = number;
+            } else {
+                depth = 1;
+            }
+            if (!squareSize.getText().isEmpty()) {
+                size = Integer.parseInt(squareSize.getText());
+            }
+            if (!textSize.getText().isEmpty()) {
+                txtSize = Integer.parseInt(textSize.getText());
+            }
+            if (!particles.getText().isEmpty()) {
+                particleNum = Integer.parseInt(particles.getText());
+            }
+            alert.close();
+        });
+        alert.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent w) {
+                gp.setId("close");
+            }
+        });
+        start.setOnKeyPressed(new EnterHandler());
+        widthInput.setOnKeyPressed(new EnterHandler());
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.BOTTOM_RIGHT);
+        vBox.getChildren().add(gp);
+        vBox.getChildren().add(start);
+        alert.setScene(new Scene(vBox, 300, 200));
+        start.requestFocus();
+        alert.setTitle("Simulator");
+        alert.showAndWait();
+        visualType = Integer.parseInt(((RadioButton) choice.getSelectedToggle()).getId());
+        return gp;
+    }
+
+    private void createMainWindow() {
+        sim = new DiffusjonSimulator(particleNum, width / 2, dimentions);
+//            gp.setHgap(5);
+//            gp.setVgap(5);
+        this.root = createScene(primaryStage);
+        this.steps = new Text("Steps: " + step);
+        root.setCenter(createSimulatorWindow(primaryStage));
+        obsStep.addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue ov, Number oldValue, Number newValue) {
+//                    Stats.stepLog(population.getText());
+//                    if (newValue.intValue() <= oldValue.intValue()) {
+//                        Stats.endLog();
+//                    } else {
+//                    }
+            }
+        });
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+//        Scene controlScene = new Scene(root, 500, 75);
+//        primaryStage.setScene(controlScene);
+        primaryStage.setTitle("Simulator");
+        primaryStage.show();
+    }
+
     private class NumberField extends TextField {
-        
+
         public NumberField() {
             super();
             this.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
