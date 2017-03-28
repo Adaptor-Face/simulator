@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -323,14 +325,77 @@ public class SimulatorGUI extends Application {
                 }
             }
         });
+        Button planeView = new Button("View anotherPlane");
+        planeView.setOnAction((ActionEvent event) -> {
+            Stage alert = new Stage();
+            VBox vBox = new VBox();
+            ScrollPane windowContent = new ScrollPane();
+            windowContent.setContent(thirdDimention.get(currentPlane.intValue() + 1));
+            NumberField plane2 = new NumberField();
+            plane2.setPromptText("Plane");
+            IntegerProperty currentPlane2 = new SimpleIntegerProperty(depth / 2);
+            plane2.setText(new Integer(depth / 2).toString());
+            Button planeSwap2 = new Button("Swap plane");
+            planeSwap2.setOnAction((ActionEvent event2) -> {
+                if (plane.getText().length() > 0) {
+                    currentPlane2.setValue(Integer.parseInt(plane2.getText()));
+                    plane2.setText("" + currentPlane2);
+                } else {
+                    plane2.setText("" + currentPlane2);
+                }
+            });
+            Button planeUp2 = new Button("Go up");
+            planeUp2.setOnAction((ActionEvent event2) -> {
+                currentPlane2.set(currentPlane2.intValue() + 1);
+            });
+            Button planeDown2 = new Button("Go Down");
+            planeDown2.setOnAction((ActionEvent event2) -> {
+                currentPlane2.set(currentPlane2.intValue() - 1);
+            });
+            currentPlane2.addListener((obs, ov, nv) -> {
+                if (nv.intValue() >= 0 && nv.intValue() <= depth) {
+                    windowContent.setContent(thirdDimention.get(nv.intValue()));
+                    plane2.setText(nv.toString());
+                    if (nv.intValue() == depth) {
+                        planeUp2.setDisable(true);
+                    }
+                    if (ov.intValue() == depth) {
+                        planeUp2.setDisable(false);
+                    }
+                    if (nv.intValue() == 0) {
+                        planeDown2.setDisable(true);
+                    }
+                    if (ov.intValue() == 0) {
+                        planeDown2.setDisable(false);
+                    }
+                }
+            });
+            HBox tools = new HBox();
+            tools.getChildren().add(plane2);
+            tools.getChildren().add(planeSwap2);
+            tools.getChildren().add(planeUp2);
+            tools.getChildren().add(planeDown2);
+            vBox.getChildren().add(tools);
+            vBox.getChildren().add(windowContent);
+            alert.setScene(new Scene(vBox));
+            alert.showAndWait();
+        });
+        if (depth == 1) {
+            plane.setDisable(true);
+            planeSwap.setDisable(true);
+            planeUp.setDisable(true);
+            planeDown.setDisable(true);
+            planeView.setDisable(true);
+        }
         toolBar.getChildren().add(back);
-        toolBar.getChildren().add(stepInput);
-        toolBar.getChildren().add(multiStep);
+//        toolBar.getChildren().add(stepInput);
+//        toolBar.getChildren().add(multiStep);
         toolBar.getChildren().add(reset);
         toolBar.getChildren().add(plane);
         toolBar.getChildren().add(planeSwap);
         toolBar.getChildren().add(planeUp);
         toolBar.getChildren().add(planeDown);
+        toolBar.getChildren().add(planeView);
 
         borderPane.setTop(toolBar);
         return borderPane;
@@ -340,8 +405,6 @@ public class SimulatorGUI extends Application {
         BorderPane borderPane = new BorderPane();
         centerContent.setStyle("-fx-font-size: 20px;");
         createGrid();
-        System.out.println(thirdDimention.size());
-        System.out.println(thirdDimention.size() / 2);
         centerContent.setContent(thirdDimention.get(thirdDimention.size() / 2));
         centerContent.setMinHeight(400);
         centerContent.setMinWidth(600);
@@ -391,9 +454,9 @@ public class SimulatorGUI extends Application {
     }
 
     private void reset() {
+        sim.reset();
         step = 0;
         obsStep.set(0);
-        System.out.println(obsStep);
         setSqauresColor("#444444");
         showStatus();
 
@@ -424,11 +487,11 @@ public class SimulatorGUI extends Application {
 //        setColor(Ocean.class, Color.CORNFLOWERBLUE);
 //    }
     private void simulateOneStep() {
-        showStatus();
         sim.simulateOneStep(dimentions);
         step++;
 //        sim.simulateOneStep();
         obsStep.setValue(step);
+        showStatus();
     }
 
     private void simulate(int steps) {
@@ -436,7 +499,7 @@ public class SimulatorGUI extends Application {
             @Override
             public Integer call() throws Exception {
                 for (Integer i = 0; i < steps; i++) {
-                    simulateOneStep();
+                    sim.simulateOneStep(dimentions);
                     updateValue(sim.getStep());
                     step++;
                     obsStep.setValue(step);
@@ -452,10 +515,23 @@ public class SimulatorGUI extends Application {
                 newStep = oldStep + 1;
             }
             if (oldStep == newStep - 1) {
+                setSqauresColor("#444444");
+                ArrayList<Location> particles = new ArrayList<>();
+                particles.addAll(sim.getLocs());
+                particles.forEach((Location loc) -> {
+                    updateVisuals(loc.toString(), "#FFFFFF");
+                });
+                obsStep.setValue(step);
             }
         });
-        new Thread(task).start();
+        Thread t1 = new Thread(task);
+        t1.start();
         showStatus();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void updateVisuals(String location, String hexColor) {
