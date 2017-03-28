@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class DiffusjonSimulator {
 
-    private int numberOfParticles, startPoint, size, step;
+    private int numberOfParticles, startPoint, size, step, width;
     private final ArrayList<Location> particles;
     private ArrayList<Location> rookMove;
     private ArrayList<Location> bishopMove;
@@ -25,10 +25,11 @@ public class DiffusjonSimulator {
     private ArrayList<Location> moves;
     private ArrayList<Location> newLocs;
 
-    public DiffusjonSimulator(int numberOfParticles, int startPoint, int size) {
+    public DiffusjonSimulator(int numberOfParticles, int width, int size) {
         createMoves();
         this.numberOfParticles = numberOfParticles;
-        this.startPoint = startPoint;
+        this.startPoint = (width/2);
+        this.width = width;
         this.size = size;
         this.particles = new ArrayList<>();
         moves = rookMove;
@@ -43,6 +44,14 @@ public class DiffusjonSimulator {
                 move = getMove(loc);
             }
             loc.changeLocation(move);
+            if(loc.getX() < 0 || loc.getX() > width-1){
+                System.out.println("adslnfa");
+            }
+            if((loc.getX() < 0 || loc.getX() > width-1) || (loc.getY() < 0 || loc.getY() > width-1) || (loc.getZ() < 0 || loc.getZ() > width-1)){
+                move.invertLocation();
+                System.out.println("Inverted" + move);
+                loc.changeLocation(move, 2);
+            }
         });
         newLocs = new ArrayList(particles);
         step++;

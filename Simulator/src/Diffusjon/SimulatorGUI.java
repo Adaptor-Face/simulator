@@ -75,8 +75,9 @@ public class SimulatorGUI extends Application {
     private final ScrollPane centerContent = new ScrollPane();
     private int visualType;
     private IntegerProperty currentPlane;
-    private ArrayList<IntegerProperty> takenPlanes = new ArrayList<>();
+    private final ArrayList<IntegerProperty> takenPlanes = new ArrayList<>();
     private boolean heatMap = false;
+    private final ArrayList<Stage> alerts = new ArrayList<>();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -85,230 +86,6 @@ public class SimulatorGUI extends Application {
         if (!gp.getId().equals("close")) {
             createMainWindow();
         }
-    }
-
-    private BorderPane createScene(Stage primaryStage) {
-
-        BorderPane borderPane = new BorderPane();
-        HBox toolBar = new HBox();
-        Button back = new Button("One Step");
-        back.setOnAction((ActionEvent event) -> {
-            simulateOneStep();
-//            System.out.println(sim.getField().lookFor(new Location(15, 67), Shallows.class, "NSEW"));
-        });
-        back.setOnKeyPressed((KeyEvent event) -> {
-            simulateOneStep();
-        });
-        NumberField stepInput = new NumberField();
-        stepInput.setPromptText("Steps");
-        Button multiStep = new Button("Step");
-        multiStep.setOnAction((ActionEvent event) -> {
-            if (stepInput.getText().length() > 0) {
-                simulate(Integer.parseInt(stepInput.getText()));
-            }
-        });
-        Button reset = new Button("Reset");
-        reset.setOnAction((ActionEvent event) -> {
-            reset();
-        });
-        final NumberField plane = new NumberField();
-        plane.setPromptText("Plane");
-        currentPlane = new SimpleIntegerProperty(depth / 2);
-        takenPlanes.add(currentPlane);
-        plane.setText(new Integer(depth / 2).toString());
-        Button planeSwap = new Button("Swap plane");
-        planeSwap.setOnAction((ActionEvent event) -> {
-            if (plane.getText().length() > 0) {
-                currentPlane.setValue(Integer.parseInt(plane.getText()));
-                plane.setText("" + currentPlane);
-            } else {
-                plane.setText("" + currentPlane);
-            }
-        });
-        final Button planeUp = new Button("Go up");
-        planeUp.setOnAction((ActionEvent event) -> {
-            currentPlane.set(currentPlane.intValue() + 1);
-        });
-        final Button planeDown = new Button("Go Down");
-        planeDown.setOnAction((ActionEvent event) -> {
-            currentPlane.set(currentPlane.intValue() - 1);
-        });
-        currentPlane.addListener((obs, ov, nv) -> {
-            if (nv.intValue() >= 0 && nv.intValue() < depth) {
-                centerContent.setContent(thirdDimention.get(nv.intValue()));
-                plane.setText(nv.toString());
-            } else if (nv.intValue() < 0) {
-                currentPlane.set(depth - 1);
-            } else if (nv.intValue() > depth - 1) {
-                currentPlane.set(0);
-            }
-        });
-        Button planeView = new Button("View anotherPlane");
-        planeView.setOnAction((ActionEvent event) -> {
-            if (takenPlanes.size() < depth) {
-                Stage alert = new Stage();
-                VBox vBox = new VBox();
-                ArrayList<Integer> available = new ArrayList<>();
-                for (int i = 0; i < depth; i++) {
-                    available.add(i);
-                }
-                takenPlanes.forEach((IntegerProperty e) -> {
-                    available.remove(new Integer(e.intValue()));
-                });
-                ScrollPane windowContent = new ScrollPane();
-                windowContent.setContent(thirdDimention.get(available.get(0)));
-                NumberField plane2 = new NumberField();
-                plane2.setPromptText("Plane");
-                IntegerProperty currentPlane2 = new SimpleIntegerProperty(available.get(0));
-                takenPlanes.add(currentPlane2);
-                plane2.setText(Integer.toString(available.get(0)));
-                available.remove(0);
-                Button planeSwap2 = new Button("Swap plane");
-                planeSwap2.setOnAction((ActionEvent event2) -> {
-                    if (plane.getText().length() > 0) {
-                        currentPlane2.setValue(Integer.parseInt(plane2.getText()));
-                        plane2.setText("" + currentPlane2);
-                    } else {
-                        plane2.setText("" + currentPlane2);
-                    }
-                });
-                Button planeUp2 = new Button("Go up");
-                planeUp2.setOnAction((ActionEvent event2) -> {
-                    currentPlane2.set(currentPlane2.intValue() + 1);
-                });
-                Button planeDown2 = new Button("Go Down");
-                planeDown2.setOnAction((ActionEvent event2) -> {
-                    currentPlane2.set(currentPlane2.intValue() - 1);
-                });
-                currentPlane2.addListener((obs, ov, nv) -> {
-                    available.clear();
-                    for (int i = 0; i < depth; i++) {
-                        available.add(i);
-                    }
-                    takenPlanes.forEach((IntegerProperty e) -> {
-                        if (e != currentPlane2) {
-                            available.remove(new Integer(e.intValue()));
-                        }
-                    });
-                    if (nv.intValue() >= 0 && nv.intValue() <= depth) {
-                        while (!available.contains(nv.intValue())) {
-                            nv = nv.intValue() + 1;
-                            if (nv.intValue() > depth - 1) {
-                                nv = 0;
-                            }
-                        }
-                        windowContent.setContent(thirdDimention.get(nv.intValue()));
-                        plane2.setText(nv.toString());
-                    } else if (nv.intValue() < 0) {
-                        currentPlane2.set(depth - 1);
-                    } else if (nv.intValue() > depth - 1) {
-                        currentPlane2.set(0);
-                    }
-                });
-                HBox tools = new HBox();
-                tools.getChildren().add(plane2);
-                tools.getChildren().add(planeSwap2);
-                tools.getChildren().add(planeUp2);
-                tools.getChildren().add(planeDown2);
-                vBox.getChildren().add(tools);
-                vBox.getChildren().add(windowContent);
-                alert.setScene(new Scene(vBox));
-                alert.setOnCloseRequest((WindowEvent e) -> {
-                    takenPlanes.remove(currentPlane2);
-                });
-                alert.showAndWait();
-            }
-        });
-        Button newSim = new Button("Restart");
-        newSim.setOnAction((ActionEvent event) -> {
-            primaryStage.close();
-            dimentions = 0;
-            gridNodes.clear();
-            gridText.clear();
-            takenPlanes.clear();
-            thirdDimention.clear();
-            GridPane gp = createStartupAlert();
-            if (!gp.getId().equals("close")) {
-                createMainWindow();
-                System.out.println(depth);
-                System.out.println(thirdDimention.size());
-            }
-        });
-        newSim.setAlignment(Pos.BASELINE_RIGHT);
-        if (depth == 1) {
-            plane.setDisable(true);
-            planeSwap.setDisable(true);
-            planeUp.setDisable(true);
-            planeDown.setDisable(true);
-            planeView.setDisable(true);
-        }
-        toolBar.getChildren().add(back);
-//        toolBar.getChildren().add(stepInput);
-//        toolBar.getChildren().add(multiStep);
-        toolBar.getChildren().add(reset);
-        toolBar.getChildren().add(plane);
-        toolBar.getChildren().add(planeSwap);
-        toolBar.getChildren().add(planeUp);
-        toolBar.getChildren().add(planeDown);
-        toolBar.getChildren().add(planeView);
-        toolBar.getChildren().add(newSim);
-
-        borderPane.setTop(toolBar);
-        return borderPane;
-    }
-
-    private BorderPane createSimulatorWindow(Stage stage) {
-        HBox subToolBar = new HBox();
-        subToolBar.setSpacing(15);
-        CheckBox heatMap = new CheckBox();
-        heatMap.setText("Show heat map");
-        heatMap.setOnAction((ActionEvent a) -> {
-            this.heatMap = heatMap.isSelected();
-            showStatus();
-        });
-        ToggleGroup moveSelect = new ToggleGroup();
-        RadioButton rook = new RadioButton();
-        rook.setSelected(true);
-        rook.setText("Rook");
-        rook.setToggleGroup(moveSelect);
-        rook.setUserData(0);
-        RadioButton bishop = new RadioButton();
-        bishop.setSelected(false);
-        bishop.setText("Bishop");
-        bishop.setToggleGroup(moveSelect);
-        bishop.setUserData(1);
-        RadioButton king = new RadioButton();
-        king.setSelected(false);
-        king.setText("King");
-        king.setToggleGroup(moveSelect);
-        king.setUserData(2);
-        RadioButton knight = new RadioButton();
-        knight.setSelected(false);
-        knight.setText("Knight");
-        knight.setToggleGroup(moveSelect);
-        knight.setUserData(3);
-        HBox radioButtons = new HBox();
-        Text txt = new Text("Move type:");
-        radioButtons.getChildren().add(txt);
-        radioButtons.getChildren().add(rook);
-        radioButtons.getChildren().add(bishop);
-        radioButtons.getChildren().add(king);
-        radioButtons.getChildren().add(knight);
-        moveSelect.selectedToggleProperty().addListener((obs, ol, nl) -> {
-            sim.setMoves((int) nl.getUserData());
-        });
-        BorderPane borderPane = new BorderPane();
-        centerContent.setStyle("-fx-font-size: 20px;");
-        createGrid();
-        centerContent.setContent(thirdDimention.get(thirdDimention.size() / 2));
-        centerContent.setMinHeight(400);
-        centerContent.setMinWidth(600);
-        borderPane.setCenter(centerContent);
-        subToolBar.getChildren().add(steps);
-        subToolBar.getChildren().add(heatMap);
-        subToolBar.getChildren().add(radioButtons);
-        borderPane.setTop(subToolBar);
-        return borderPane;
     }
 
     private void createGrid() {
@@ -452,7 +229,7 @@ public class SimulatorGUI extends Application {
                 int num1 = Math.abs(Integer.parseInt(str[0]) - middle.getX());
                 int num2 = Math.abs(Integer.parseInt(str[1]) - middle.getY());
                 int num3 = Math.abs(Integer.parseInt(str[2]) - middle.getZ());
-                bFinished = 255 - ((num1 + num2 + num3) * (300/width));
+                bFinished = 255 - ((num1 + num2 + num3) * (300 / width));
                 if (bFinished < 40) {
                     bFinished = 40;
                 }
@@ -463,6 +240,232 @@ public class SimulatorGUI extends Application {
             String hexColor = "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(bFinished);
             square.setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
         });
+    }
+
+    private BorderPane createScene(Stage primaryStage) {
+
+        BorderPane borderPane = new BorderPane();
+        HBox toolBar = new HBox();
+        Button back = new Button("One Step");
+        back.setOnAction((ActionEvent event) -> {
+            simulateOneStep();
+//            System.out.println(sim.getField().lookFor(new Location(15, 67), Shallows.class, "NSEW"));
+        });
+        back.setOnKeyPressed((KeyEvent event) -> {
+            simulateOneStep();
+        });
+        NumberField stepInput = new NumberField();
+        stepInput.setPromptText("Steps");
+        Button multiStep = new Button("Step");
+        multiStep.setOnAction((ActionEvent event) -> {
+            if (stepInput.getText().length() > 0) {
+                simulate(Integer.parseInt(stepInput.getText()));
+            }
+        });
+        Button reset = new Button("Reset");
+        reset.setOnAction((ActionEvent event) -> {
+            reset();
+        });
+        final NumberField plane = new NumberField();
+        plane.setPromptText("Plane");
+        currentPlane = new SimpleIntegerProperty(depth / 2);
+        takenPlanes.add(currentPlane);
+        plane.setText(new Integer(depth / 2).toString());
+        Button planeSwap = new Button("Swap plane");
+        planeSwap.setOnAction((ActionEvent event) -> {
+            if (plane.getText().length() > 0) {
+                currentPlane.setValue(Integer.parseInt(plane.getText()));
+                plane.setText("" + currentPlane);
+            } else {
+                plane.setText("" + currentPlane);
+            }
+        });
+        final Button planeUp = new Button("Go up");
+        planeUp.setOnAction((ActionEvent event) -> {
+            currentPlane.set(currentPlane.intValue() + 1);
+        });
+        final Button planeDown = new Button("Go Down");
+        planeDown.setOnAction((ActionEvent event) -> {
+            currentPlane.set(currentPlane.intValue() - 1);
+        });
+        currentPlane.addListener((obs, ov, nv) -> {
+            if (nv.intValue() >= 0 && nv.intValue() < depth) {
+                centerContent.setContent(thirdDimention.get(nv.intValue()));
+                plane.setText(nv.toString());
+            } else if (nv.intValue() < 0) {
+                currentPlane.set(depth - 1);
+            } else if (nv.intValue() > depth - 1) {
+                currentPlane.set(0);
+            }
+        });
+        Button planeView = new Button("View anotherPlane");
+        planeView.setOnAction((ActionEvent event) -> {
+            if (takenPlanes.size() < depth) {
+                Stage alert = new Stage();
+                VBox vBox = new VBox();
+                ArrayList<Integer> available = new ArrayList<>();
+                for (int i = 0; i < depth; i++) {
+                    available.add(i);
+                }
+                takenPlanes.forEach((IntegerProperty e) -> {
+                    available.remove(new Integer(e.intValue()));
+                });
+                ScrollPane windowContent = new ScrollPane();
+                windowContent.setContent(thirdDimention.get(available.get(0)));
+                NumberField plane2 = new NumberField();
+                plane2.setPromptText("Plane");
+                IntegerProperty currentPlane2 = new SimpleIntegerProperty(available.get(0));
+                takenPlanes.add(currentPlane2);
+                plane2.setText(Integer.toString(available.get(0)));
+                available.remove(0);
+                Button planeSwap2 = new Button("Swap plane");
+                planeSwap2.setOnAction((ActionEvent event2) -> {
+                    if (plane.getText().length() > 0) {
+                        currentPlane2.setValue(Integer.parseInt(plane2.getText()));
+                        plane2.setText("" + currentPlane2);
+                    } else {
+                        plane2.setText("" + currentPlane2);
+                    }
+                });
+                Button planeUp2 = new Button("Go up");
+                planeUp2.setOnAction((ActionEvent event2) -> {
+                    currentPlane2.set(currentPlane2.intValue() + 1);
+                });
+                Button planeDown2 = new Button("Go Down");
+                planeDown2.setOnAction((ActionEvent event2) -> {
+                    currentPlane2.set(currentPlane2.intValue() - 1);
+                });
+                currentPlane2.addListener((obs, ov, nv) -> {
+                    available.clear();
+                    for (int i = 0; i < depth; i++) {
+                        available.add(i);
+                    }
+                    takenPlanes.forEach((IntegerProperty e) -> {
+                        if (e != currentPlane2) {
+                            available.remove(new Integer(e.intValue()));
+                        }
+                    });
+                    if (nv.intValue() >= 0 && nv.intValue() <= depth) {
+                        while (!available.contains(nv.intValue())) {
+                            nv = nv.intValue() + 1;
+                            if (nv.intValue() > depth - 1) {
+                                nv = 0;
+                            }
+                        }
+                        windowContent.setContent(thirdDimention.get(nv.intValue()));
+                        plane2.setText(nv.toString());
+                    } else if (nv.intValue() < 0) {
+                        currentPlane2.set(depth - 1);
+                    } else if (nv.intValue() > depth - 1) {
+                        currentPlane2.set(0);
+                    }
+                });
+                HBox tools = new HBox();
+                tools.getChildren().add(plane2);
+                tools.getChildren().add(planeSwap2);
+                tools.getChildren().add(planeUp2);
+                tools.getChildren().add(planeDown2);
+                vBox.getChildren().add(tools);
+                vBox.getChildren().add(windowContent);
+                alert.setScene(new Scene(vBox));
+                alert.setOnCloseRequest((WindowEvent e) -> {
+                    takenPlanes.remove(currentPlane2);
+                    alerts.remove(alert);
+                });
+                alerts.add(alert);
+                alert.showAndWait();
+            }
+        });
+        Button newSim = new Button("Restart");
+        newSim.setOnAction((ActionEvent event) -> {
+            primaryStage.close();
+            dimentions = 0;
+            gridNodes.clear();
+            gridText.clear();
+            takenPlanes.clear();
+            thirdDimention.clear();
+            GridPane gp = createStartupAlert();
+            if (!gp.getId().equals("close")) {
+                createMainWindow();
+                System.out.println(depth);
+                System.out.println(thirdDimention.size());
+            }
+        });
+        newSim.setAlignment(Pos.BASELINE_RIGHT);
+        if (depth == 1) {
+            plane.setDisable(true);
+            planeSwap.setDisable(true);
+            planeUp.setDisable(true);
+            planeDown.setDisable(true);
+            planeView.setDisable(true);
+        }
+        toolBar.getChildren().add(back);
+//        toolBar.getChildren().add(stepInput);
+//        toolBar.getChildren().add(multiStep);
+        toolBar.getChildren().add(reset);
+        toolBar.getChildren().add(plane);
+        toolBar.getChildren().add(planeSwap);
+        toolBar.getChildren().add(planeUp);
+        toolBar.getChildren().add(planeDown);
+        toolBar.getChildren().add(planeView);
+        toolBar.getChildren().add(newSim);
+
+        borderPane.setTop(toolBar);
+        return borderPane;
+    }
+
+    private BorderPane createSimulatorWindow(Stage stage) {
+        HBox subToolBar = new HBox();
+        subToolBar.setSpacing(15);
+        CheckBox heatMap = new CheckBox();
+        heatMap.setText("Show heat map");
+        heatMap.setOnAction((ActionEvent a) -> {
+            this.heatMap = heatMap.isSelected();
+            showStatus();
+        });
+        ToggleGroup moveSelect = new ToggleGroup();
+        RadioButton rook = new RadioButton();
+        rook.setSelected(true);
+        rook.setText("Rook");
+        rook.setToggleGroup(moveSelect);
+        rook.setUserData(0);
+        RadioButton bishop = new RadioButton();
+        bishop.setSelected(false);
+        bishop.setText("Bishop");
+        bishop.setToggleGroup(moveSelect);
+        bishop.setUserData(1);
+        RadioButton king = new RadioButton();
+        king.setSelected(false);
+        king.setText("King");
+        king.setToggleGroup(moveSelect);
+        king.setUserData(2);
+        RadioButton knight = new RadioButton();
+        knight.setSelected(false);
+        knight.setText("Knight");
+        knight.setToggleGroup(moveSelect);
+        knight.setUserData(3);
+        HBox radioButtons = new HBox();
+        Text txt = new Text("Move type:");
+        radioButtons.getChildren().add(txt);
+        radioButtons.getChildren().add(rook);
+        radioButtons.getChildren().add(bishop);
+        radioButtons.getChildren().add(king);
+        radioButtons.getChildren().add(knight);
+        moveSelect.selectedToggleProperty().addListener((obs, ol, nl) -> {
+            sim.setMoves((int) nl.getUserData());
+        });
+        BorderPane borderPane = new BorderPane();
+        centerContent.setStyle("-fx-font-size: 20px;");
+        createGrid();
+        centerContent.setContent(thirdDimention.get(thirdDimention.size() / 2));
+        centerContent.setMinHeight(400);
+        centerContent.setMinWidth(600);
+        borderPane.setCenter(centerContent);
+        subToolBar.getChildren().add(steps);
+        subToolBar.getChildren().add(heatMap);
+        subToolBar.getChildren().add(radioButtons);
+        borderPane.setTop(subToolBar);
+        return borderPane;
     }
 
     private GridPane createStartupAlert() {
@@ -633,7 +636,7 @@ public class SimulatorGUI extends Application {
     }
 
     private void createMainWindow() {
-        sim = new DiffusjonSimulator(particleNum, width / 2, dimentions);
+        sim = new DiffusjonSimulator(particleNum, width, dimentions);
 //            gp.setHgap(5);
 //            gp.setVgap(5);
         this.root = createScene(primaryStage);
@@ -654,6 +657,12 @@ public class SimulatorGUI extends Application {
 //        Scene controlScene = new Scene(root, 500, 75);
 //        primaryStage.setScene(controlScene);
         primaryStage.setTitle("Simulator");
+        primaryStage.setOnCloseRequest(eh -> {
+            ArrayList<Stage> close = new ArrayList<>(alerts);
+            close.forEach(cnsmr -> {
+                cnsmr.close();
+            });
+        });
         primaryStage.show();
     }
 
