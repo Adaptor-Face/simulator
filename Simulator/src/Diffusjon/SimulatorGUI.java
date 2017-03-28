@@ -52,21 +52,22 @@ public class SimulatorGUI extends Application {
     private BorderPane root;
     private Stage primaryStage;
     private DiffusjonSimulator sim;
-    private int defaultValue = 60;
+    private int dimentions = 0;
+    private final int defaultValue = 60;
     private int heigth = 1;
     private int width = 1;
     private int depth = 1;
     private int size = 20;
     private int txtSize = 10;
     private int particleNum = 1;
-    private HashMap<String, StackPane> gridNodes = new HashMap<>();
-    private HashMap<StackPane, Text> gridText = new HashMap<>();
-    private ArrayList<GridPane> thirdDimention = new ArrayList<>();
+    private final HashMap<String, StackPane> gridNodes = new HashMap<>();
+    private final HashMap<StackPane, Text> gridText = new HashMap<>();
+    private final ArrayList<GridPane> thirdDimention = new ArrayList<>();
     private Text steps;
     private int step = 0;
-    private SimpleIntegerProperty obsStep = new SimpleIntegerProperty(0);
+    private final SimpleIntegerProperty obsStep = new SimpleIntegerProperty(0);
     private Stats stats;
-    private ScrollPane centerContent = new ScrollPane();
+    private final ScrollPane centerContent = new ScrollPane();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -119,12 +120,24 @@ public class SimulatorGUI extends Application {
                     } catch (NumberFormatException ex) {
                     }
                     if (oneD.selectedProperty().getValue()) {
-                        width = number;
+                        dimentions++;
                     }
                     if (twoD.selectedProperty().getValue()) {
-                        heigth = number;
+                        dimentions++;
                     }
                     if (threeD.selectedProperty().getValue()) {
+                        dimentions++;
+
+                    }
+                    if (dimentions >= 1) {
+                        heigth = number;
+                        width = number;
+                        depth = number;
+                    }
+                    if (dimentions >= 2) {
+                        width = number;
+                    }
+                    if (dimentions >= 3) {
                         depth = number;
                     }
                     if (!squareSize.getText().isEmpty()) {
@@ -147,13 +160,24 @@ public class SimulatorGUI extends Application {
                 number = Integer.parseInt(widthInput.getText());
             } catch (NumberFormatException ex) {
             }
+            int dimentions = 0;
             if (oneD.selectedProperty().getValue()) {
-                width = number;
+                dimentions++;
             }
             if (twoD.selectedProperty().getValue()) {
-                heigth = number;
+                dimentions++;
             }
             if (threeD.selectedProperty().getValue()) {
+                dimentions++;
+
+            }
+            if (dimentions >= 1) {
+                width = number;
+            }
+            if (dimentions >= 2) {
+                heigth = number;
+            }
+            if (dimentions >= 3) {
                 depth = number;
             }
             if (!squareSize.getText().isEmpty()) {
@@ -179,12 +203,12 @@ public class SimulatorGUI extends Application {
         vBox.setAlignment(Pos.BOTTOM_RIGHT);
         vBox.getChildren().add(gp);
         vBox.getChildren().add(start);
-        alert.setScene(new Scene(vBox, 250, 160));
+        alert.setScene(new Scene(vBox, 250, 180));
         start.requestFocus();
         alert.setTitle("Simulator");
         alert.showAndWait();
         if (!gp.getId().equals("close")) {
-            sim = new DiffusjonSimulator(particleNum, width/2);
+            sim = new DiffusjonSimulator(particleNum, width / 2, dimentions);
             gp.setHgap(5);
             gp.setVgap(5);
             this.root = createScene(primaryStage);
@@ -285,8 +309,8 @@ public class SimulatorGUI extends Application {
                     txt.setFill(Color.WHITE);
                     txt.setStyle("-fx-font-size: " + txtSize + "px;");
                     square.getChildren().add(txt);
-                    square.setMinHeight(size);
-                    square.setMinWidth(size / 2);
+                    square.setMinHeight(size / 2);
+                    square.setMinWidth(size);
                     GridPane.setHgrow(square, Priority.ALWAYS);
                     GridPane.setVgrow(square, Priority.ALWAYS);
                     gridPane.add(square, x, y);
@@ -313,13 +337,13 @@ public class SimulatorGUI extends Application {
         step = 0;
         obsStep.set(0);
         System.out.println(obsStep);
-        setParticleColor("#444444");
+        setSqauresColor("#444444");
         showStatus();
 
     }
 
     private void showStatus() {
-        setParticleColor("#444444");
+        setSqauresColor("#444444");
         this.steps.setText("Steps: " + step);
     }
 
@@ -332,6 +356,12 @@ public class SimulatorGUI extends Application {
 //        setColor(Ocean.class, Color.CORNFLOWERBLUE);
 //    }
     private void simulateOneStep() {
+        ArrayList<Location> particles = new ArrayList<>();
+        particles.addAll(sim.simulateOneStep(dimentions));
+        particles.forEach((Location loc) -> {
+            setColor(loc.toString(), "#FFFFFF");
+        });
+        particles.clear();
         step++;
 //        sim.simulateOneStep();
         obsStep.setValue(step);
@@ -343,7 +373,7 @@ public class SimulatorGUI extends Application {
             @Override
             public Integer call() throws Exception {
                 for (Integer i = 0; i < steps; i++) {
-                    sim.simulateOneStep();
+                    simulateOneStep();
                     updateValue(sim.getStep());
                     step++;
                     obsStep.setValue(step);
@@ -359,14 +389,17 @@ public class SimulatorGUI extends Application {
                 newStep = oldStep + 1;
             }
             if (oldStep == newStep - 1) {
-                setParticleColor("#444444");
             }
         });
         new Thread(task).start();
         showStatus();
     }
 
-    private void setParticleColor(String hexColor) {
+    private void setColor(String location, String hexColor) {
+        gridNodes.get(location).setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
+    }
+
+    private void setSqauresColor(String hexColor) {
         gridNodes.values().forEach((StackPane square) -> {
             square.setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
         });

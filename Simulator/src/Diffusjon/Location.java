@@ -11,9 +11,9 @@ package Diffusjon;
  */
 public class Location {
 
-    int x;
-    int y;
-    int z;
+    private int x;
+    private int y;
+    private int z;
 
     public Location(int x, int y, int z) {
         this.x = x;
@@ -64,9 +64,25 @@ public class Location {
             this.y += y;
             this.z += z;
     }
+    public void changeLocation(Location loc) {
+            this.x += loc.x;
+            this.y += loc.y;
+            this.z += loc.z;
+    }
     
     @Override
     public Object clone(){
         return new Location(x,y,z);
+    }
+    
+    public int getDimentions(){
+        if(x != 0 && y == 0 && z == 0){
+            return 1;
+        } else if(x != 0 && y != 0 && z == 0){
+            return 2;
+        } else if(x != 0 && y == 0 && z == 0){
+            return 3;
+        }
+        return 0;
     }
 }
