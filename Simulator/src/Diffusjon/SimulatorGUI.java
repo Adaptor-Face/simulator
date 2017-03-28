@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -21,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
@@ -42,6 +44,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -78,6 +81,10 @@ public class SimulatorGUI extends Application {
     private final ArrayList<IntegerProperty> takenPlanes = new ArrayList<>();
     private boolean heatMap = false;
     private final ArrayList<Stage> alerts = new ArrayList<>();
+    private int running = 0;
+    private IntegerProperty autoRunner = new SimpleIntegerProperty();
+    private int counter = 0;
+    private int tickTimer = 50;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -171,7 +178,34 @@ public class SimulatorGUI extends Application {
 
     private void simulate(int steps) {
         for (int i = 0; i < steps; i++) {
-            simulateOneStep();
+            PauseTransition pause = new PauseTransition(
+                    Duration.millis((i + 1) * tickTimer));
+            pause.setOnFinished(event -> {
+                simulateOneStep();
+            });
+            pause.play();
+        }
+        showStatus();
+    }
+
+    private void autoRun() {
+        int run = running;
+        for (int i = 0; i < run; i++) {
+            PauseTransition pause = new PauseTransition(
+                    Duration.millis((i + 1) * tickTimer));
+            pause.setOnFinished(event -> {
+                if (running != 0) {
+                    simulateOneStep();
+                    counter++;
+                } else {
+                    pause.stop();
+                }
+                if (counter >= running) {
+                    autoRunner.set(autoRunner.intValue() + 1);
+                    counter = 0;
+                }
+            });
+            pause.play();
         }
         showStatus();
     }
@@ -376,6 +410,24 @@ public class SimulatorGUI extends Application {
             planeDown.setDisable(true);
             planeView.setDisable(true);
         }
+        HBox toolBar2 = new HBox();
+        Slider stepTimer = new Slider();
+        Text ticks = new Text("50");
+        stepTimer.setMin(1);
+        stepTimer.setMax(1000);
+        stepTimer.setMinWidth(200);
+        stepTimer.setValue(50);
+        stepTimer.setMajorTickUnit(50);
+        stepTimer.setMinorTickCount(5);
+        stepTimer.setBlockIncrement(20);
+        stepTimer.valueProperty().addListener(cl -> {
+            tickTimer = new Double(stepTimer.getValue()).intValue();
+            ticks.setText(" " + tickTimer + "ms");
+        });
+        Text stepTimerTxt = new Text("Min time between ticks: ");
+        toolBar2.getChildren().add(stepTimerTxt);
+        toolBar2.getChildren().add(stepTimer);
+        toolBar2.getChildren().add(ticks);
         toolBar.getChildren().add(back);
         toolBar.getChildren().add(stepInput);
         toolBar.getChildren().add(multiStep);
@@ -386,12 +438,19 @@ public class SimulatorGUI extends Application {
         toolBar.getChildren().add(planeDown);
         toolBar.getChildren().add(planeView);
         toolBar.getChildren().add(newSim);
-
-        borderPane.setTop(toolBar);
+        VBox topBar = new VBox();
+        topBar.getChildren().add(toolBar);
+        topBar.getChildren().add(toolBar2);
+        borderPane.setTop(topBar);
         return borderPane;
     }
 
-    private BorderPane createSimulatorWindow(Stage stage) {
+    private BorderPane createSimulatorWindow() {
+        autoRunner.addListener((cl, ov, nv) -> {
+            if (nv.intValue() == ov.intValue() + 1) {
+                autoRun();
+            }
+        });
         HBox subToolBar = new HBox();
         subToolBar.setSpacing(15);
         CheckBox heatMap = new CheckBox();
@@ -399,6 +458,16 @@ public class SimulatorGUI extends Application {
         heatMap.setOnAction((ActionEvent a) -> {
             this.heatMap = heatMap.isSelected();
             showStatus();
+        });
+        CheckBox autoRun = new CheckBox();
+        autoRun.setText("Run");
+        autoRun.setOnAction(ae -> {
+            if (autoRun.isSelected()) {
+                running = 10;
+                autoRun();
+            } else {
+                running = 0;
+            }
         });
         ToggleGroup moveSelect = new ToggleGroup();
         RadioButton rook = new RadioButton();
@@ -441,6 +510,7 @@ public class SimulatorGUI extends Application {
         subToolBar.getChildren().add(steps);
         subToolBar.getChildren().add(heatMap);
         subToolBar.getChildren().add(radioButtons);
+        subToolBar.getChildren().add(autoRun);
         borderPane.setTop(subToolBar);
         return borderPane;
     }
@@ -625,7 +695,7 @@ public class SimulatorGUI extends Application {
 //            gp.setVgap(5);
         this.root = createScene(primaryStage);
         this.steps = new Text("Steps: " + step);
-        root.setCenter(createSimulatorWindow(primaryStage));
+        root.setCenter(createSimulatorWindow());
         obsStep.addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue ov, Number oldValue, Number newValue) {
@@ -648,6 +718,7 @@ public class SimulatorGUI extends Application {
             });
         });
         primaryStage.show();
+
     }
 
     private class NumberField extends TextField {
