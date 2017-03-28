@@ -78,11 +78,11 @@ public class Location {
     public int getDimentions(){
         if(x != 0 && y == 0 && z == 0){
             return 1;
-        } else if(x != 0 && y != 0 && z == 0){
+        } else if(y != 0 && z == 0){
             return 2;
-        } else if(x != 0 && y == 0 && z == 0){
+        } else if(z != 0){
             return 3;
         }
-        return 0;
+        return Integer.MAX_VALUE;
     }
 }

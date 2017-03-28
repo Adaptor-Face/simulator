@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javafx.application.Application;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -16,8 +17,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -68,6 +71,8 @@ public class SimulatorGUI extends Application {
     private final SimpleIntegerProperty obsStep = new SimpleIntegerProperty(0);
     private Stats stats;
     private final ScrollPane centerContent = new ScrollPane();
+    private int visualType;
+    private IntegerProperty currentPlane;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -87,6 +92,24 @@ public class SimulatorGUI extends Application {
         twoD.setSelected(false);
         CheckBox threeD = new CheckBox();
         threeD.setSelected(false);
+        HBox choiceBox = new HBox();
+        ToggleGroup choice = new ToggleGroup();
+        RadioButton color = new RadioButton();
+        color.setToggleGroup(choice);
+        color.setSelected(true);
+        color.setText("Color");
+        color.setId("0");
+        RadioButton count = new RadioButton();
+        count.setToggleGroup(choice);
+        count.setText("Count");
+        count.setId("1");
+        RadioButton decimal = new RadioButton();
+        decimal.setToggleGroup(choice);
+        decimal.setText("Decimal");
+        decimal.setId("2");
+        choiceBox.getChildren().add(color);
+        choiceBox.getChildren().add(count);
+        choiceBox.getChildren().add(decimal);
         Text wTxt = new Text("Width");
         Text oneDTxt = new Text("First Dimention");
         Text twoDTxt = new Text("Second Dimention");
@@ -94,6 +117,7 @@ public class SimulatorGUI extends Application {
         Text sqrSizeTxt = new Text("Square size");
         Text textSizeTxt = new Text("Text size");
         Text particlesTxt = new Text("Number of particles");
+        Text choiceText = new Text("Visual type");
         gp.add(wTxt, 0, 0);
         gp.add(particlesTxt, 0, 1);
         gp.add(oneDTxt, 0, 2);
@@ -101,6 +125,7 @@ public class SimulatorGUI extends Application {
         gp.add(threeDTxt, 0, 4);
         gp.add(sqrSizeTxt, 0, 5);
         gp.add(textSizeTxt, 0, 6);
+        gp.add(choiceText, 0, 7);
         gp.add(widthInput, 1, 0);
         gp.add(particles, 1, 1);
         gp.add(oneD, 1, 2);
@@ -108,6 +133,7 @@ public class SimulatorGUI extends Application {
         gp.add(threeD, 1, 4);
         gp.add(squareSize, 1, 5);
         gp.add(textSize, 1, 6);
+        gp.add(choiceBox, 1, 7);
         gp.setId("");
         class EnterHandler implements EventHandler<KeyEvent> {
 
@@ -160,7 +186,6 @@ public class SimulatorGUI extends Application {
                 number = Integer.parseInt(widthInput.getText());
             } catch (NumberFormatException ex) {
             }
-            int dimentions = 0;
             if (oneD.selectedProperty().getValue()) {
                 dimentions++;
             }
@@ -203,11 +228,12 @@ public class SimulatorGUI extends Application {
         vBox.setAlignment(Pos.BOTTOM_RIGHT);
         vBox.getChildren().add(gp);
         vBox.getChildren().add(start);
-        alert.setScene(new Scene(vBox, 250, 180));
+        alert.setScene(new Scene(vBox, 300, 200));
         start.requestFocus();
         alert.setTitle("Simulator");
         alert.showAndWait();
         if (!gp.getId().equals("close")) {
+            visualType = Integer.parseInt(((RadioButton) choice.getSelectedToggle()).getId());
             sim = new DiffusjonSimulator(particleNum, width / 2, dimentions);
             gp.setHgap(5);
             gp.setVgap(5);
@@ -258,13 +284,43 @@ public class SimulatorGUI extends Application {
         reset.setOnAction((ActionEvent event) -> {
             reset();
         });
-        NumberField plane = new NumberField();
+        final NumberField plane = new NumberField();
         plane.setPromptText("Plane");
+        currentPlane = new SimpleIntegerProperty(depth / 2);
+        plane.setText(new Integer(depth / 2).toString());
         Button planeSwap = new Button("Swap plane");
         planeSwap.setOnAction((ActionEvent event) -> {
-            if (planeSwap.getText().length() > 0) {
-                centerContent.setContent(thirdDimention.get(Integer.parseInt(plane.getText())));
+            if (plane.getText().length() > 0) {
+                currentPlane.setValue(Integer.parseInt(plane.getText()));
+                plane.setText("" + currentPlane);
             } else {
+                plane.setText("" + currentPlane);
+            }
+        });
+        final Button planeUp = new Button("Go up");
+        planeUp.setOnAction((ActionEvent event) -> {
+            currentPlane.set(currentPlane.intValue() + 1);
+        });
+        final Button planeDown = new Button("Go Down");
+        planeDown.setOnAction((ActionEvent event) -> {
+            currentPlane.set(currentPlane.intValue() - 1);
+        });
+        currentPlane.addListener((obs, ov, nv) -> {
+            if (nv.intValue() >= 0 && nv.intValue() <= depth) {
+                centerContent.setContent(thirdDimention.get(nv.intValue()));
+                plane.setText(nv.toString());
+                if (nv.intValue() == depth) {
+                    planeUp.setDisable(true);
+                }
+                if (ov.intValue() == depth) {
+                    planeUp.setDisable(false);
+                }
+                if (nv.intValue() == 0) {
+                    planeDown.setDisable(true);
+                }
+                if (ov.intValue() == 0) {
+                    planeDown.setDisable(false);
+                }
             }
         });
         toolBar.getChildren().add(back);
@@ -273,6 +329,9 @@ public class SimulatorGUI extends Application {
         toolBar.getChildren().add(reset);
         toolBar.getChildren().add(plane);
         toolBar.getChildren().add(planeSwap);
+        toolBar.getChildren().add(planeUp);
+        toolBar.getChildren().add(planeDown);
+
         borderPane.setTop(toolBar);
         return borderPane;
     }
@@ -285,9 +344,7 @@ public class SimulatorGUI extends Application {
         System.out.println(thirdDimention.size() / 2);
         centerContent.setContent(thirdDimention.get(thirdDimention.size() / 2));
         centerContent.setMinHeight(400);
-        centerContent.setMaxHeight(800);
         centerContent.setMinWidth(600);
-        centerContent.setMaxWidth(1200);
         borderPane.setCenter(centerContent);
         borderPane.setTop(steps);
         return borderPane;
@@ -305,7 +362,7 @@ public class SimulatorGUI extends Application {
             for (int y = 0; y < heigth; y++) {
                 for (int x = 0; x < width; x++) {
                     StackPane square = new StackPane();
-                    Text txt = new Text("" + z);
+                    Text txt = new Text();
                     txt.setFill(Color.WHITE);
                     txt.setStyle("-fx-font-size: " + txtSize + "px;");
                     square.getChildren().add(txt);
@@ -343,8 +400,19 @@ public class SimulatorGUI extends Application {
     }
 
     private void showStatus() {
+        if (visualType > 0) {
+            gridText.values().forEach((Text txt) -> {
+                txt.setText("");
+            });
+        }
         setSqauresColor("#444444");
+        ArrayList<Location> particles = new ArrayList<>();
+        particles.addAll(sim.getLocs());
+        particles.forEach((Location loc) -> {
+            updateVisuals(loc.toString(), "#FFFFFF");
+        });
         this.steps.setText("Steps: " + step);
+        particles.clear();
     }
 
 //    private void setObjectColors() {
@@ -356,16 +424,11 @@ public class SimulatorGUI extends Application {
 //        setColor(Ocean.class, Color.CORNFLOWERBLUE);
 //    }
     private void simulateOneStep() {
-        ArrayList<Location> particles = new ArrayList<>();
-        particles.addAll(sim.simulateOneStep(dimentions));
-        particles.forEach((Location loc) -> {
-            setColor(loc.toString(), "#FFFFFF");
-        });
-        particles.clear();
+        showStatus();
+        sim.simulateOneStep(dimentions);
         step++;
 //        sim.simulateOneStep();
         obsStep.setValue(step);
-        showStatus();
     }
 
     private void simulate(int steps) {
@@ -395,8 +458,19 @@ public class SimulatorGUI extends Application {
         showStatus();
     }
 
-    private void setColor(String location, String hexColor) {
-        gridNodes.get(location).setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
+    private void updateVisuals(String location, String hexColor) {
+        if (visualType == 0) {
+            gridNodes.get(location).setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
+        } else if (visualType == 1) {
+            int num;
+            try {
+                num = Integer.parseInt(gridText.get(gridNodes.get(location)).getText());
+            } catch (NumberFormatException ex) {
+                num = 0;
+            }
+            num++;
+            gridText.get(gridNodes.get(location)).setText("" + num);
+        }
     }
 
     private void setSqauresColor(String hexColor) {
