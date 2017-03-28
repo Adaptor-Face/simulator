@@ -147,7 +147,7 @@ public class SimulatorGUI extends Application {
         ArrayList<Location> particles = new ArrayList<>();
         particles.addAll(sim.getLocs());
         particles.forEach((Location loc) -> {
-            updateVisuals(loc.toString(), "#FFFFFF");
+            updateVisuals(loc.toString(), "#CCCCCC");
         });
         this.steps.setText("Steps: " + step);
         particles.clear();
@@ -170,36 +170,9 @@ public class SimulatorGUI extends Application {
     }
 
     private void simulate(int steps) {
-        Task<Integer> task = new Task<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                for (Integer i = 0; i < steps; i++) {
-                    sim.simulateOneStep(dimentions);
-                    updateValue(sim.getStep());
-                    step++;
-                    obsStep.setValue(step);
-                }
-                return null;
-            }
-        };
-        task.valueProperty().addListener((obs, oldStep, newStep) -> {
-            if (oldStep == null) {
-                oldStep = 0;
-            }
-            if (newStep == null) {
-                newStep = oldStep + 1;
-            }
-            if (oldStep == newStep - 1) {
-                ArrayList<Location> particles = new ArrayList<>();
-                particles.addAll(sim.getLocs());
-                particles.forEach((Location loc) -> {
-                    updateVisuals(loc.toString(), "#FFFFFF");
-                });
-                obsStep.setValue(step);
-            }
-        });
-        Thread t1 = new Thread(task);
-        t1.start();
+        for (int i = 0; i < steps; i++) {
+            simulateOneStep();
+        }
         showStatus();
     }
 
@@ -247,11 +220,11 @@ public class SimulatorGUI extends Application {
         BorderPane borderPane = new BorderPane();
         HBox toolBar = new HBox();
         Button back = new Button("One Step");
-        back.setOnAction(e -> {
+        back.setOnMouseClicked(eh -> {
             simulateOneStep();
 //            System.out.println(sim.getField().lookFor(new Location(15, 67), Shallows.class, "NSEW"));
         });
-        back.setOnKeyPressed(e -> {
+        back.setOnKeyPressed(eh -> {
             simulateOneStep();
         });
         NumberField stepInput = new NumberField();
@@ -281,17 +254,17 @@ public class SimulatorGUI extends Application {
             }
         });
         final Button planeUp = new Button("Go up");
-        planeUp.setOnAction((ActionEvent event) -> {
+        planeUp.setOnMousePressed(eh -> {
             currentPlane.set(currentPlane.intValue() + 1);
         });
-        planeUp.setOnKeyPressed(eh-> {
+        planeUp.setOnKeyPressed(eh -> {
             currentPlane.set(currentPlane.intValue() + 1);
         });
         final Button planeDown = new Button("Go Down");
-        planeDown.setOnAction((ActionEvent event) -> {
+        planeDown.setOnMousePressed(eh -> {
             currentPlane.set(currentPlane.intValue() - 1);
         });
-        planeDown.setOnKeyPressed(eh-> {
+        planeDown.setOnKeyPressed(eh -> {
             currentPlane.set(currentPlane.intValue() + 1);
         });
         currentPlane.addListener((obs, ov, nv) -> {
@@ -325,7 +298,7 @@ public class SimulatorGUI extends Application {
                 plane2.setText(Integer.toString(available.get(0)));
                 available.remove(0);
                 Button planeSwap2 = new Button("Swap plane");
-                planeSwap2.setOnAction((ActionEvent event2) -> {
+                planeSwap2.setOnAction(eh -> {
                     if (plane.getText().length() > 0) {
                         currentPlane2.setValue(Integer.parseInt(plane2.getText()));
                         plane2.setText("" + currentPlane2);
@@ -334,11 +307,11 @@ public class SimulatorGUI extends Application {
                     }
                 });
                 Button planeUp2 = new Button("Go up");
-                planeUp2.setOnAction((ActionEvent event2) -> {
+                planeUp2.setOnAction(eh -> {
                     currentPlane2.set(currentPlane2.intValue() + 1);
                 });
                 Button planeDown2 = new Button("Go Down");
-                planeDown2.setOnAction((ActionEvent event2) -> {
+                planeDown2.setOnAction(eh -> {
                     currentPlane2.set(currentPlane2.intValue() - 1);
                 });
                 currentPlane2.addListener((obs, ov, nv) -> {
@@ -389,6 +362,7 @@ public class SimulatorGUI extends Application {
             gridText.clear();
             takenPlanes.clear();
             thirdDimention.clear();
+            obsStep.set(0);
             GridPane gp = createStartupAlert();
             if (!gp.getId().equals("close")) {
                 createMainWindow();
@@ -403,8 +377,8 @@ public class SimulatorGUI extends Application {
             planeView.setDisable(true);
         }
         toolBar.getChildren().add(back);
-//        toolBar.getChildren().add(stepInput);
-//        toolBar.getChildren().add(multiStep);
+        toolBar.getChildren().add(stepInput);
+        toolBar.getChildren().add(multiStep);
         toolBar.getChildren().add(reset);
         toolBar.getChildren().add(plane);
         toolBar.getChildren().add(planeSwap);
