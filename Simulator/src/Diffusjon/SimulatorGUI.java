@@ -75,6 +75,7 @@ public class SimulatorGUI extends Application {
     private final ScrollPane centerContent = new ScrollPane();
     private int visualType;
     private IntegerProperty currentPlane;
+    private ArrayList<IntegerProperty> takenPlanes = new ArrayList<>();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -289,6 +290,7 @@ public class SimulatorGUI extends Application {
         final NumberField plane = new NumberField();
         plane.setPromptText("Plane");
         currentPlane = new SimpleIntegerProperty(depth / 2);
+        takenPlanes.add(currentPlane);
         plane.setText(new Integer(depth / 2).toString());
         Button planeSwap = new Button("Swap plane");
         planeSwap.setOnAction((ActionEvent event) -> {
@@ -308,77 +310,90 @@ public class SimulatorGUI extends Application {
             currentPlane.set(currentPlane.intValue() - 1);
         });
         currentPlane.addListener((obs, ov, nv) -> {
-            if (nv.intValue() >= 0 && nv.intValue() <= depth) {
+            if (nv.intValue() >= 0 && nv.intValue() < depth) {
                 centerContent.setContent(thirdDimention.get(nv.intValue()));
                 plane.setText(nv.toString());
-                if (nv.intValue() == depth) {
-                    planeUp.setDisable(true);
-                }
-                if (ov.intValue() == depth) {
-                    planeUp.setDisable(false);
-                }
-                if (nv.intValue() == 0) {
-                    planeDown.setDisable(true);
-                }
-                if (ov.intValue() == 0) {
-                    planeDown.setDisable(false);
-                }
+            } else if (nv.intValue() < 0) {
+                currentPlane.set(depth - 1);
+            } else if (nv.intValue() > depth - 1) {
+                currentPlane.set(0);
             }
         });
         Button planeView = new Button("View anotherPlane");
         planeView.setOnAction((ActionEvent event) -> {
-            Stage alert = new Stage();
-            VBox vBox = new VBox();
-            ScrollPane windowContent = new ScrollPane();
-            windowContent.setContent(thirdDimention.get(currentPlane.intValue() + 1));
-            NumberField plane2 = new NumberField();
-            plane2.setPromptText("Plane");
-            IntegerProperty currentPlane2 = new SimpleIntegerProperty(depth / 2);
-            plane2.setText(new Integer(depth / 2).toString());
-            Button planeSwap2 = new Button("Swap plane");
-            planeSwap2.setOnAction((ActionEvent event2) -> {
-                if (plane.getText().length() > 0) {
-                    currentPlane2.setValue(Integer.parseInt(plane2.getText()));
-                    plane2.setText("" + currentPlane2);
-                } else {
-                    plane2.setText("" + currentPlane2);
+            if (takenPlanes.size() < depth) {
+                Stage alert = new Stage();
+                VBox vBox = new VBox();
+                ArrayList<Integer> available = new ArrayList<>();
+                for (int i = 0; i < depth; i++) {
+                    available.add(i);
                 }
-            });
-            Button planeUp2 = new Button("Go up");
-            planeUp2.setOnAction((ActionEvent event2) -> {
-                currentPlane2.set(currentPlane2.intValue() + 1);
-            });
-            Button planeDown2 = new Button("Go Down");
-            planeDown2.setOnAction((ActionEvent event2) -> {
-                currentPlane2.set(currentPlane2.intValue() - 1);
-            });
-            currentPlane2.addListener((obs, ov, nv) -> {
-                if (nv.intValue() >= 0 && nv.intValue() <= depth) {
-                    windowContent.setContent(thirdDimention.get(nv.intValue()));
-                    plane2.setText(nv.toString());
-                    if (nv.intValue() == depth) {
-                        planeUp2.setDisable(true);
+                takenPlanes.forEach((IntegerProperty e) -> {
+                    available.remove(new Integer(e.intValue()));
+                });
+                ScrollPane windowContent = new ScrollPane();
+                windowContent.setContent(thirdDimention.get(available.get(0)));
+                NumberField plane2 = new NumberField();
+                plane2.setPromptText("Plane");
+                IntegerProperty currentPlane2 = new SimpleIntegerProperty(available.get(0));
+                takenPlanes.add(currentPlane2);
+                plane2.setText(Integer.toString(available.get(0)));
+                available.remove(0);
+                Button planeSwap2 = new Button("Swap plane");
+                planeSwap2.setOnAction((ActionEvent event2) -> {
+                    if (plane.getText().length() > 0) {
+                        currentPlane2.setValue(Integer.parseInt(plane2.getText()));
+                        plane2.setText("" + currentPlane2);
+                    } else {
+                        plane2.setText("" + currentPlane2);
                     }
-                    if (ov.intValue() == depth) {
-                        planeUp2.setDisable(false);
+                });
+                Button planeUp2 = new Button("Go up");
+                planeUp2.setOnAction((ActionEvent event2) -> {
+                    currentPlane2.set(currentPlane2.intValue() + 1);
+                });
+                Button planeDown2 = new Button("Go Down");
+                planeDown2.setOnAction((ActionEvent event2) -> {
+                    currentPlane2.set(currentPlane2.intValue() - 1);
+                });
+                currentPlane2.addListener((obs, ov, nv) -> {
+                    available.clear();
+                    for (int i = 0; i < depth; i++) {
+                        available.add(i);
                     }
-                    if (nv.intValue() == 0) {
-                        planeDown2.setDisable(true);
+                    takenPlanes.forEach((IntegerProperty e) -> {
+                        if (e != currentPlane2) {
+                            available.remove(new Integer(e.intValue()));
+                        }
+                    });
+                    if (nv.intValue() >= 0 && nv.intValue() <= depth) {
+                        while (!available.contains(nv.intValue())) {
+                            nv = nv.intValue() + 1;
+                            if (nv.intValue() > depth - 1) {
+                                nv = 0;
+                            }
+                        }
+                        windowContent.setContent(thirdDimention.get(nv.intValue()));
+                        plane2.setText(nv.toString());
+                    } else if (nv.intValue() < 0) {
+                        currentPlane2.set(depth - 1);
+                    } else if (nv.intValue() > depth - 1) {
+                        currentPlane2.set(0);
                     }
-                    if (ov.intValue() == 0) {
-                        planeDown2.setDisable(false);
-                    }
-                }
-            });
-            HBox tools = new HBox();
-            tools.getChildren().add(plane2);
-            tools.getChildren().add(planeSwap2);
-            tools.getChildren().add(planeUp2);
-            tools.getChildren().add(planeDown2);
-            vBox.getChildren().add(tools);
-            vBox.getChildren().add(windowContent);
-            alert.setScene(new Scene(vBox));
-            alert.showAndWait();
+                });
+                HBox tools = new HBox();
+                tools.getChildren().add(plane2);
+                tools.getChildren().add(planeSwap2);
+                tools.getChildren().add(planeUp2);
+                tools.getChildren().add(planeDown2);
+                vBox.getChildren().add(tools);
+                vBox.getChildren().add(windowContent);
+                alert.setScene(new Scene(vBox));
+                alert.setOnCloseRequest((WindowEvent e) -> {
+                    takenPlanes.remove(currentPlane2);
+                });
+                alert.showAndWait();
+            }
         });
         if (depth == 1) {
             plane.setDisable(true);
@@ -425,7 +440,7 @@ public class SimulatorGUI extends Application {
             for (int y = 0; y < heigth; y++) {
                 for (int x = 0; x < width; x++) {
                     StackPane square = new StackPane();
-                    Text txt = new Text();
+                    Text txt = new Text("" + z);
                     txt.setFill(Color.WHITE);
                     txt.setStyle("-fx-font-size: " + txtSize + "px;");
                     square.getChildren().add(txt);
