@@ -52,10 +52,13 @@ public class SimulatorGUI extends Application {
     private BorderPane root;
     private Stage primaryStage;
     private DiffusjonSimulator sim;
+    private int defaultValue = 60;
     private int heigth = 1;
     private int width = 1;
     private int depth = 1;
     private int size = 20;
+    private int txtSize = 10;
+    private int particleNum = 1;
     private HashMap<String, StackPane> gridNodes = new HashMap<>();
     private HashMap<StackPane, Text> gridText = new HashMap<>();
     private ArrayList<GridPane> thirdDimention = new ArrayList<>();
@@ -70,9 +73,13 @@ public class SimulatorGUI extends Application {
         Stage alert = new Stage();
         GridPane gp = new GridPane();
         NumberField widthInput = new NumberField();
-        widthInput.setPromptText("120");
+        widthInput.setPromptText("" + defaultValue);
         NumberField squareSize = new NumberField();
         squareSize.setPromptText("20");
+        NumberField textSize = new NumberField();
+        textSize.setPromptText("12");
+        NumberField particles = new NumberField();
+        particles.setPromptText("1");
         CheckBox oneD = new CheckBox();
         oneD.setSelected(true);
         CheckBox twoD = new CheckBox();
@@ -84,23 +91,29 @@ public class SimulatorGUI extends Application {
         Text twoDTxt = new Text("Second Dimention");
         Text threeDTxt = new Text("Third Dimention");
         Text sqrSizeTxt = new Text("Square size");
+        Text textSizeTxt = new Text("Text size");
+        Text particlesTxt = new Text("Number of particles");
         gp.add(wTxt, 0, 0);
-        gp.add(oneDTxt, 0, 1);
-        gp.add(twoDTxt, 0, 2);
-        gp.add(threeDTxt, 0, 3);
-        gp.add(sqrSizeTxt, 0, 4);
+        gp.add(particlesTxt, 0, 1);
+        gp.add(oneDTxt, 0, 2);
+        gp.add(twoDTxt, 0, 3);
+        gp.add(threeDTxt, 0, 4);
+        gp.add(sqrSizeTxt, 0, 5);
+        gp.add(textSizeTxt, 0, 6);
         gp.add(widthInput, 1, 0);
-        gp.add(oneD, 1, 1);
-        gp.add(twoD, 1, 2);
-        gp.add(threeD, 1, 3);
-        gp.add(squareSize, 1, 4);
+        gp.add(particles, 1, 1);
+        gp.add(oneD, 1, 2);
+        gp.add(twoD, 1, 3);
+        gp.add(threeD, 1, 4);
+        gp.add(squareSize, 1, 5);
+        gp.add(textSize, 1, 6);
         gp.setId("");
         class EnterHandler implements EventHandler<KeyEvent> {
 
             @Override
             public void handle(KeyEvent k) {
                 if (k.getCode().equals(KeyCode.ENTER)) {
-                    int number = 120;
+                    int number = defaultValue;
                     try {
                         number = Integer.parseInt(widthInput.getText());
                     } catch (NumberFormatException ex) {
@@ -117,13 +130,19 @@ public class SimulatorGUI extends Application {
                     if (!squareSize.getText().isEmpty()) {
                         size = Integer.parseInt(squareSize.getText());
                     }
+                    if (!textSize.getText().isEmpty()) {
+                        txtSize = Integer.parseInt(textSize.getText());
+                    }
+                    if (!particles.getText().isEmpty()) {
+                        particleNum = Integer.parseInt(particles.getText());
+                    }
                     alert.close();
                 }
             }
         }
         Button start = new Button("Start Simulation");
         start.setOnAction((ActionEvent e) -> {
-            int number = 120;
+            int number = defaultValue;
             try {
                 number = Integer.parseInt(widthInput.getText());
             } catch (NumberFormatException ex) {
@@ -140,6 +159,12 @@ public class SimulatorGUI extends Application {
             if (!squareSize.getText().isEmpty()) {
                 size = Integer.parseInt(squareSize.getText());
             }
+            if (!textSize.getText().isEmpty()) {
+                txtSize = Integer.parseInt(textSize.getText());
+            }
+            if (!particles.getText().isEmpty()) {
+                particleNum = Integer.parseInt(particles.getText());
+            }
             alert.close();
         });
         alert.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -154,11 +179,12 @@ public class SimulatorGUI extends Application {
         vBox.setAlignment(Pos.BOTTOM_RIGHT);
         vBox.getChildren().add(gp);
         vBox.getChildren().add(start);
-        alert.setScene(new Scene(vBox, 250, 120));
+        alert.setScene(new Scene(vBox, 250, 160));
         start.requestFocus();
         alert.setTitle("Simulator");
         alert.showAndWait();
         if (!gp.getId().equals("close")) {
+            sim = new DiffusjonSimulator(particleNum, width/2);
             gp.setHgap(5);
             gp.setVgap(5);
             this.root = createScene(primaryStage);
@@ -229,6 +255,7 @@ public class SimulatorGUI extends Application {
 
     private BorderPane createSimulatorWindow(Stage stage) {
         BorderPane borderPane = new BorderPane();
+        centerContent.setStyle("-fx-font-size: 20px;");
         createGrid();
         System.out.println(thirdDimention.size());
         System.out.println(thirdDimention.size() / 2);
@@ -256,6 +283,7 @@ public class SimulatorGUI extends Application {
                     StackPane square = new StackPane();
                     Text txt = new Text("" + z);
                     txt.setFill(Color.WHITE);
+                    txt.setStyle("-fx-font-size: " + txtSize + "px;");
                     square.getChildren().add(txt);
                     square.setMinHeight(size);
                     square.setMinWidth(size / 2);
@@ -315,8 +343,8 @@ public class SimulatorGUI extends Application {
             @Override
             public Integer call() throws Exception {
                 for (Integer i = 0; i < steps; i++) {
-//                    sim.simulateOneStep();
-//                    updateValue(sim.getStep());
+                    sim.simulateOneStep();
+                    updateValue(sim.getStep());
                     step++;
                     obsStep.setValue(step);
                 }
