@@ -86,6 +86,17 @@ public class SimulatorGUI extends Application {
     private int counter = 0;
     private int tickTimer = 50;
 
+    private void setFields(SimulatorGUI old) {
+        this.dimentions = old.dimentions;
+        this.height = old.height;
+        this.width = old.width;
+        this.depth = old.depth;
+        this.size = old.size;
+        this.txtSize = old.txtSize;
+        this.particleNum = old.particleNum;
+        this.visualType = old.visualType;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
@@ -189,6 +200,7 @@ public class SimulatorGUI extends Application {
     }
 
     private void autoRun() {
+        System.out.println(running + " " + tickTimer + " " + counter);
         int run = running;
         for (int i = 0; i < run; i++) {
             PauseTransition pause = new PauseTransition(
@@ -200,6 +212,7 @@ public class SimulatorGUI extends Application {
                 } else {
                     pause.stop();
                 }
+                System.out.println(counter + " " + running);
                 if (counter >= running) {
                     autoRunner.set(autoRunner.intValue() + 1);
                     counter = 0;
@@ -391,15 +404,31 @@ public class SimulatorGUI extends Application {
         });
         Button newSim = new Button("Restart");
         newSim.setOnAction((ActionEvent event) -> {
-            primaryStage.close();
-            gridNodes.clear();
-            gridText.clear();
-            takenPlanes.clear();
-            thirdDimention.clear();
-            obsStep.set(0);
-            GridPane gp = createStartupAlert();
-            if (!gp.getId().equals("close")) {
-                createMainWindow();
+//            running = 0;
+//            System.out.println("Set newSim");
+//            autoRunner.set(0);
+//            counter = 0;
+//            primaryStage.close();
+//            gridNodes.clear();
+//            gridText.clear();
+//            takenPlanes.clear();
+//            thirdDimention.clear();
+//            obsStep.set(0);
+//            GridPane gp = createStartupAlert();
+//            if (!gp.getId().equals("close")) {
+//                createMainWindow();
+//            }
+            SimulatorGUI simG = new SimulatorGUI();
+            simG.setFields(this);
+            this.primaryStage.close();
+            try {
+                simG.start(new Stage());
+                ArrayList<Stage> close = new ArrayList<>(alerts);
+                close.forEach(cnsmr -> {
+                    cnsmr.close();
+                });
+            } catch (Exception ex) {
+                Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         newSim.setAlignment(Pos.BASELINE_RIGHT);
@@ -414,7 +443,7 @@ public class SimulatorGUI extends Application {
         Slider stepTimer = new Slider();
         Text ticks = new Text("50");
         stepTimer.setMin(1);
-        stepTimer.setMax(1000);
+        stepTimer.setMax(500);
         stepTimer.setMinWidth(200);
         stepTimer.setValue(50);
         stepTimer.setMajorTickUnit(50);
@@ -467,6 +496,7 @@ public class SimulatorGUI extends Application {
                 autoRun();
             } else {
                 running = 0;
+                System.out.println("Set AutoRun");
             }
         });
         ToggleGroup moveSelect = new ToggleGroup();
@@ -690,6 +720,8 @@ public class SimulatorGUI extends Application {
     }
 
     private void createMainWindow() {
+        running = 0;
+        System.out.println("Set mainWindow");
         sim = new DiffusjonSimulator(particleNum, width, dimentions);
 //            gp.setHgap(5);
 //            gp.setVgap(5);
