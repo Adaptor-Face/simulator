@@ -37,6 +37,7 @@ public class DiffusjonSimulator {
 
     public void simulateOneStep(int dimentions) {
         particles.forEach((Location loc) -> {
+            
             Location move = getMove(loc);
             while (move.getDimentions() > dimentions) {
                 move = getMove(loc);
@@ -78,6 +79,23 @@ public class DiffusjonSimulator {
         int moveNum = ThreadLocalRandom.current().nextInt(0, moves.size());
         return moves.get(moveNum);
     }
+    
+    public void setMoves(int num){
+        if(num == 0){
+            moves.clear();
+            moves.addAll(rookMove);
+        } else if(num == 1){
+            moves.clear();
+            moves.addAll(bishopMove);
+        } else if(num == 2){
+            moves.clear();
+            moves.addAll(kingMove);
+        } else if(num == 3){
+            moves.clear();
+            moves.addAll(knightMove);
+        }
+        System.out.println(num);
+    }
 
     private void createMoves() {
         rookMove = new ArrayList<>();
@@ -108,6 +126,56 @@ public class DiffusjonSimulator {
         bishopMove.add(new Location(0, -1, 1));
         bishopMove.add(new Location(0, 1, -1));
         bishopMove.add(new Location(0, -1, -1));
+        
+        kingMove.add(new Location(1,0,0));
+        kingMove.add(new Location(1,1,0));
+        kingMove.add(new Location(0,1,0));
+        kingMove.add(new Location(-1,1,0));
+        kingMove.add(new Location(-1,0,0));
+        kingMove.add(new Location(-1,-1,0));
+        kingMove.add(new Location(0,-1,0));
+        kingMove.add(new Location(1,-1,0));
+        
+        kingMove.add(new Location(0,0,1));
+        kingMove.add(new Location(1,0,1));
+        kingMove.add(new Location(1,1,1));
+        kingMove.add(new Location(0,1,1));
+        kingMove.add(new Location(-1,1,1));
+        kingMove.add(new Location(-1,0,1));
+        kingMove.add(new Location(-1,-1,1));
+        kingMove.add(new Location(0,-1,1));
+        kingMove.add(new Location(1,-1,1));
+        
+        kingMove.add(new Location(0,0,-1));
+        kingMove.add(new Location(1,0,-1));
+        kingMove.add(new Location(1,1,-1));
+        kingMove.add(new Location(0,1,-1));
+        kingMove.add(new Location(-1,1,-1));
+        kingMove.add(new Location(-1,0,-1));
+        kingMove.add(new Location(-1,-1,-1));
+        kingMove.add(new Location(0,-1,-1));
+        kingMove.add(new Location(1,-1,-1));
+        
+        knightMove.add(new Location(2,1,0));
+        knightMove.add(new Location(1,2,0));
+        knightMove.add(new Location(2,-1,0));
+        knightMove.add(new Location(1,-2,0));
+        
+        knightMove.add(new Location(-2,1,0));
+        knightMove.add(new Location(-1,2,0));
+        knightMove.add(new Location(-2,-1,0));
+        knightMove.add(new Location(-1,-2,0));
+        
+        
+        knightMove.add(new Location(2,0,1));
+        knightMove.add(new Location(1,0,2));
+        knightMove.add(new Location(2,0,-1));
+        knightMove.add(new Location(1,0,-2));
+        
+        knightMove.add(new Location(-2,0,1));
+        knightMove.add(new Location(-1,0,2));
+        knightMove.add(new Location(-2,0,-1));
+        knightMove.add(new Location(-1,0,-2));
     }
 
 }

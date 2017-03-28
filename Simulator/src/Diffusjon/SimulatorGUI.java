@@ -53,13 +53,13 @@ import javafx.stage.WindowEvent;
  * @author Kristoffer
  */
 public class SimulatorGUI extends Application {
-
+    
     private BorderPane root;
     private Stage primaryStage;
     private DiffusjonSimulator sim;
     private int dimentions = 0;
     private final int defaultValue = 60;
-    private int heigth = 1;
+    private int height = 1;
     private int width = 1;
     private int depth = 1;
     private int size = 20;
@@ -76,7 +76,8 @@ public class SimulatorGUI extends Application {
     private int visualType;
     private IntegerProperty currentPlane;
     private ArrayList<IntegerProperty> takenPlanes = new ArrayList<>();
-
+    private boolean heatMap = false;
+    
     @Override
     public void start(Stage primaryStage) throws Exception {
         Stage alert = new Stage();
@@ -139,7 +140,7 @@ public class SimulatorGUI extends Application {
         gp.add(choiceBox, 1, 7);
         gp.setId("");
         class EnterHandler implements EventHandler<KeyEvent> {
-
+            
             @Override
             public void handle(KeyEvent k) {
                 if (k.getCode().equals(KeyCode.ENTER)) {
@@ -156,10 +157,10 @@ public class SimulatorGUI extends Application {
                     }
                     if (threeD.selectedProperty().getValue()) {
                         dimentions++;
-
+                        
                     }
                     if (dimentions >= 1) {
-                        heigth = number;
+                        height = number;
                         width = number;
                         depth = number;
                     }
@@ -197,13 +198,13 @@ public class SimulatorGUI extends Application {
             }
             if (threeD.selectedProperty().getValue()) {
                 dimentions++;
-
+                
             }
             if (dimentions >= 1) {
                 width = number;
             }
             if (dimentions >= 2) {
-                heigth = number;
+                height = number;
             }
             if (dimentions >= 3) {
                 depth = number;
@@ -262,9 +263,9 @@ public class SimulatorGUI extends Application {
             primaryStage.show();
         }
     }
-
+    
     private BorderPane createScene(Stage primaryStage) {
-
+        
         BorderPane borderPane = new BorderPane();
         HBox toolBar = new HBox();
         Button back = new Button("One Step");
@@ -411,12 +412,51 @@ public class SimulatorGUI extends Application {
         toolBar.getChildren().add(planeUp);
         toolBar.getChildren().add(planeDown);
         toolBar.getChildren().add(planeView);
-
+        
         borderPane.setTop(toolBar);
         return borderPane;
     }
-
+    
     private BorderPane createSimulatorWindow(Stage stage) {
+        HBox subToolBar = new HBox();
+        subToolBar.setSpacing(15);
+        CheckBox heatMap = new CheckBox();
+        heatMap.setText("Show heat map");
+        heatMap.setOnAction((ActionEvent a) -> {
+            this.heatMap = heatMap.isSelected();
+            showStatus();
+        });
+        ToggleGroup moveSelect = new ToggleGroup();
+        RadioButton rook = new RadioButton();
+        rook.setSelected(true);
+        rook.setText("Rook");
+        rook.setToggleGroup(moveSelect);
+        rook.setUserData(0);
+        RadioButton bishop = new RadioButton();
+        bishop.setSelected(false);
+        bishop.setText("Bishop");
+        bishop.setToggleGroup(moveSelect);
+        bishop.setUserData(1);
+        RadioButton king = new RadioButton();
+        king.setSelected(false);
+        king.setText("King");
+        king.setToggleGroup(moveSelect);
+        king.setUserData(2);
+        RadioButton knight = new RadioButton();
+        knight.setSelected(false);
+        knight.setText("Knight");
+        knight.setToggleGroup(moveSelect);
+        knight.setUserData(3);
+        HBox radioButtons = new HBox();
+        Text txt = new Text("Move type:");
+        radioButtons.getChildren().add(txt);
+        radioButtons.getChildren().add(rook);
+        radioButtons.getChildren().add(bishop);
+        radioButtons.getChildren().add(king);
+        radioButtons.getChildren().add(knight);
+        moveSelect.selectedToggleProperty().addListener((obs, ol, nl) -> {
+            sim.setMoves((int) nl.getUserData());
+        });
         BorderPane borderPane = new BorderPane();
         centerContent.setStyle("-fx-font-size: 20px;");
         createGrid();
@@ -424,10 +464,13 @@ public class SimulatorGUI extends Application {
         centerContent.setMinHeight(400);
         centerContent.setMinWidth(600);
         borderPane.setCenter(centerContent);
-        borderPane.setTop(steps);
+        subToolBar.getChildren().add(steps);
+        subToolBar.getChildren().add(heatMap);
+        subToolBar.getChildren().add(radioButtons);
+        borderPane.setTop(subToolBar);
         return borderPane;
     }
-
+    
     private void createGrid() {
         for (int z = 0; z < depth; z++) {
             GridPane gridPane = new GridPane();
@@ -437,10 +480,10 @@ public class SimulatorGUI extends Application {
             gridPane.setMaxHeight(Double.MAX_VALUE);
             gridPane.setMaxWidth(Double.MAX_VALUE);
             gridPane.setBackground(new Background(new BackgroundFill(Color.web("#000000"), CornerRadii.EMPTY, Insets.EMPTY)));
-            for (int y = 0; y < heigth; y++) {
+            for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     StackPane square = new StackPane();
-                    Text txt = new Text("" + z);
+                    Text txt = new Text();
                     txt.setFill(Color.WHITE);
                     txt.setStyle("-fx-font-size: " + txtSize + "px;");
                     square.getChildren().add(txt);
@@ -455,35 +498,35 @@ public class SimulatorGUI extends Application {
             }
             thirdDimention.add(gridPane);
         }
-
+        
         showStatus();
     }
-
+    
     @Override
     public void stop() {
         System.exit(0);
     }
-
+    
     public static void main(String[] args) {
         launch(args);
     }
-
+    
     private void reset() {
         sim.reset();
         step = 0;
         obsStep.set(0);
-        setSqauresColor("#444444");
+        setSqauresColor(40, 40, 40);
         showStatus();
-
+        
     }
-
+    
     private void showStatus() {
         if (visualType > 0) {
             gridText.values().forEach((Text txt) -> {
                 txt.setText("");
             });
         }
-        setSqauresColor("#444444");
+        setSqauresColor(40, 40, 40);
         ArrayList<Location> particles = new ArrayList<>();
         particles.addAll(sim.getLocs());
         particles.forEach((Location loc) -> {
@@ -508,7 +551,7 @@ public class SimulatorGUI extends Application {
         obsStep.setValue(step);
         showStatus();
     }
-
+    
     private void simulate(int steps) {
         Task<Integer> task = new Task<Integer>() {
             @Override
@@ -530,7 +573,6 @@ public class SimulatorGUI extends Application {
                 newStep = oldStep + 1;
             }
             if (oldStep == newStep - 1) {
-                setSqauresColor("#444444");
                 ArrayList<Location> particles = new ArrayList<>();
                 particles.addAll(sim.getLocs());
                 particles.forEach((Location loc) -> {
@@ -542,13 +584,8 @@ public class SimulatorGUI extends Application {
         Thread t1 = new Thread(task);
         t1.start();
         showStatus();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
-
+    
     private void updateVisuals(String location, String hexColor) {
         if (visualType == 0) {
             gridNodes.get(location).setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -563,15 +600,33 @@ public class SimulatorGUI extends Application {
             gridText.get(gridNodes.get(location)).setText("" + num);
         }
     }
-
-    private void setSqauresColor(String hexColor) {
-        gridNodes.values().forEach((StackPane square) -> {
+    
+    private void setSqauresColor(int r, int g, int b) {
+        gridNodes.keySet().forEach((String loc) -> {
+            StackPane square = gridNodes.get(loc);
+            int bFinished = b;
+            if (heatMap) {
+                String[] str = loc.split(",");
+                Location middle = new Location(width / 2, height / 2, depth / 2);
+//            int bFinished = b + (Integer.parseInt(str[0]) - middle.getX()) + (Integer.parseInt(str[1]) - middle.getY()) + (Integer.parseInt(str[2]) - middle.getZ());
+                int num1 = Math.abs(Integer.parseInt(str[0]) - middle.getX());
+                int num2 = Math.abs(Integer.parseInt(str[1]) - middle.getY());
+                int num3 = Math.abs(Integer.parseInt(str[2]) - middle.getZ());
+                bFinished = 255 - ((num1 + num2 + num3) * 6);
+                if (bFinished < 40) {
+                    bFinished = 40;
+                }
+                if (bFinished > 255) {
+                    bFinished = 255;
+                }
+            }
+            String hexColor = "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(bFinished);
             square.setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
         });
     }
-
+    
     private class NumberField extends TextField {
-
+        
         public NumberField() {
             super();
             this.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {

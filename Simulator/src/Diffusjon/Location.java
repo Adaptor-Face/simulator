@@ -85,4 +85,16 @@ public class Location {
         }
         return Integer.MAX_VALUE;
     }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getZ() {
+        return z;
+    }
 }
