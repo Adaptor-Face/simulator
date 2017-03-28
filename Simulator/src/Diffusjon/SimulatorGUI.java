@@ -247,11 +247,11 @@ public class SimulatorGUI extends Application {
         BorderPane borderPane = new BorderPane();
         HBox toolBar = new HBox();
         Button back = new Button("One Step");
-        back.setOnAction((ActionEvent event) -> {
+        back.setOnAction(e -> {
             simulateOneStep();
 //            System.out.println(sim.getField().lookFor(new Location(15, 67), Shallows.class, "NSEW"));
         });
-        back.setOnKeyPressed((KeyEvent event) -> {
+        back.setOnKeyPressed(e -> {
             simulateOneStep();
         });
         NumberField stepInput = new NumberField();
@@ -284,9 +284,15 @@ public class SimulatorGUI extends Application {
         planeUp.setOnAction((ActionEvent event) -> {
             currentPlane.set(currentPlane.intValue() + 1);
         });
+        planeUp.setOnKeyPressed(eh-> {
+            currentPlane.set(currentPlane.intValue() + 1);
+        });
         final Button planeDown = new Button("Go Down");
         planeDown.setOnAction((ActionEvent event) -> {
             currentPlane.set(currentPlane.intValue() - 1);
+        });
+        planeDown.setOnKeyPressed(eh-> {
+            currentPlane.set(currentPlane.intValue() + 1);
         });
         currentPlane.addListener((obs, ov, nv) -> {
             if (nv.intValue() >= 0 && nv.intValue() < depth) {
@@ -386,8 +392,6 @@ public class SimulatorGUI extends Application {
             GridPane gp = createStartupAlert();
             if (!gp.getId().equals("close")) {
                 createMainWindow();
-                System.out.println(depth);
-                System.out.println(thirdDimention.size());
             }
         });
         newSim.setAlignment(Pos.BASELINE_RIGHT);

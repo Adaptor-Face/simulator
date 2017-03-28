@@ -44,16 +44,12 @@ public class DiffusjonSimulator {
                 move = getMove(loc);
             }
             loc.changeLocation(move);
-            if(loc.getX() < 0 || loc.getX() > width-1){
-                System.out.println("adslnfa");
-            }
             if((loc.getX() < 0 || loc.getX() > width-1) || (loc.getY() < 0 || loc.getY() > width-1) || (loc.getZ() < 0 || loc.getZ() > width-1)){
                 move.invertLocation();
-                System.out.println("Inverted" + move);
                 loc.changeLocation(move, 2);
             }
         });
-        newLocs = new ArrayList(particles);
+        newLocs = new ArrayList<>(particles);
         step++;
     }
 
@@ -80,7 +76,7 @@ public class DiffusjonSimulator {
         for (int i = 0; i < numberOfParticles; i++) {
             particles.add((Location) location.clone());
         }
-        newLocs= new ArrayList(particles);
+        newLocs= new ArrayList<>(particles);
         
     }
 
@@ -103,7 +99,6 @@ public class DiffusjonSimulator {
             moves.clear();
             moves.addAll(knightMove);
         }
-        System.out.println(num);
     }
 
     private void createMoves() {
