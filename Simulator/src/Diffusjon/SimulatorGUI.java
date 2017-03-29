@@ -10,6 +10,8 @@ import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -87,6 +89,7 @@ public class SimulatorGUI extends Application {
     private IntegerProperty autoRunner = new SimpleIntegerProperty();
     private int counter = 0;
     private int tickTimer = 50;
+    private Text info = new Text();
 
     private void setFields(SimulatorGUI old) {
         this.dimensions = old.dimensions;
@@ -174,6 +177,24 @@ public class SimulatorGUI extends Application {
             });
         }
         this.steps.setText("Steps: " + step);
+        Fraction sum = new Fraction(0, 1);
+        DoubleWrapper count = new DoubleWrapper(0);
+        gridText.values().forEach(cnsmr -> {
+            if (!cnsmr.getText().isEmpty() && visualType == 1) {
+                count.add(Double.parseDouble(cnsmr.getText()));
+            } else if (!cnsmr.getText().isEmpty() && visualType == 2) {
+                sum.add(new Fraction(cnsmr.getText()));
+            } else if (cnsmr.getId() != null && !cnsmr.getId().isEmpty() && visualType == 3) {
+                count.add(Double.parseDouble(cnsmr.getId()));
+            }
+        });
+        if (visualType == 1) {
+            this.info.setText(String.format("Particle Count: %1$.0f", count.getValue()));
+        } else if (visualType == 2) {
+            this.info.setText("Fraction sum: " + sum);
+        } else if (visualType == 3) {
+            this.info.setText("Decimal sum: " + count);
+        }
         particles.clear();
     }
 
@@ -283,7 +304,7 @@ public class SimulatorGUI extends Application {
                     double decimal;
                     try {
                         String id = gridText.get(gridNodes.get(location)).getId();
-                        if(id == null){
+                        if (id == null) {
                             id = "";
                         }
                         decimal = Double.parseDouble(id);
@@ -300,7 +321,7 @@ public class SimulatorGUI extends Application {
                         String test2 = txt.getId();
                         try {
                             double value = Double.parseDouble(test2);
-                            value = value*baseDecimal;
+                            value = value * baseDecimal;
                             d.add(value);
                         } catch (NumberFormatException ex) {
                         }
@@ -614,6 +635,7 @@ public class SimulatorGUI extends Application {
         centerContent.setMinWidth(600);
         borderPane.setCenter(centerContent);
         subToolBar.getChildren().add(steps);
+        subToolBar.getChildren().add(info);
         subToolBar.getChildren().add(heatMap);
         subToolBar.getChildren().add(radioButtons);
         subToolBar.getChildren().add(autoRun);

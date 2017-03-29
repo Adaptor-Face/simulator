@@ -41,12 +41,23 @@ public class Fraction {
     public void add(Fraction fract) {
         if (denominator == fract.denominator) {
             numerator += fract.numerator;
+        } else if(denominator % fract.denominator == 0 || fract.denominator % denominator == 0){
+            if(denominator > fract.denominator){
+                numerator += fract.numerator * (denominator / fract.denominator);
+            } else {
+                numerator = numerator * (fract.denominator / denominator) + fract.numerator;
+                denominator = fract.denominator;
+            }
         }
         else {
             long newDenominator = denominator * fract.denominator;
             numerator = numerator * fract.denominator;
             numerator = numerator + (fract.numerator * denominator);
             denominator = newDenominator;
+        }
+        while(numerator % 2 == 0 && denominator % 2 == 0){
+            numerator = numerator / 2;
+            denominator = denominator / 2;
         }
     }
 
@@ -57,6 +68,9 @@ public class Fraction {
 
     @Override
     public String toString() {
+        if(denominator % numerator == 0){
+            return 1 + "/" + (denominator/numerator);
+        }
         return numerator + "/" + denominator;
     }
 
