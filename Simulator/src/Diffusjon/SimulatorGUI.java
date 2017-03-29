@@ -62,7 +62,7 @@ public class SimulatorGUI extends Application {
     private BorderPane root;
     private Stage primaryStage;
     private DiffusjonSimulator sim;
-    private int dimensionss = 1;
+    private int dimensions = 1;
     private final int defaultValue = 60;
     private int height = 1;
     private int width = defaultValue;
@@ -89,7 +89,7 @@ public class SimulatorGUI extends Application {
     private int tickTimer = 50;
 
     private void setFields(SimulatorGUI old) {
-        this.dimensionss = old.dimensionss;
+        this.dimensions = old.dimensions;
         this.height = old.height;
         this.width = old.width;
         this.depth = old.depth;
@@ -585,12 +585,12 @@ public class SimulatorGUI extends Application {
         particles.setPromptText("1");
         particles.setText("" + particleNum);
         CheckBox oneD = new CheckBox();
-        oneD.setSelected(dimensionss > 0);
+        oneD.setSelected(dimensions > 0);
         CheckBox twoD = new CheckBox();
-        twoD.setSelected(dimensionss > 1);
+        twoD.setSelected(dimensions > 1);
         CheckBox threeD = new CheckBox();
-        threeD.setSelected(dimensionss > 2);
-        dimensionss = 0;
+        threeD.setSelected(dimensions > 2);
+        dimensions = 0;
         HBox choiceBox = new HBox();
         ToggleGroup choice = new ToggleGroup();
         RadioButton color = new RadioButton();
@@ -647,24 +647,24 @@ public class SimulatorGUI extends Application {
                     } catch (NumberFormatException ex) {
                     }
                     if (oneD.selectedProperty().getValue()) {
-                        dimensionss++;
+                        dimensions++;
                     }
                     if (twoD.selectedProperty().getValue()) {
-                        dimensionss++;
+                        dimensions++;
                     }
                     if (threeD.selectedProperty().getValue()) {
-                        dimensionss++;
+                        dimensions++;
 
                     }
-                    if (dimensionss >= 1) {
+                    if (dimensions >= 1) {
                         width = number;
                     }
-                    if (dimensionss >= 2) {
+                    if (dimensions >= 2) {
                         height = number;
                     } else {
                         height = 1;
                     }
-                    if (dimensionss >= 3) {
+                    if (dimensions >= 3) {
                         depth = number;
                     } else {
                         depth = 1;
@@ -690,24 +690,24 @@ public class SimulatorGUI extends Application {
             } catch (NumberFormatException ex) {
             }
             if (oneD.selectedProperty().getValue()) {
-                dimensionss++;
+                dimensions++;
             }
             if (twoD.selectedProperty().getValue()) {
-                dimensionss++;
+                dimensions++;
             }
             if (threeD.selectedProperty().getValue()) {
-                dimensionss++;
+                dimensions++;
 
             }
-            if (dimensionss >= 1) {
+            if (dimensions >= 1) {
                 width = number;
             }
-            if (dimensionss >= 2) {
+            if (dimensions >= 2) {
                 height = number;
             } else {
                 height = 1;
             }
-            if (dimensionss >= 3) {
+            if (dimensions >= 3) {
                 depth = number;
             } else {
                 depth = 1;
@@ -745,7 +745,7 @@ public class SimulatorGUI extends Application {
 
     private void createMainWindow() {
         running = 0;
-        sim = new DiffusjonSimulator(particleNum, width, dimensionss);
+        sim = new DiffusjonSimulator(particleNum, width, dimensions);
 //            gp.setHgap(5);
 //            gp.setVgap(5);
         this.root = createScene(primaryStage);

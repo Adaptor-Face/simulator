@@ -44,14 +44,14 @@ public class DiffusjonSimulator {
     public boolean simulateOneStep(boolean decimal) {
         boolean canMove = false;
         for (Location loc : moves) {
-            if (loc.getdimensionss() <= dimensions) {
+            if (loc.getdimensions() <= dimensions) {
                 canMove = true;
             }
         }
         Iterator<Location> it = moves.iterator();
         while (it.hasNext()) {
             Location move = it.next();
-            if (move.getdimensionss() > dimensions) {
+            if (move.getdimensions() > dimensions) {
                 it.remove();
             }
         }
@@ -80,7 +80,7 @@ public class DiffusjonSimulator {
             final ArrayList<Location> moves = new ArrayList<>();
             particles.forEach((Location loc) -> {
                 this.moves.forEach((Location move) -> {
-                    if (move.getdimensionss() <= dimensions) {
+                    if (move.getdimensions() <= dimensions) {
                         Location newLoc = new Location(loc.getX(), loc.getY(), loc.getZ());
                         newLoc.changeLocation(move);
                         moves.add(newLoc);
