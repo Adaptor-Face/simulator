@@ -19,6 +19,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -61,6 +62,7 @@ import javafx.util.Duration;
  */
 public class SimulatorGUI extends Application {
 
+    private final boolean autoLog = false;
     private BorderPane root;
     private Stage primaryStage;
     private DiffusjonSimulator sim;
@@ -72,6 +74,7 @@ public class SimulatorGUI extends Application {
     private int size = 20;
     private int txtSize = 10;
     private int particleNum = 1;
+    private Location startPoint;
     private final HashMap<String, StackPane> gridNodes = new HashMap<>();
     private final HashMap<StackPane, Text> gridText = new HashMap<>();
     private final ArrayList<GridPane> thirddimensions = new ArrayList<>();
@@ -107,6 +110,16 @@ public class SimulatorGUI extends Application {
         this.primaryStage = primaryStage;
         GridPane gp = createStartupAlert();
         if (!gp.getId().equals("close")) {
+            int x = width / 2;
+            int y = 0;
+            int z = 0;
+            if (dimensions >= 2) {
+                y = x;
+            }
+            if (dimensions >= 3) {
+                z = x;
+            }
+            startPoint = new Location(x, y, z);
             createMainWindow();
         }
     }
@@ -144,6 +157,9 @@ public class SimulatorGUI extends Application {
 
     @Override
     public void stop() {
+        if (stats != null) {
+            stats.writeToLogFile(autoLog);
+        }
         System.exit(0);
     }
 
@@ -152,6 +168,7 @@ public class SimulatorGUI extends Application {
     }
 
     private void reset() {
+        stats.writeToLogFile(autoLog);
         sim.reset();
         step = 0;
         obsStep.set(0);
@@ -166,7 +183,9 @@ public class SimulatorGUI extends Application {
         particles.addAll(sim.getLocs());
         particles.forEach((Location loc) -> {
             updateVisuals(loc.toString(), "#CCCCCC");
+            stats.nonFinalLog("" + loc.getDistanceFromPoint(startPoint));
         });
+        stats.endEventLog();
         if (visualType > 0) {
             gridNodes.keySet().forEach((String loc) -> {
                 if (!particles.contains(new Location(loc))) {
@@ -177,39 +196,35 @@ public class SimulatorGUI extends Application {
             });
         }
         this.steps.setText("Steps: " + step);
-        Fraction sum = new Fraction(0, 1);
-        DoubleWrapper count = new DoubleWrapper(0);
-        gridText.values().forEach(cnsmr -> {
-            if (!cnsmr.getText().isEmpty() && visualType == 1) {
-                count.add(Double.parseDouble(cnsmr.getText()));
-            } else if (!cnsmr.getText().isEmpty() && visualType == 2) {
-                sum.add(new Fraction(cnsmr.getText()));
-            } else if (cnsmr.getId() != null && !cnsmr.getId().isEmpty() && visualType == 3) {
-                count.add(Double.parseDouble(cnsmr.getId()));
-            }
-        });
-        if (visualType == 1) {
-            this.info.setText(String.format("Particle Count: %1$.0f", count.getValue()));
-        } else if (visualType == 2) {
-            this.info.setText("Fraction sum: " + sum);
-        } else if (visualType == 3) {
-            this.info.setText("Decimal sum: " + count);
-        }
+//        Fraction sum = new Fraction(0, 1);
+//        DoubleWrapper count = new DoubleWrapper(0);
+//        gridText.values().forEach(cnsmr -> {
+//            if (!cnsmr.getText().isEmpty() && visualType == 1) {
+//                count.add(Double.parseDouble(cnsmr.getText()));
+//            } else if (!cnsmr.getText().isEmpty() && visualType == 2) {
+//                sum.add(new Fraction(cnsmr.getText()));
+//            } else if (cnsmr.getId() != null && !cnsmr.getId().isEmpty() && visualType == 3) {
+//                count.add(Double.parseDouble(cnsmr.getId()));
+//            }
+//        });
+//        switch (visualType) {
+//            case 1:
+//                this.info.setText(String.format("Particle Count: %1$.0f", count.getValue()));
+//                break;
+//            case 2:
+//                this.info.setText("Fraction sum: " + sum);
+//                break;
+//            case 3:
+//                this.info.setText("Decimal sum: " + count);
+//                break;
+//            default:
+//                break;
+//        }
         particles.clear();
     }
-
-//    private void setObjectColors() {
-//        setColor(Seal.class, Color.RED);
-//        setColor(PolarBear.class, Color.BLACK);
-//        setColor(Land.class, Color.AZURE);
-//        setColor(Shallows.class, Color.AQUA);
-//        setColor(Shore.class, Color.LIGHTBLUE);
-//        setColor(Ocean.class, Color.CORNFLOWERBLUE);
-//    }
     private void simulateOneStep() {
         sim.simulateOneStep(visualType == 2 || visualType == 3);
         step++;
-//        sim.simulateOneStep();
         obsStep.setValue(step);
         showStatus();
     }
@@ -363,208 +378,8 @@ public class SimulatorGUI extends Application {
     private BorderPane createScene(Stage primaryStage) {
 
         BorderPane borderPane = new BorderPane();
-        HBox toolBar = new HBox();
-        Button back = new Button("One Step");
-        back.setOnMouseClicked(eh -> {
-            simulateOneStep();
-//            System.out.println(sim.getField().lookFor(new Location(15, 67), Shallows.class, "NSEW"));
-        });
-        back.setOnKeyPressed(eh -> {
-            simulateOneStep();
-        });
-        NumberField stepInput = new NumberField();
-        stepInput.setPromptText("Steps");
-        Button multiStep = new Button("Step");
-        multiStep.setOnAction((ActionEvent event) -> {
-            if (stepInput.getText().length() > 0) {
-                simulate(Integer.parseInt(stepInput.getText()));
-            }
-        });
-        Button reset = new Button("Reset");
-        reset.setOnAction((ActionEvent event) -> {
-            reset();
-        });
-        final NumberField plane = new NumberField();
-        plane.setPromptText("Plane");
-        currentPlane = new SimpleIntegerProperty(depth / 2);
-        takenPlanes.add(currentPlane);
-        plane.setText(Integer.toString(depth / 2));
-        Button planeSwap = new Button("Swap plane");
-        planeSwap.setOnAction((ActionEvent event) -> {
-            if (plane.getText().length() > 0) {
-                currentPlane.setValue(Integer.parseInt(plane.getText()));
-                plane.setText("" + currentPlane);
-            } else {
-                plane.setText("" + currentPlane);
-            }
-        });
-        final Button planeUp = new Button("Go up");
-        planeUp.setOnMousePressed(eh -> {
-            currentPlane.set(currentPlane.intValue() + 1);
-        });
-        planeUp.setOnKeyPressed(eh -> {
-            currentPlane.set(currentPlane.intValue() + 1);
-        });
-        final Button planeDown = new Button("Go Down");
-        planeDown.setOnMousePressed(eh -> {
-            currentPlane.set(currentPlane.intValue() - 1);
-        });
-        planeDown.setOnKeyPressed(eh -> {
-            currentPlane.set(currentPlane.intValue() + 1);
-        });
-        currentPlane.addListener((obs, ov, nv) -> {
-            if (nv.intValue() >= 0 && nv.intValue() < depth) {
-                centerContent.setContent(thirddimensions.get(nv.intValue()));
-                plane.setText(nv.toString());
-            } else if (nv.intValue() < 0) {
-                currentPlane.set(depth - 1);
-            } else if (nv.intValue() > depth - 1) {
-                currentPlane.set(0);
-            }
-        });
-        Button planeView = new Button("View anotherPlane");
-        planeView.setOnAction((ActionEvent event) -> {
-            if (takenPlanes.size() < depth) {
-                Stage alert = new Stage();
-                VBox vBox = new VBox();
-                ArrayList<Integer> available = new ArrayList<>();
-                for (int i = 0; i < depth; i++) {
-                    available.add(i);
-                }
-                takenPlanes.forEach((IntegerProperty e) -> {
-                    available.remove(new Integer(e.intValue()));
-                });
-                ScrollPane windowContent = new ScrollPane();
-                windowContent.setContent(thirddimensions.get(available.get(0)));
-                NumberField plane2 = new NumberField();
-                plane2.setPromptText("Plane");
-                IntegerProperty currentPlane2 = new SimpleIntegerProperty(available.get(0));
-                takenPlanes.add(currentPlane2);
-                plane2.setText(Integer.toString(available.get(0)));
-                available.remove(0);
-                Button planeSwap2 = new Button("Swap plane");
-                planeSwap2.setOnAction(eh -> {
-                    if (plane.getText().length() > 0) {
-                        currentPlane2.setValue(Integer.parseInt(plane2.getText()));
-                        plane2.setText("" + currentPlane2);
-                    } else {
-                        plane2.setText("" + currentPlane2);
-                    }
-                });
-                Button planeUp2 = new Button("Go up");
-                planeUp2.setOnAction(eh -> {
-                    currentPlane2.set(currentPlane2.intValue() + 1);
-                });
-                Button planeDown2 = new Button("Go Down");
-                planeDown2.setOnAction(eh -> {
-                    currentPlane2.set(currentPlane2.intValue() - 1);
-                });
-                currentPlane2.addListener((obs, ov, nv) -> {
-                    available.clear();
-                    for (int i = 0; i < depth; i++) {
-                        available.add(i);
-                    }
-                    takenPlanes.forEach((IntegerProperty e) -> {
-                        if (e != currentPlane2) {
-                            available.remove(new Integer(e.intValue()));
-                        }
-                    });
-                    if (nv.intValue() >= 0 && nv.intValue() <= depth) {
-                        while (!available.contains(nv.intValue())) {
-                            nv = nv.intValue() + 1;
-                            if (nv.intValue() > depth - 1) {
-                                nv = 0;
-                            }
-                        }
-                        windowContent.setContent(thirddimensions.get(nv.intValue()));
-                        plane2.setText(nv.toString());
-                    } else if (nv.intValue() < 0) {
-                        currentPlane2.set(depth - 1);
-                    } else if (nv.intValue() > depth - 1) {
-                        currentPlane2.set(0);
-                    }
-                });
-                HBox tools = new HBox();
-                tools.getChildren().add(plane2);
-                tools.getChildren().add(planeSwap2);
-                tools.getChildren().add(planeUp2);
-                tools.getChildren().add(planeDown2);
-                vBox.getChildren().add(tools);
-                vBox.getChildren().add(windowContent);
-                alert.setScene(new Scene(vBox));
-                alert.setOnCloseRequest((WindowEvent e) -> {
-                    takenPlanes.remove(currentPlane2);
-                    alerts.remove(alert);
-                });
-                alerts.add(alert);
-                alert.showAndWait();
-            }
-        });
-        Button newSim = new Button("Restart");
-        newSim.setOnAction((ActionEvent event) -> {
-//            running = 0;
-//            System.out.println("Set newSim");
-//            autoRunner.set(0);
-//            counter = 0;
-//            primaryStage.close();
-//            gridNodes.clear();
-//            gridText.clear();
-//            takenPlanes.clear();
-//            thirddimensions.clear();
-//            obsStep.set(0);
-//            GridPane gp = createStartupAlert();
-//            if (!gp.getId().equals("close")) {
-//                createMainWindow();
-//            }
-            SimulatorGUI simG = new SimulatorGUI();
-            simG.setFields(this);
-            this.primaryStage.close();
-            try {
-                simG.start(new Stage());
-                ArrayList<Stage> close = new ArrayList<>(alerts);
-                close.forEach(cnsmr -> {
-                    cnsmr.close();
-                });
-            } catch (Exception ex) {
-                Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-        newSim.setAlignment(Pos.BASELINE_RIGHT);
-        if (depth == 1) {
-            plane.setDisable(true);
-            planeSwap.setDisable(true);
-            planeUp.setDisable(true);
-            planeDown.setDisable(true);
-            planeView.setDisable(true);
-        }
-        HBox toolBar2 = new HBox();
-        Slider stepTimer = new Slider();
-        Text ticks = new Text("50");
-        stepTimer.setMin(1);
-        stepTimer.setMax(500);
-        stepTimer.setMinWidth(200);
-        stepTimer.setValue(50);
-        stepTimer.setMajorTickUnit(50);
-        stepTimer.setMinorTickCount(5);
-        stepTimer.setBlockIncrement(20);
-        stepTimer.valueProperty().addListener(cl -> {
-            tickTimer = new Double(stepTimer.getValue()).intValue();
-            ticks.setText(" " + tickTimer + "ms");
-        });
-        Text stepTimerTxt = new Text("Min time between ticks: ");
-        toolBar2.getChildren().add(stepTimerTxt);
-        toolBar2.getChildren().add(stepTimer);
-        toolBar2.getChildren().add(ticks);
-        toolBar.getChildren().add(back);
-        toolBar.getChildren().add(stepInput);
-        toolBar.getChildren().add(multiStep);
-        toolBar.getChildren().add(reset);
-        toolBar.getChildren().add(plane);
-        toolBar.getChildren().add(planeSwap);
-        toolBar.getChildren().add(planeUp);
-        toolBar.getChildren().add(planeDown);
-        toolBar.getChildren().add(planeView);
-        toolBar.getChildren().add(newSim);
+        HBox toolBar = createMainToolBar();
+        HBox toolBar2 = createSecondaryToolBar();
         VBox topBar = new VBox();
         topBar.getChildren().add(toolBar);
         topBar.getChildren().add(toolBar2);
@@ -578,55 +393,6 @@ public class SimulatorGUI extends Application {
                 autoRun();
             }
         });
-        HBox subToolBar = new HBox();
-        subToolBar.setSpacing(15);
-        CheckBox heatMap = new CheckBox();
-        heatMap.setText("Show heat map");
-        heatMap.setOnAction((ActionEvent a) -> {
-            this.heatMap = heatMap.isSelected();
-            showStatus();
-        });
-        CheckBox autoRun = new CheckBox();
-        autoRun.setText("Run");
-        autoRun.setOnAction(ae -> {
-            if (autoRun.isSelected()) {
-                running = 10;
-                autoRun();
-            } else {
-                running = 0;
-            }
-        });
-        ToggleGroup moveSelect = new ToggleGroup();
-        RadioButton rook = new RadioButton();
-        rook.setSelected(true);
-        rook.setText("Rook");
-        rook.setToggleGroup(moveSelect);
-        rook.setUserData(0);
-        RadioButton bishop = new RadioButton();
-        bishop.setSelected(false);
-        bishop.setText("Bishop");
-        bishop.setToggleGroup(moveSelect);
-        bishop.setUserData(1);
-        RadioButton king = new RadioButton();
-        king.setSelected(false);
-        king.setText("King");
-        king.setToggleGroup(moveSelect);
-        king.setUserData(2);
-        RadioButton knight = new RadioButton();
-        knight.setSelected(false);
-        knight.setText("Knight");
-        knight.setToggleGroup(moveSelect);
-        knight.setUserData(3);
-        HBox radioButtons = new HBox();
-        Text txt = new Text("Move type:");
-        radioButtons.getChildren().add(txt);
-        radioButtons.getChildren().add(rook);
-        radioButtons.getChildren().add(bishop);
-        radioButtons.getChildren().add(king);
-        radioButtons.getChildren().add(knight);
-        moveSelect.selectedToggleProperty().addListener((obs, ol, nl) -> {
-            sim.setMoves((int) nl.getUserData());
-        });
         BorderPane borderPane = new BorderPane();
         centerContent.setStyle("-fx-font-size: 20px;");
         createGrid();
@@ -634,12 +400,7 @@ public class SimulatorGUI extends Application {
         centerContent.setMinHeight(400);
         centerContent.setMinWidth(600);
         borderPane.setCenter(centerContent);
-        subToolBar.getChildren().add(steps);
-        subToolBar.getChildren().add(info);
-        subToolBar.getChildren().add(heatMap);
-        subToolBar.getChildren().add(radioButtons);
-        subToolBar.getChildren().add(autoRun);
-        borderPane.setTop(subToolBar);
+        borderPane.setTop(createSubToolBar());
         return borderPane;
     }
 
@@ -815,7 +576,7 @@ public class SimulatorGUI extends Application {
         vBox.setAlignment(Pos.BOTTOM_RIGHT);
         vBox.getChildren().add(gp);
         vBox.getChildren().add(start);
-        alert.setScene(new Scene(vBox, 300, 200));
+        alert.setScene(new Scene(vBox));
         start.requestFocus();
         alert.setTitle("Simulator");
         alert.showAndWait();
@@ -826,6 +587,7 @@ public class SimulatorGUI extends Application {
     private void createMainWindow() {
         running = 0;
         sim = new DiffusjonSimulator(particleNum, width, dimensions);
+        stats = new Stats();
 //            gp.setHgap(5);
 //            gp.setVgap(5);
         this.root = createScene(primaryStage);
@@ -854,6 +616,260 @@ public class SimulatorGUI extends Application {
         });
         primaryStage.show();
 
+    }
+
+    private HBox createSecondaryToolBar() {
+        HBox toolBar = new HBox();
+        Slider stepTimer = new Slider();
+        Text ticks = new Text("50");
+        stepTimer.setMin(1);
+        stepTimer.setMax(500);
+        stepTimer.setMinWidth(200);
+        stepTimer.setValue(50);
+        stepTimer.setMajorTickUnit(50);
+        stepTimer.setMinorTickCount(5);
+        stepTimer.setBlockIncrement(20);
+        stepTimer.valueProperty().addListener(cl -> {
+            tickTimer = new Double(stepTimer.getValue()).intValue();
+            ticks.setText(" " + tickTimer + "ms");
+        });
+        Text stepTimerTxt = new Text("Min time between ticks: ");
+        toolBar.getChildren().add(stepTimerTxt);
+        toolBar.getChildren().add(stepTimer);
+        toolBar.getChildren().add(ticks);
+        return toolBar;
+    }
+
+    private Node createSubToolBar() {
+        HBox toolBar = new HBox();
+        toolBar.setSpacing(15);
+        CheckBox heatMap = new CheckBox();
+        heatMap.setText("Show heat map");
+        heatMap.setOnAction((ActionEvent a) -> {
+            this.heatMap = heatMap.isSelected();
+            showStatus();
+        });
+        CheckBox autoRun = new CheckBox();
+        autoRun.setText("Run");
+        autoRun.setOnAction(ae -> {
+            if (autoRun.isSelected()) {
+                running = 10;
+                autoRun();
+            } else {
+                running = 0;
+            }
+        });
+        ToggleGroup moveSelect = new ToggleGroup();
+        RadioButton rook = new RadioButton();
+        rook.setSelected(true);
+        rook.setText("Rook");
+        rook.setToggleGroup(moveSelect);
+        rook.setUserData(0);
+        RadioButton bishop = new RadioButton();
+        bishop.setSelected(false);
+        bishop.setText("Bishop");
+        bishop.setToggleGroup(moveSelect);
+        bishop.setUserData(1);
+        RadioButton king = new RadioButton();
+        king.setSelected(false);
+        king.setText("King");
+        king.setToggleGroup(moveSelect);
+        king.setUserData(2);
+        RadioButton knight = new RadioButton();
+        knight.setSelected(false);
+        knight.setText("Knight");
+        knight.setToggleGroup(moveSelect);
+        knight.setUserData(3);
+        HBox radioButtons = new HBox();
+        Text txt = new Text("Move type:");
+        radioButtons.getChildren().add(txt);
+        radioButtons.getChildren().add(rook);
+        radioButtons.getChildren().add(bishop);
+        radioButtons.getChildren().add(king);
+        radioButtons.getChildren().add(knight);
+        moveSelect.selectedToggleProperty().addListener((obs, ol, nl) -> {
+            sim.setMoves((int) nl.getUserData());
+        });
+        toolBar.getChildren().add(steps);
+        toolBar.getChildren().add(info);
+        toolBar.getChildren().add(heatMap);
+        toolBar.getChildren().add(radioButtons);
+        toolBar.getChildren().add(autoRun);
+        return toolBar;
+    }
+
+    private HBox createMainToolBar() {
+        HBox toolBar = new HBox();
+        Button back = new Button("One Step");
+        back.setOnMouseClicked(eh -> {
+            simulateOneStep();
+//            System.out.println(sim.getField().lookFor(new Location(15, 67), Shallows.class, "NSEW"));
+        });
+        back.setOnKeyPressed(eh -> {
+            simulateOneStep();
+        });
+        NumberField stepInput = new NumberField();
+        stepInput.setPromptText("Steps");
+        Button multiStep = new Button("Step");
+        multiStep.setOnAction((ActionEvent event) -> {
+            if (stepInput.getText().length() > 0) {
+                simulate(Integer.parseInt(stepInput.getText()));
+            }
+        });
+        Button reset = new Button("Reset");
+        reset.setOnAction((ActionEvent event) -> {
+            reset();
+        });
+        final NumberField plane = new NumberField();
+        plane.setPromptText("Plane");
+        currentPlane = new SimpleIntegerProperty(depth / 2);
+        takenPlanes.add(currentPlane);
+        plane.setText(Integer.toString(depth / 2));
+        Button planeSwap = new Button("Swap plane");
+        planeSwap.setOnAction((ActionEvent event) -> {
+            if (plane.getText().length() > 0) {
+                currentPlane.setValue(Integer.parseInt(plane.getText()));
+                plane.setText("" + currentPlane);
+            } else {
+                plane.setText("" + currentPlane);
+            }
+        });
+        final Button planeUp = new Button("Go up");
+        planeUp.setOnMousePressed(eh -> {
+            currentPlane.set(currentPlane.intValue() + 1);
+        });
+        planeUp.setOnKeyPressed(eh -> {
+            currentPlane.set(currentPlane.intValue() + 1);
+        });
+        final Button planeDown = new Button("Go Down");
+        planeDown.setOnMousePressed(eh -> {
+            currentPlane.set(currentPlane.intValue() - 1);
+        });
+        planeDown.setOnKeyPressed(eh -> {
+            currentPlane.set(currentPlane.intValue() + 1);
+        });
+        currentPlane.addListener((obs, ov, nv) -> {
+            if (nv.intValue() >= 0 && nv.intValue() < depth) {
+                centerContent.setContent(thirddimensions.get(nv.intValue()));
+                plane.setText(nv.toString());
+            } else if (nv.intValue() < 0) {
+                currentPlane.set(depth - 1);
+            } else if (nv.intValue() > depth - 1) {
+                currentPlane.set(0);
+            }
+        });
+        Button planeView = new Button("View anotherPlane");
+        planeView.setOnAction((ActionEvent event) -> {
+            if (takenPlanes.size() < depth) {
+                Stage alert = new Stage();
+                VBox vBox = new VBox();
+                ArrayList<Integer> available = new ArrayList<>();
+                for (int i = 0; i < depth; i++) {
+                    available.add(i);
+                }
+                takenPlanes.forEach((IntegerProperty e) -> {
+                    available.remove(new Integer(e.intValue()));
+                });
+                ScrollPane windowContent = new ScrollPane();
+                windowContent.setContent(thirddimensions.get(available.get(0)));
+                NumberField plane2 = new NumberField();
+                plane2.setPromptText("Plane");
+                IntegerProperty currentPlane2 = new SimpleIntegerProperty(available.get(0));
+                takenPlanes.add(currentPlane2);
+                plane2.setText(Integer.toString(available.get(0)));
+                available.remove(0);
+                Button planeSwap2 = new Button("Swap plane");
+                planeSwap2.setOnAction(eh -> {
+                    if (plane.getText().length() > 0) {
+                        currentPlane2.setValue(Integer.parseInt(plane2.getText()));
+                        plane2.setText("" + currentPlane2);
+                    } else {
+                        plane2.setText("" + currentPlane2);
+                    }
+                });
+                Button planeUp2 = new Button("Go up");
+                planeUp2.setOnAction(eh -> {
+                    currentPlane2.set(currentPlane2.intValue() + 1);
+                });
+                Button planeDown2 = new Button("Go Down");
+                planeDown2.setOnAction(eh -> {
+                    currentPlane2.set(currentPlane2.intValue() - 1);
+                });
+                currentPlane2.addListener((obs, ov, nv) -> {
+                    available.clear();
+                    for (int i = 0; i < depth; i++) {
+                        available.add(i);
+                    }
+                    takenPlanes.forEach((IntegerProperty e) -> {
+                        if (e != currentPlane2) {
+                            available.remove(new Integer(e.intValue()));
+                        }
+                    });
+                    if (nv.intValue() >= 0 && nv.intValue() <= depth) {
+                        while (!available.contains(nv.intValue())) {
+                            nv = nv.intValue() + 1;
+                            if (nv.intValue() > depth - 1) {
+                                nv = 0;
+                            }
+                        }
+                        windowContent.setContent(thirddimensions.get(nv.intValue()));
+                        plane2.setText(nv.toString());
+                    } else if (nv.intValue() < 0) {
+                        currentPlane2.set(depth - 1);
+                    } else if (nv.intValue() > depth - 1) {
+                        currentPlane2.set(0);
+                    }
+                });
+                HBox tools = new HBox();
+                tools.getChildren().add(plane2);
+                tools.getChildren().add(planeSwap2);
+                tools.getChildren().add(planeUp2);
+                tools.getChildren().add(planeDown2);
+                vBox.getChildren().add(tools);
+                vBox.getChildren().add(windowContent);
+                alert.setScene(new Scene(vBox));
+                alert.setOnCloseRequest((WindowEvent e) -> {
+                    takenPlanes.remove(currentPlane2);
+                    alerts.remove(alert);
+                });
+                alerts.add(alert);
+                alert.showAndWait();
+            }
+        });
+        Button newSim = new Button("Restart");
+        newSim.setOnAction((ActionEvent event) -> {
+            SimulatorGUI simG = new SimulatorGUI();
+            simG.setFields(this);
+            this.primaryStage.close();
+            try {
+                simG.start(new Stage());
+                ArrayList<Stage> close = new ArrayList<>(alerts);
+                close.forEach(cnsmr -> {
+                    cnsmr.close();
+                });
+            } catch (Exception ex) {
+                Logger.getLogger(SimulatorGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        newSim.setAlignment(Pos.BASELINE_RIGHT);
+        if (depth == 1) {
+            plane.setDisable(true);
+            planeSwap.setDisable(true);
+            planeUp.setDisable(true);
+            planeDown.setDisable(true);
+            planeView.setDisable(true);
+        }
+        toolBar.getChildren().add(back);
+        toolBar.getChildren().add(stepInput);
+        toolBar.getChildren().add(multiStep);
+        toolBar.getChildren().add(reset);
+        toolBar.getChildren().add(plane);
+        toolBar.getChildren().add(planeSwap);
+        toolBar.getChildren().add(planeUp);
+        toolBar.getChildren().add(planeDown);
+        toolBar.getChildren().add(planeView);
+        toolBar.getChildren().add(newSim);
+        return toolBar;
     }
 
     private class NumberField extends TextField {

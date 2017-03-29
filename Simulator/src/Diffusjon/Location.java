@@ -92,6 +92,13 @@ public class Location {
     public Object clone() {
         return new Location(x, y, z);
     }
+    
+    public int getDistanceFromPoint(Location loc){
+        return Math.abs(x-loc.x) + Math.abs(y-loc.y) + Math.abs(z-loc.z);
+    }
+    public int getDistanceFromOrigo(){
+        return Math.abs(x)+Math.abs(y)+Math.abs(z);
+    }
 
     public int getDimensions() {
         if (x != 0 && y == 0 && z == 0) {
