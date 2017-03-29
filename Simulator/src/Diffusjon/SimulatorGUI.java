@@ -235,6 +235,15 @@ public class SimulatorGUI extends Application {
             }
             num++;
             gridText.get(gridNodes.get(location)).setText("" + num);
+        } else if (visualType == 2) {
+            int num;
+            try {
+                num = Integer.parseInt(gridText.get(gridNodes.get(location)).getText());
+            } catch (NumberFormatException ex) {
+                num = 0;
+            }
+            num++;
+            gridText.get(gridNodes.get(location)).setText("" + num);
         }
     }
 
