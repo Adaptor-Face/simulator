@@ -93,7 +93,7 @@ public class Location {
         return new Location(x, y, z);
     }
 
-    public int getdimensions() {
+    public int getDimensions() {
         if (x != 0 && y == 0 && z == 0) {
             return 1;
         } else if (y != 0 && z == 0) {

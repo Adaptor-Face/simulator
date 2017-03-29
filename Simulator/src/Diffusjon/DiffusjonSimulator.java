@@ -38,21 +38,15 @@ public class DiffusjonSimulator {
         this.dimensions = dimensionss;
         this.particles = new ArrayList<>();
         moves = new ArrayList(rookMove);
+        makeMovesMatchDimesions();
         reset();
     }
 
     public boolean simulateOneStep(boolean decimal) {
         boolean canMove = false;
         for (Location loc : moves) {
-            if (loc.getdimensions() <= dimensions) {
+            if (loc.getDimensions() <= dimensions) {
                 canMove = true;
-            }
-        }
-        Iterator<Location> it = moves.iterator();
-        while (it.hasNext()) {
-            Location move = it.next();
-            if (move.getdimensions() > dimensions) {
-                it.remove();
             }
         }
         if (!decimal) {
@@ -80,7 +74,7 @@ public class DiffusjonSimulator {
             final ArrayList<Location> moves = new ArrayList<>();
             particles.forEach((Location loc) -> {
                 this.moves.forEach((Location move) -> {
-                    if (move.getdimensions() <= dimensions) {
+                    if (move.getDimensions() <= dimensions) {
                         Location newLoc = new Location(loc.getX(), loc.getY(), loc.getZ());
                         newLoc.changeLocation(move);
                         moves.add(newLoc);
@@ -135,18 +129,22 @@ public class DiffusjonSimulator {
             case 0:
                 moves.clear();
                 moves.addAll(rookMove);
+                makeMovesMatchDimesions();
                 break;
             case 1:
                 moves.clear();
                 moves.addAll(bishopMove);
+                makeMovesMatchDimesions();
                 break;
             case 2:
                 moves.clear();
                 moves.addAll(kingMove);
+                makeMovesMatchDimesions();
                 break;
             case 3:
                 moves.clear();
                 moves.addAll(knightMove);
+                makeMovesMatchDimesions();
                 break;
             default:
                 break;
@@ -231,6 +229,16 @@ public class DiffusjonSimulator {
         knightMove.add(new Location(-1, 0, 2));
         knightMove.add(new Location(-2, 0, -1));
         knightMove.add(new Location(-1, 0, -2));
+    }
+
+    private void makeMovesMatchDimesions() {
+        Iterator<Location> it = moves.iterator();
+        while (it.hasNext()) {
+            Location move = it.next();
+            if (move.getDimensions() > dimensions) {
+                it.remove();
+            }
+        }
     }
 
 }

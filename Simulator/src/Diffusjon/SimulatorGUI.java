@@ -158,7 +158,7 @@ public class SimulatorGUI extends Application {
     }
 
     private void showStatus() {
-        if (visualType > 0) {
+        if (visualType == 1) {
             gridText.values().forEach((Text txt) -> {
                 txt.setText("");
             });
@@ -241,20 +241,18 @@ public class SimulatorGUI extends Application {
             }
             case 2: {
                 ArrayList<Location> moves = new ArrayList<>(sim.getMoves());
-                Fraction fract = new Fraction(1, 1);
+                Fraction fract = new Fraction(0, 1);
                 moves.forEach(e -> {
-                    Location currentLoc = new Location(location);
-                    currentLoc.changeLocation(e);
-                    String test = currentLoc.toString();
-                    StackPane pane = gridNodes.get(test);
+                    StackPane pane = gridNodes.get(location);
                     Text txt = gridText.get(pane);
                     String test2 = txt.getText();
+                    gridText.get(gridNodes.get(e.toString())).setText("");
                     try {
                         fract.add(new Fraction(test2));
                     } catch (NumberFormatException ex) {
-                        System.out.println("Cought");
                     }
                 });
+
                 gridText.get(gridNodes.get(location)).setText("" + fract);
                 break;
             }
