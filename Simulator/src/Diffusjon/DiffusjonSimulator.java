@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class DiffusjonSimulator {
 
-    private int numberOfParticles, startPoint, size, step;
+    private int numberOfParticles, startPoint, dimentions, step, width;
     private final ArrayList<Location> particles;
     private ArrayList<Location> rookMove;
     private ArrayList<Location> bishopMove;
@@ -28,17 +28,18 @@ public class DiffusjonSimulator {
     private ArrayList<Location> moves;
     private ArrayList<Location> newLocs;
 
-    public DiffusjonSimulator(int numberOfParticles, int startPoint, int size) {
+    public DiffusjonSimulator(int numberOfParticles, int width, int dimentions) {
         createMoves();
         this.numberOfParticles = numberOfParticles;
-        this.startPoint = startPoint;
-        this.size = size;
+        this.startPoint = (width/2);
+        this.width = width;
+        this.dimentions = dimentions;
         this.particles = new ArrayList<>();
         moves = new ArrayList(rookMove);
         reset();
     }
 
-    public boolean simulateOneStep(int dimentions, boolean decimal) {
+    public boolean simulateOneStep(boolean decimal) {
         boolean canMove = false;
         for (Location loc : moves) {
             if (loc.getDimentions() <= dimentions) {
@@ -89,10 +90,10 @@ public class DiffusjonSimulator {
         int x = startPoint;
         int y = 0;
         int z = 0;
-        if (size >= 2) {
+        if (dimentions >= 2) {
             y = startPoint;
         }
-        if (size >= 3) {
+        if (dimentions >= 3) {
             z = startPoint;
         }
         Location location = new Location(x, y, z);
@@ -100,8 +101,8 @@ public class DiffusjonSimulator {
         for (int i = 0; i < numberOfParticles; i++) {
             particles.add((Location) location.clone());
         }
-        newLocs = new ArrayList(particles);
-
+        newLocs= new ArrayList<>(particles);
+        
     }
 
     private Location getMove(Location loc) {
