@@ -224,26 +224,40 @@ public class SimulatorGUI extends Application {
     }
 
     private void updateVisuals(String location, String hexColor) {
-        if (visualType == 0) {
-            gridNodes.get(location).setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
-        } else if (visualType == 1) {
-            int num;
-            try {
-                num = Integer.parseInt(gridText.get(gridNodes.get(location)).getText());
-            } catch (NumberFormatException ex) {
-                num = 0;
+        switch (visualType) {
+            case 0:
+                gridNodes.get(location).setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
+                break;
+            case 1: {
+                int num;
+                try {
+                    num = Integer.parseInt(gridText.get(gridNodes.get(location)).getText());
+                } catch (NumberFormatException ex) {
+                    num = 0;
+                }
+                num++;
+                gridText.get(gridNodes.get(location)).setText("" + num);
+                break;
             }
-            num++;
-            gridText.get(gridNodes.get(location)).setText("" + num);
-        } else if (visualType == 2) {
-            int num;
-            try {
-                num = Integer.parseInt(gridText.get(gridNodes.get(location)).getText());
-            } catch (NumberFormatException ex) {
-                num = 0;
+            case 2: {
+                ArrayList<Location> moves = new ArrayList<>(sim.getMoves());
+                Fraction fract = new Fraction(1, 1);
+                moves.forEach(e -> {
+                    String test = e.toString();
+                    StackPane pane = gridNodes.get(test);
+                    Text txt = gridText.get(pane);
+                    String test2 = txt.getText();
+                    try {
+                        fract.add(new Fraction(test2));
+                    } catch (NumberFormatException ex) {
+                        System.out.println("Cought");
+                    }
+                });
+                gridText.get(gridNodes.get(location)).setText("" + fract);
+                break;
             }
-            num++;
-            gridText.get(gridNodes.get(location)).setText("" + num);
+            default:
+                break;
         }
     }
 

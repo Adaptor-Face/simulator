@@ -88,7 +88,7 @@ public class DiffusjonSimulator {
                     }
                 });
             });
-            newLocs = new ArrayList(moves);
+            newLocs = new ArrayList(new LinkedHashSet<>(moves));
         }
         return canMove;
     }
