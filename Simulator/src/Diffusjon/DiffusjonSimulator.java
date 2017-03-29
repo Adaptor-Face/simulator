@@ -42,14 +42,14 @@ public class DiffusjonSimulator {
         reset();
     }
 
-    public boolean simulateOneStep(boolean decimal) {
+    public boolean simulateOneStep(boolean fraction) {
         boolean canMove = false;
         for (Location loc : moves) {
             if (loc.getDimensions() <= dimensions) {
                 canMove = true;
             }
         }
-        if (!decimal) {
+        if (!fraction) {
             if (canMove) {
                 particles.forEach((Location loc) -> {
 
