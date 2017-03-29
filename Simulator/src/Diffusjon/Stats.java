@@ -13,6 +13,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,6 +39,9 @@ public class Stats {
         log = new File("C:/SosLogs/stepLog_" + dateFormat.format(date) + ".txt");
     }
 
+    public Iterator<String> getCurrentLog(){
+        return runTimeLog.iterator();
+    }
     public void log(String event) {
         runTimeLog.add(event);
         runTimeLog.forEach(e->{

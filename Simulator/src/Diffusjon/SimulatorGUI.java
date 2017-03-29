@@ -2,6 +2,7 @@ package Diffusjon;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -80,7 +81,6 @@ public class SimulatorGUI extends Application {
     private final ArrayList<GridPane> thirddimensions = new ArrayList<>();
     private Text steps;
     private int step = 0;
-    private final SimpleIntegerProperty obsStep = new SimpleIntegerProperty(0);
     private Stats stats;
     private final ScrollPane centerContent = new ScrollPane();
     private int visualType;
@@ -93,6 +93,7 @@ public class SimulatorGUI extends Application {
     private int counter = 0;
     private int tickTimer = 50;
     private Text info = new Text();
+    private boolean headless = false;
 
     private void setFields(SimulatorGUI old) {
         this.dimensions = old.dimensions;
@@ -171,31 +172,45 @@ public class SimulatorGUI extends Application {
         stats.writeToLogFile(autoLog);
         sim.reset();
         step = 0;
-        obsStep.set(0);
         setSqauresColor(40, 40, 40);
         showStatus();
 
     }
 
     private void showStatus() {
-        setSqauresColor(40, 40, 40);
-        ArrayList<Location> particles = new ArrayList<>();
-        particles.addAll(sim.getLocs());
-        particles.forEach((Location loc) -> {
-            updateVisuals(loc.toString(), "#CCCCCC");
-            stats.nonFinalLog("" + loc.getDistanceFromPoint(startPoint));
-        });
-        stats.endEventLog();
-        if (visualType > 0) {
-            gridNodes.keySet().forEach((String loc) -> {
-                if (!particles.contains(new Location(loc))) {
-                    Text txt = gridText.get(gridNodes.get(loc));
-                    txt.setText("");
-                    txt.setId("");
-                }
+        if (!headless) {
+            if (visualType == 0) {
+                setSqauresColor(40, 40, 40);
+            }
+            ArrayList<Location> particles = new ArrayList<>();
+            particles.addAll(sim.getLocs());
+            particles.forEach((Location loc) -> {
+                updateVisuals(loc.toString(), "#CCCCCC");
+                stats.nonFinalLog("" + loc.getDistanceFromPoint(startPoint));
             });
+            stats.endEventLog();
+            //SLOW
+            if (visualType > 0) {
+                gridNodes.keySet().forEach((String loc) -> {
+                    if (!particles.contains(new Location(loc))) {
+                        Text txt = gridText.get(gridNodes.get(loc));
+                        txt.setText("");
+                        txt.setId("");
+                    }
+                });
+            }
+            particles.clear();
+        } else {
+            ArrayList<Location> particles = new ArrayList<>();
+            particles.addAll(sim.getLocs());
+            particles.forEach((Location loc) -> {
+                stats.nonFinalLog("" + loc.getDistanceFromPoint(startPoint));
+            });
+            stats.endEventLog();
+            particles.clear();
         }
         this.steps.setText("Steps: " + step);
+
 //        Fraction sum = new Fraction(0, 1);
 //        DoubleWrapper count = new DoubleWrapper(0);
 //        gridText.values().forEach(cnsmr -> {
@@ -220,12 +235,11 @@ public class SimulatorGUI extends Application {
 //            default:
 //                break;
 //        }
-        particles.clear();
     }
+
     private void simulateOneStep() {
         sim.simulateOneStep(visualType == 2 || visualType == 3);
         step++;
-        obsStep.setValue(step);
         showStatus();
     }
 
@@ -353,26 +367,29 @@ public class SimulatorGUI extends Application {
 
     private void setSqauresColor(int r, int g, int b) {
         gridNodes.keySet().forEach((String loc) -> {
-            StackPane square = gridNodes.get(loc);
-            int bFinished = b;
-            if (heatMap) {
-                String[] str = loc.split(",");
-                Location middle = new Location(width / 2, height / 2, depth / 2);
-//            int bFinished = b + (Integer.parseInt(str[0]) - middle.getX()) + (Integer.parseInt(str[1]) - middle.getY()) + (Integer.parseInt(str[2]) - middle.getZ());
-                int num1 = Math.abs(Integer.parseInt(str[0]) - middle.getX());
-                int num2 = Math.abs(Integer.parseInt(str[1]) - middle.getY());
-                int num3 = Math.abs(Integer.parseInt(str[2]) - middle.getZ());
-                bFinished = 255 - ((num1 + num2 + num3) * (300 / width));
-                if (bFinished < 40) {
-                    bFinished = 40;
-                }
-                if (bFinished > 255) {
-                    bFinished = 255;
-                }
-            }
-            String hexColor = "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(bFinished);
-            square.setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
+            setSquareColor(r, g, b, loc);
         });
+    }
+
+    private void setSquareColor(int r, int g, int b, String loc) {
+        StackPane square = gridNodes.get(loc);
+        int bFinished = b;
+        if (heatMap) {
+            String[] str = loc.split(",");
+            Location middle = new Location(width / 2, height / 2, depth / 2);
+            int num1 = Math.abs(Integer.parseInt(str[0]) - middle.getX());
+            int num2 = Math.abs(Integer.parseInt(str[1]) - middle.getY());
+            int num3 = Math.abs(Integer.parseInt(str[2]) - middle.getZ());
+            bFinished = 255 - ((num1 + num2 + num3) * (300 / width));
+            if (bFinished < 40) {
+                bFinished = 40;
+            }
+            if (bFinished > 255) {
+                bFinished = 255;
+            }
+        }
+        String hexColor = "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(bFinished);
+        square.setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
     }
 
     private BorderPane createScene(Stage primaryStage) {
@@ -394,12 +411,14 @@ public class SimulatorGUI extends Application {
             }
         });
         BorderPane borderPane = new BorderPane();
-        centerContent.setStyle("-fx-font-size: 20px;");
-        createGrid();
-        centerContent.setContent(thirddimensions.get(thirddimensions.size() / 2));
-        centerContent.setMinHeight(400);
-        centerContent.setMinWidth(600);
-        borderPane.setCenter(centerContent);
+        if (!headless) {
+            centerContent.setStyle("-fx-font-size: 20px;");
+            createGrid();
+            centerContent.setContent(thirddimensions.get(thirddimensions.size() / 2));
+            centerContent.setMinHeight(400);
+            centerContent.setMinWidth(600);
+            borderPane.setCenter(centerContent);
+        }
         borderPane.setTop(createSubToolBar());
         return borderPane;
     }
@@ -426,6 +445,8 @@ public class SimulatorGUI extends Application {
         CheckBox threeD = new CheckBox();
         threeD.setSelected(dimensions > 2);
         dimensions = 0;
+        CheckBox headLess = new CheckBox();
+        headLess.setSelected(headless);
         HBox choiceBox = new HBox();
         ToggleGroup choice = new ToggleGroup();
         RadioButton color = new RadioButton();
@@ -459,7 +480,8 @@ public class SimulatorGUI extends Application {
         Text sqrSizeTxt = new Text("Square size");
         Text textSizeTxt = new Text("Text size");
         Text particlesTxt = new Text("Number of particles");
-        Text choiceText = new Text("Visual type");
+        Text choiceTxt = new Text("Visual type");
+        Text headlessTxt = new Text("No graphical view");
         gp.add(wTxt, 0, 0);
         gp.add(particlesTxt, 0, 1);
         gp.add(oneDTxt, 0, 2);
@@ -467,7 +489,8 @@ public class SimulatorGUI extends Application {
         gp.add(threeDTxt, 0, 4);
         gp.add(sqrSizeTxt, 0, 5);
         gp.add(textSizeTxt, 0, 6);
-        gp.add(choiceText, 0, 7);
+        gp.add(choiceTxt, 0, 7);
+        gp.add(headlessTxt, 0, 8);
         gp.add(widthInput, 1, 0);
         gp.add(particles, 1, 1);
         gp.add(oneD, 1, 2);
@@ -476,6 +499,7 @@ public class SimulatorGUI extends Application {
         gp.add(squareSize, 1, 5);
         gp.add(textSize, 1, 6);
         gp.add(choiceBox, 1, 7);
+        gp.add(headLess, 1, 8);
         gp.setId("");
         class EnterHandler implements EventHandler<KeyEvent> {
 
@@ -519,6 +543,7 @@ public class SimulatorGUI extends Application {
                     if (!particles.getText().isEmpty()) {
                         particleNum = Integer.parseInt(particles.getText());
                     }
+                    headless = headLess.isSelected();
                     alert.close();
                 }
             }
@@ -562,6 +587,7 @@ public class SimulatorGUI extends Application {
             if (!particles.getText().isEmpty()) {
                 particleNum = Integer.parseInt(particles.getText());
             }
+            headless = headLess.isSelected();
             alert.close();
         });
         alert.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -593,16 +619,6 @@ public class SimulatorGUI extends Application {
         this.root = createScene(primaryStage);
         this.steps = new Text("Steps: " + step);
         root.setCenter(createSimulatorWindow());
-        obsStep.addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue ov, Number oldValue, Number newValue) {
-//                    Stats.stepLog(population.getText());
-//                    if (newValue.intValue() <= oldValue.intValue()) {
-//                        Stats.endLog();
-//                    } else {
-//                    }
-            }
-        });
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
 //        Scene controlScene = new Scene(root, 500, 75);
@@ -869,6 +885,21 @@ public class SimulatorGUI extends Application {
         toolBar.getChildren().add(planeDown);
         toolBar.getChildren().add(planeView);
         toolBar.getChildren().add(newSim);
+        if (headless) {
+            plane.setVisible(false);
+            planeSwap.setVisible(false);
+            planeUp.setVisible(false);
+            planeDown.setVisible(false);
+            planeView.setVisible(false);
+            Button printLog = new Button("Print");
+            printLog.setOnAction(eh -> {
+                Iterator<String> it = stats.getCurrentLog();
+                while (it.hasNext()) {
+                    System.out.println(it.next());
+                }
+            });
+            toolBar.getChildren().add(printLog);
+        }
         return toolBar;
     }
 
