@@ -243,7 +243,9 @@ public class SimulatorGUI extends Application {
                 ArrayList<Location> moves = new ArrayList<>(sim.getMoves());
                 Fraction fract = new Fraction(1, 1);
                 moves.forEach(e -> {
-                    String test = e.toString();
+                    Location currentLoc = new Location(location);
+                    currentLoc.changeLocation(e);
+                    String test = currentLoc.toString();
                     StackPane pane = gridNodes.get(test);
                     Text txt = gridText.get(pane);
                     String test2 = txt.getText();

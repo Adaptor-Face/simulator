@@ -26,6 +26,12 @@ public class Location {
         this.y = num;
         this.z = num;
     }
+    public Location(String location) {
+        String[] str = location.split(",");
+        this.x = Integer.parseInt(str[0]);
+        this.y = Integer.parseInt(str[1]);
+        this.z = Integer.parseInt(str[2]);
+    }
 
     @Override
     public String toString() {
