@@ -31,7 +31,7 @@ public class DiffusjonSimulator {
     public DiffusjonSimulator(int numberOfParticles, int width, int dimentions) {
         createMoves();
         this.numberOfParticles = numberOfParticles;
-        this.startPoint = (width/2);
+        this.startPoint = (width / 2);
         this.width = width;
         this.dimentions = dimentions;
         this.particles = new ArrayList<>();
@@ -49,13 +49,19 @@ public class DiffusjonSimulator {
         if (!decimal) {
             if (canMove) {
                 particles.forEach((Location loc) -> {
+
                     Location move = getMove(loc);
                     while (move.getDimentions() > dimentions) {
                         move = getMove(loc);
                     }
                     loc.changeLocation(move);
+                    if ((loc.getX() < 0 || loc.getX() > width - 1) || (loc.getY() < 0 || loc.getY() > width - 1) || (loc.getZ() < 0 || loc.getZ() > width - 1)) {
+                        move.invertLocation();
+                        loc.changeLocation(move, 2);
+                        move.invertLocation();
+                    }
                 });
-                newLocs = new ArrayList(particles);
+                newLocs = new ArrayList<>(particles);
                 step++;
             }
         } else {
@@ -101,8 +107,8 @@ public class DiffusjonSimulator {
         for (int i = 0; i < numberOfParticles; i++) {
             particles.add((Location) location.clone());
         }
-        newLocs= new ArrayList<>(particles);
-        
+        newLocs = new ArrayList<>(particles);
+
     }
 
     private Location getMove(Location loc) {
