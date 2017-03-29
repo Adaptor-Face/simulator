@@ -89,4 +89,8 @@ public class Fraction {
         return true;
     }
 
+    String toDecimal() {
+        return numerator/denominator + "";
+    }
+
 }

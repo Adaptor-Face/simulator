@@ -169,6 +169,7 @@ public class SimulatorGUI extends Application {
                 if (!particles.contains(new Location(loc))) {
                     Text txt = gridText.get(gridNodes.get(loc));
                     txt.setText("");
+                    txt.setId("");
                 }
             });
         }
@@ -185,7 +186,7 @@ public class SimulatorGUI extends Application {
 //        setColor(Ocean.class, Color.CORNFLOWERBLUE);
 //    }
     private void simulateOneStep() {
-        sim.simulateOneStep(visualType == 2);
+        sim.simulateOneStep(visualType == 2 || visualType == 3);
         step++;
 //        sim.simulateOneStep();
         obsStep.setValue(step);
@@ -270,6 +271,42 @@ public class SimulatorGUI extends Application {
                         }
                     });
                     gridText.get(gridNodes.get(location)).setText("" + fract);
+                }
+                break;
+            }
+            case 3: {
+                if (step == 0) {
+                    gridText.get(gridNodes.get(location)).setText("" + 1);
+                    gridText.get(gridNodes.get(location)).setId("" + 1);
+                } else {
+                    ArrayList<Location> moves = new ArrayList<>(sim.getMoves());
+                    double decimal;
+                    try {
+                        String id = gridText.get(gridNodes.get(location)).getId();
+                        if(id == null){
+                            id = "";
+                        }
+                        decimal = Double.parseDouble(id);
+                    } catch (NumberFormatException ex) {
+                        decimal = (double) 1 / (double) moves.size();
+                    }
+                    DoubleWrapper d = new DoubleWrapper(0);
+                    double baseDecimal = decimal;
+                    moves.forEach(e -> {
+                        Location loc = new Location(location);
+                        loc.changeLocation(e);
+                        StackPane pane = gridNodes.get(loc.toString());
+                        Text txt = gridText.get(pane);
+                        String test2 = txt.getId();
+                        try {
+                            double value = Double.parseDouble(test2);
+                            value = value*baseDecimal;
+                            d.add(value);
+                        } catch (NumberFormatException ex) {
+                        }
+                    });
+                    gridText.get(gridNodes.get(location)).setText(String.format("%1$.5f", d.getValue()));
+                    gridText.get(gridNodes.get(location)).setId("" + d.getValue());
                 }
                 break;
             }
@@ -620,12 +657,18 @@ public class SimulatorGUI extends Application {
         count.setId("1");
         RadioButton fraction = new RadioButton();
         fraction.setToggleGroup(choice);
-        fraction.setText("Decimal");
+        fraction.setText("Fraction");
         fraction.setSelected(visualType == 2);
         fraction.setId("2");
+        RadioButton decimal = new RadioButton();
+        decimal.setToggleGroup(choice);
+        decimal.setText("Decimal");
+        decimal.setSelected(visualType == 3);
+        decimal.setId("3");
         choiceBox.getChildren().add(color);
         choiceBox.getChildren().add(count);
         choiceBox.getChildren().add(fraction);
+        choiceBox.getChildren().add(decimal);
         Text wTxt = new Text("Width");
         Text oneDTxt = new Text("First dimensions");
         Text twoDTxt = new Text("Second dimensions");
