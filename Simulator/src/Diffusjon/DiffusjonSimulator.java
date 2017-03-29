@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class DiffusjonSimulator {
 
-    private int numberOfParticles, startPoint, dimentions, step, width;
+    private int numberOfParticles, startPoint, dimensions, step, width;
     private final ArrayList<Location> particles;
     private ArrayList<Location> rookMove;
     private ArrayList<Location> bishopMove;
@@ -30,12 +30,12 @@ public class DiffusjonSimulator {
 
     private int caseNum = 0;
 
-    public DiffusjonSimulator(int numberOfParticles, int width, int dimentions) {
+    public DiffusjonSimulator(int numberOfParticles, int width, int dimensionss) {
         createMoves();
         this.numberOfParticles = numberOfParticles;
         this.startPoint = (width / 2);
         this.width = width;
-        this.dimentions = dimentions;
+        this.dimensions = dimensionss;
         this.particles = new ArrayList<>();
         moves = new ArrayList(rookMove);
         reset();
@@ -44,14 +44,14 @@ public class DiffusjonSimulator {
     public boolean simulateOneStep(boolean decimal) {
         boolean canMove = false;
         for (Location loc : moves) {
-            if (loc.getDimentions() <= dimentions) {
+            if (loc.getdimensionss() <= dimensions) {
                 canMove = true;
             }
         }
         Iterator<Location> it = moves.iterator();
         while (it.hasNext()) {
             Location move = it.next();
-            if (move.getDimentions() > dimentions) {
+            if (move.getdimensionss() > dimensions) {
                 it.remove();
             }
         }
@@ -80,7 +80,7 @@ public class DiffusjonSimulator {
             final ArrayList<Location> moves = new ArrayList<>();
             particles.forEach((Location loc) -> {
                 this.moves.forEach((Location move) -> {
-                    if (move.getDimentions() <= dimentions) {
+                    if (move.getdimensionss() <= dimensions) {
                         Location newLoc = new Location(loc.getX(), loc.getY(), loc.getZ());
                         newLoc.changeLocation(move);
                         moves.add(newLoc);
@@ -105,10 +105,10 @@ public class DiffusjonSimulator {
         int x = startPoint;
         int y = 0;
         int z = 0;
-        if (dimentions >= 2) {
+        if (dimensions >= 2) {
             y = startPoint;
         }
-        if (dimentions >= 3) {
+        if (dimensions >= 3) {
             z = startPoint;
         }
         Location location = new Location(x, y, z);

@@ -62,7 +62,7 @@ public class SimulatorGUI extends Application {
     private BorderPane root;
     private Stage primaryStage;
     private DiffusjonSimulator sim;
-    private int dimentions = 1;
+    private int dimensionss = 1;
     private final int defaultValue = 60;
     private int height = 1;
     private int width = defaultValue;
@@ -72,7 +72,7 @@ public class SimulatorGUI extends Application {
     private int particleNum = 1;
     private final HashMap<String, StackPane> gridNodes = new HashMap<>();
     private final HashMap<StackPane, Text> gridText = new HashMap<>();
-    private final ArrayList<GridPane> thirdDimention = new ArrayList<>();
+    private final ArrayList<GridPane> thirddimensions = new ArrayList<>();
     private Text steps;
     private int step = 0;
     private final SimpleIntegerProperty obsStep = new SimpleIntegerProperty(0);
@@ -89,7 +89,7 @@ public class SimulatorGUI extends Application {
     private int tickTimer = 50;
 
     private void setFields(SimulatorGUI old) {
-        this.dimentions = old.dimentions;
+        this.dimensionss = old.dimensionss;
         this.height = old.height;
         this.width = old.width;
         this.depth = old.depth;
@@ -133,7 +133,7 @@ public class SimulatorGUI extends Application {
                     gridText.put(square, txt);
                 }
             }
-            thirdDimention.add(gridPane);
+            thirddimensions.add(gridPane);
         }
 
         showStatus();
@@ -341,7 +341,7 @@ public class SimulatorGUI extends Application {
         });
         currentPlane.addListener((obs, ov, nv) -> {
             if (nv.intValue() >= 0 && nv.intValue() < depth) {
-                centerContent.setContent(thirdDimention.get(nv.intValue()));
+                centerContent.setContent(thirddimensions.get(nv.intValue()));
                 plane.setText(nv.toString());
             } else if (nv.intValue() < 0) {
                 currentPlane.set(depth - 1);
@@ -362,7 +362,7 @@ public class SimulatorGUI extends Application {
                     available.remove(new Integer(e.intValue()));
                 });
                 ScrollPane windowContent = new ScrollPane();
-                windowContent.setContent(thirdDimention.get(available.get(0)));
+                windowContent.setContent(thirddimensions.get(available.get(0)));
                 NumberField plane2 = new NumberField();
                 plane2.setPromptText("Plane");
                 IntegerProperty currentPlane2 = new SimpleIntegerProperty(available.get(0));
@@ -403,7 +403,7 @@ public class SimulatorGUI extends Application {
                                 nv = 0;
                             }
                         }
-                        windowContent.setContent(thirdDimention.get(nv.intValue()));
+                        windowContent.setContent(thirddimensions.get(nv.intValue()));
                         plane2.setText(nv.toString());
                     } else if (nv.intValue() < 0) {
                         currentPlane2.set(depth - 1);
@@ -437,7 +437,7 @@ public class SimulatorGUI extends Application {
 //            gridNodes.clear();
 //            gridText.clear();
 //            takenPlanes.clear();
-//            thirdDimention.clear();
+//            thirddimensions.clear();
 //            obsStep.set(0);
 //            GridPane gp = createStartupAlert();
 //            if (!gp.getId().equals("close")) {
@@ -557,7 +557,7 @@ public class SimulatorGUI extends Application {
         BorderPane borderPane = new BorderPane();
         centerContent.setStyle("-fx-font-size: 20px;");
         createGrid();
-        centerContent.setContent(thirdDimention.get(thirdDimention.size() / 2));
+        centerContent.setContent(thirddimensions.get(thirddimensions.size() / 2));
         centerContent.setMinHeight(400);
         centerContent.setMinWidth(600);
         borderPane.setCenter(centerContent);
@@ -585,12 +585,12 @@ public class SimulatorGUI extends Application {
         particles.setPromptText("1");
         particles.setText("" + particleNum);
         CheckBox oneD = new CheckBox();
-        oneD.setSelected(dimentions > 0);
+        oneD.setSelected(dimensionss > 0);
         CheckBox twoD = new CheckBox();
-        twoD.setSelected(dimentions > 1);
+        twoD.setSelected(dimensionss > 1);
         CheckBox threeD = new CheckBox();
-        threeD.setSelected(dimentions > 2);
-        dimentions = 0;
+        threeD.setSelected(dimensionss > 2);
+        dimensionss = 0;
         HBox choiceBox = new HBox();
         ToggleGroup choice = new ToggleGroup();
         RadioButton color = new RadioButton();
@@ -612,9 +612,9 @@ public class SimulatorGUI extends Application {
         choiceBox.getChildren().add(count);
         choiceBox.getChildren().add(decimal);
         Text wTxt = new Text("Width");
-        Text oneDTxt = new Text("First Dimention");
-        Text twoDTxt = new Text("Second Dimention");
-        Text threeDTxt = new Text("Third Dimention");
+        Text oneDTxt = new Text("First dimensions");
+        Text twoDTxt = new Text("Second dimensions");
+        Text threeDTxt = new Text("Third dimensions");
         Text sqrSizeTxt = new Text("Square size");
         Text textSizeTxt = new Text("Text size");
         Text particlesTxt = new Text("Number of particles");
@@ -647,24 +647,24 @@ public class SimulatorGUI extends Application {
                     } catch (NumberFormatException ex) {
                     }
                     if (oneD.selectedProperty().getValue()) {
-                        dimentions++;
+                        dimensionss++;
                     }
                     if (twoD.selectedProperty().getValue()) {
-                        dimentions++;
+                        dimensionss++;
                     }
                     if (threeD.selectedProperty().getValue()) {
-                        dimentions++;
+                        dimensionss++;
 
                     }
-                    if (dimentions >= 1) {
+                    if (dimensionss >= 1) {
                         width = number;
                     }
-                    if (dimentions >= 2) {
+                    if (dimensionss >= 2) {
                         height = number;
                     } else {
                         height = 1;
                     }
-                    if (dimentions >= 3) {
+                    if (dimensionss >= 3) {
                         depth = number;
                     } else {
                         depth = 1;
@@ -690,24 +690,24 @@ public class SimulatorGUI extends Application {
             } catch (NumberFormatException ex) {
             }
             if (oneD.selectedProperty().getValue()) {
-                dimentions++;
+                dimensionss++;
             }
             if (twoD.selectedProperty().getValue()) {
-                dimentions++;
+                dimensionss++;
             }
             if (threeD.selectedProperty().getValue()) {
-                dimentions++;
+                dimensionss++;
 
             }
-            if (dimentions >= 1) {
+            if (dimensionss >= 1) {
                 width = number;
             }
-            if (dimentions >= 2) {
+            if (dimensionss >= 2) {
                 height = number;
             } else {
                 height = 1;
             }
-            if (dimentions >= 3) {
+            if (dimensionss >= 3) {
                 depth = number;
             } else {
                 depth = 1;
@@ -745,7 +745,7 @@ public class SimulatorGUI extends Application {
 
     private void createMainWindow() {
         running = 0;
-        sim = new DiffusjonSimulator(particleNum, width, dimentions);
+        sim = new DiffusjonSimulator(particleNum, width, dimensionss);
 //            gp.setHgap(5);
 //            gp.setVgap(5);
         this.root = createScene(primaryStage);
