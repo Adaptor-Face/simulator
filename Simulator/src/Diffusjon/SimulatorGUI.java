@@ -158,17 +158,20 @@ public class SimulatorGUI extends Application {
     }
 
     private void showStatus() {
-        if (visualType == 1) {
-            gridText.values().forEach((Text txt) -> {
-                txt.setText("");
-            });
-        }
         setSqauresColor(40, 40, 40);
         ArrayList<Location> particles = new ArrayList<>();
         particles.addAll(sim.getLocs());
         particles.forEach((Location loc) -> {
             updateVisuals(loc.toString(), "#CCCCCC");
         });
+        if (visualType > 0) {
+            gridNodes.keySet().forEach((String loc) -> {
+                if (!particles.contains(new Location(loc))) {
+                    Text txt = gridText.get(gridNodes.get(loc));
+                    txt.setText("");
+                }
+            });
+        }
         this.steps.setText("Steps: " + step);
         particles.clear();
     }
@@ -240,20 +243,34 @@ public class SimulatorGUI extends Application {
                 break;
             }
             case 2: {
-                ArrayList<Location> moves = new ArrayList<>(sim.getMoves());
-                Fraction fract = new Fraction(0, 1);
-                moves.forEach(e -> {
-                    StackPane pane = gridNodes.get(location);
-                    Text txt = gridText.get(pane);
-                    String test2 = txt.getText();
-                    gridText.get(gridNodes.get(e.toString())).setText("");
+                if (step == 0) {
+                    Fraction fract = new Fraction(1, 1);
+                    gridText.get(gridNodes.get(location)).setText("" + fract);
+                } else {
+                    ArrayList<Location> moves = new ArrayList<>(sim.getMoves());
+                    Fraction fraction;
                     try {
-                        fract.add(new Fraction(test2));
+                        fraction = new Fraction(gridText.get(gridNodes.get(location)).getText());
                     } catch (NumberFormatException ex) {
+                        fraction = new Fraction(1, moves.size());
                     }
-                });
-
-                gridText.get(gridNodes.get(location)).setText("" + fract);
+                    Fraction baseFract = new Fraction(fraction);
+                    Fraction fract = new Fraction(0, 1);
+                    moves.forEach(e -> {
+                        Location loc = new Location(location);
+                        loc.changeLocation(e);
+                        StackPane pane = gridNodes.get(loc.toString());
+                        Text txt = gridText.get(pane);
+                        String test2 = txt.getText();
+                        try {
+                            Fraction fra = new Fraction(test2);
+                            fra.multiply(baseFract);
+                            fract.add(new Fraction(fra));
+                        } catch (NumberFormatException ex) {
+                        }
+                    });
+                    gridText.get(gridNodes.get(location)).setText("" + fract);
+                }
                 break;
             }
             default:
