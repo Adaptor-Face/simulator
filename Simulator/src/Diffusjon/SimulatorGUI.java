@@ -17,6 +17,8 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
@@ -53,7 +55,7 @@ import javafx.stage.WindowEvent;
  * @author Kristoffer
  */
 public class SimulatorGUI extends Application {
-    
+
     private BorderPane root;
     private Stage primaryStage;
     private DiffusjonSimulator sim;
@@ -77,7 +79,7 @@ public class SimulatorGUI extends Application {
     private IntegerProperty currentPlane;
     private ArrayList<IntegerProperty> takenPlanes = new ArrayList<>();
     private boolean heatMap = false;
-    
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         Stage alert = new Stage();
@@ -140,7 +142,7 @@ public class SimulatorGUI extends Application {
         gp.add(choiceBox, 1, 7);
         gp.setId("");
         class EnterHandler implements EventHandler<KeyEvent> {
-            
+
             @Override
             public void handle(KeyEvent k) {
                 if (k.getCode().equals(KeyCode.ENTER)) {
@@ -157,7 +159,7 @@ public class SimulatorGUI extends Application {
                     }
                     if (threeD.selectedProperty().getValue()) {
                         dimentions++;
-                        
+
                     }
                     if (dimentions >= 1) {
                         height = number;
@@ -198,7 +200,7 @@ public class SimulatorGUI extends Application {
             }
             if (threeD.selectedProperty().getValue()) {
                 dimentions++;
-                
+
             }
             if (dimentions >= 1) {
                 width = number;
@@ -263,9 +265,9 @@ public class SimulatorGUI extends Application {
             primaryStage.show();
         }
     }
-    
+
     private BorderPane createScene(Stage primaryStage) {
-        
+
         BorderPane borderPane = new BorderPane();
         HBox toolBar = new HBox();
         Button back = new Button("One Step");
@@ -412,11 +414,11 @@ public class SimulatorGUI extends Application {
         toolBar.getChildren().add(planeUp);
         toolBar.getChildren().add(planeDown);
         toolBar.getChildren().add(planeView);
-        
+
         borderPane.setTop(toolBar);
         return borderPane;
     }
-    
+
     private BorderPane createSimulatorWindow(Stage stage) {
         HBox subToolBar = new HBox();
         subToolBar.setSpacing(15);
@@ -470,7 +472,7 @@ public class SimulatorGUI extends Application {
         borderPane.setTop(subToolBar);
         return borderPane;
     }
-    
+
     private void createGrid() {
         for (int z = 0; z < depth; z++) {
             GridPane gridPane = new GridPane();
@@ -498,28 +500,28 @@ public class SimulatorGUI extends Application {
             }
             thirdDimention.add(gridPane);
         }
-        
+
         showStatus();
     }
-    
+
     @Override
     public void stop() {
         System.exit(0);
     }
-    
+
     public static void main(String[] args) {
         launch(args);
     }
-    
+
     private void reset() {
         sim.reset();
         step = 0;
         obsStep.set(0);
         setSqauresColor(40, 40, 40);
         showStatus();
-        
+
     }
-    
+
     private void showStatus() {
         if (visualType > 0) {
             gridText.values().forEach((Text txt) -> {
@@ -536,28 +538,25 @@ public class SimulatorGUI extends Application {
         particles.clear();
     }
 
-//    private void setObjectColors() {
-//        setColor(Seal.class, Color.RED);
-//        setColor(PolarBear.class, Color.BLACK);
-//        setColor(Land.class, Color.AZURE);
-//        setColor(Shallows.class, Color.AQUA);
-//        setColor(Shore.class, Color.LIGHTBLUE);
-//        setColor(Ocean.class, Color.CORNFLOWERBLUE);
-//    }
     private void simulateOneStep() {
-        sim.simulateOneStep(dimentions);
-        step++;
-//        sim.simulateOneStep();
-        obsStep.setValue(step);
-        showStatus();
+        if (!sim.simulateOneStep(dimentions, (visualType == 2))) {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Warning Dialog");
+            alert.setHeaderText("Move type needs more dimentions to move.");
+            alert.showAndWait();
+        } else {
+            step++;
+            obsStep.setValue(step);
+            showStatus();
+        }
     }
-    
+
     private void simulate(int steps) {
         Task<Integer> task = new Task<Integer>() {
             @Override
             public Integer call() throws Exception {
                 for (Integer i = 0; i < steps; i++) {
-                    sim.simulateOneStep(dimentions);
+                    sim.simulateOneStep(dimentions, (visualType == 2));
                     updateValue(sim.getStep());
                     step++;
                     obsStep.setValue(step);
@@ -585,7 +584,7 @@ public class SimulatorGUI extends Application {
         t1.start();
         showStatus();
     }
-    
+
     private void updateVisuals(String location, String hexColor) {
         if (visualType == 0) {
             gridNodes.get(location).setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -598,9 +597,18 @@ public class SimulatorGUI extends Application {
             }
             num++;
             gridText.get(gridNodes.get(location)).setText("" + num);
+        } else if (visualType == 2) {
+            int num;
+            try {
+                num = Integer.parseInt(gridText.get(gridNodes.get(location)).getText());
+            } catch (NumberFormatException ex) {
+                num = 0;
+            }
+            num++;
+            gridText.get(gridNodes.get(location)).setText("" + num);
         }
     }
-    
+
     private void setSqauresColor(int r, int g, int b) {
         gridNodes.keySet().forEach((String loc) -> {
             StackPane square = gridNodes.get(loc);
@@ -624,9 +632,9 @@ public class SimulatorGUI extends Application {
             square.setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
         });
     }
-    
+
     private class NumberField extends TextField {
-        
+
         public NumberField() {
             super();
             this.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
