@@ -45,8 +45,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -315,14 +313,17 @@ public class SimulatorGUI extends Application {
                         loc.changeLocation(e);
                         StackPane pane = gridNodes.get(loc.toString());
                         Text txt = gridText.get(pane);
-                        String test2 = txt.getText();
-                        try {
-                            Fraction fra = new Fraction(test2);
-                            fra.multiply(baseFract);
-                            fract.add(new Fraction(fra));
-                        } catch (NumberFormatException ex) {
+                        if (txt != null) {
+                            String test2 = txt.getText();
+                            try {
+                                Fraction fra = new Fraction(test2);
+                                fra.multiply(baseFract);
+                                fract.add(new Fraction(fra));
+                            } catch (NumberFormatException ex) {
+                            }
                         }
                     });
+
                     gridText.get(gridNodes.get(location)).setText("" + fract);
                 }
                 break;
@@ -350,12 +351,14 @@ public class SimulatorGUI extends Application {
                         loc.changeLocation(e);
                         StackPane pane = gridNodes.get(loc.toString());
                         Text txt = gridText.get(pane);
-                        String test2 = txt.getId();
-                        try {
-                            double value = Double.parseDouble(test2);
-                            value = value * baseDecimal;
-                            d.add(value);
-                        } catch (NumberFormatException ex) {
+                        if (txt != null) {
+                            String test2 = txt.getId();
+                            try {
+                                double value = Double.parseDouble(test2);
+                                value = value * baseDecimal;
+                                d.add(value);
+                            } catch (NumberFormatException ex) {
+                            }
                         }
                     });
                     gridText.get(gridNodes.get(location)).setText(String.format("%1$.5f", d.getValue()));

@@ -5,18 +5,21 @@
  */
 package Diffusjon;
 
+import java.math.BigInteger;
+import java.util.Objects;
+
 /**
  *
  * @author Kristoffer
  */
 public class Fraction {
 
-    private long numerator;
-    private long denominator;
+    private BigInteger numerator;
+    private BigInteger denominator;
 
     public Fraction(long numerator, long denominator) {
-        this.numerator = numerator;
-        this.denominator = denominator;
+        this.numerator = new BigInteger("" + numerator);
+        this.denominator = new BigInteger("" + denominator);
     }
 
     public Fraction(Fraction fract) {
@@ -29,58 +32,58 @@ public class Fraction {
             throw new NumberFormatException("Number String empty");
         }
         if (fract.equals("1")) {
-            numerator = 1;
-            denominator = 1;
+            numerator = new BigInteger("" + 1);
+            denominator = new BigInteger("" + 1);
         } else {
-            String[] str = fract.split("/");
-            numerator = Integer.parseInt(str[0]);
-            denominator = Integer.parseInt(str[1]);
+            String[] str = fract.split("\\n");
+            numerator = new BigInteger("" + str[0]);
+            denominator = new BigInteger("" + str[1]);
         }
     }
 
     public void add(Fraction fract) {
-        if (denominator == fract.denominator) {
-            numerator += fract.numerator;
-        } else if(denominator % fract.denominator == 0 || fract.denominator % denominator == 0){
-            if(denominator > fract.denominator){
-                numerator += fract.numerator * (denominator / fract.denominator);
+        if (denominator.equals(fract.denominator)) {
+            numerator = numerator.add(fract.numerator);
+        } else if (denominator.mod(fract.denominator).equals(new BigInteger("" + 0)) || fract.denominator.mod(denominator).equals(new BigInteger("" + 0))) {
+            if (denominator.compareTo(fract.denominator) == 1) {
+                numerator = fract.numerator.multiply(denominator.divide(fract.denominator));
             } else {
-                numerator = numerator * (fract.denominator / denominator) + fract.numerator;
+                numerator = numerator.multiply(fract.denominator.divide(denominator)).add(fract.numerator);
                 denominator = fract.denominator;
             }
-        }
-        else {
-            long newDenominator = denominator * fract.denominator;
-            numerator = numerator * fract.denominator;
-            numerator = numerator + (fract.numerator * denominator);
+        } else {
+            BigInteger newDenominator = denominator.multiply(fract.denominator);
+            numerator = numerator.multiply(fract.denominator);
+            numerator = numerator.add(fract.numerator.multiply(denominator));
             denominator = newDenominator;
         }
-        while(numerator % 2 == 0 && denominator % 2 == 0){
-            numerator = numerator / 2;
-            denominator = denominator / 2;
+        while (numerator.mod(new BigInteger("" + 2)).equals(new BigInteger("" + 0)) && denominator.mod(new BigInteger("" + 2)).equals(new BigInteger("" + 0))) {
+            numerator = numerator.divide(new BigInteger("" + 2));
+            denominator = denominator.divide(new BigInteger("" + 2));
         }
     }
 
     public void multiply(Fraction fract) {
-        numerator = numerator * fract.numerator;
-        denominator = denominator * fract.denominator;
+        numerator = numerator.multiply(fract.numerator);
+        denominator = denominator.multiply(fract.denominator);
     }
 
     @Override
     public String toString() {
-        if(denominator % numerator == 0){
-            return 1 + "/" + (denominator/numerator);
+        if (denominator.intValue() != 0 && numerator.intValue() != 0 && denominator.mod(numerator).equals( new BigInteger("" + 0))) {
+            return 1 + "\n" + (denominator.divide(numerator));
         }
-        return numerator + "/" + denominator;
+        return numerator + "\n" + denominator;
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 79 * hash + (int) (this.numerator ^ (this.numerator >>> 32));
-        hash = 79 * hash + (int) (this.denominator ^ (this.denominator >>> 32));
+        hash = 29 * hash + Objects.hashCode(this.numerator);
+        hash = 29 * hash + Objects.hashCode(this.denominator);
         return hash;
     }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -103,8 +106,8 @@ public class Fraction {
         return true;
     }
 
-    String toDecimal() {
-        return numerator/denominator + "";
+    public String toDecimal() {
+        return numerator.divide(denominator).toString();
     }
 
 }

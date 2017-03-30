@@ -56,7 +56,7 @@ public class DiffusjonSimulator {
                     Location move = getMove(loc);
 
                     loc.changeLocation(move);
-                    if ((loc.getX() < 0 || loc.getX() > width - 1) || (loc.getY() < 0 || loc.getY() > width - 1) || (loc.getZ() < 0 || loc.getZ() > width - 1)) {
+                    if (!isValidLocation(loc)) {
 
                         move.invertLocation();
                         loc.changeLocation(move, 2);
@@ -77,7 +77,9 @@ public class DiffusjonSimulator {
                     if (move.getDimensions() <= dimensions) {
                         Location newLoc = new Location(loc.getX(), loc.getY(), loc.getZ());
                         newLoc.changeLocation(move);
-                        moves.add(newLoc);
+                        if (isValidLocation(newLoc)) {
+                            moves.add(newLoc);
+                        }
                     }
                 });
             });
@@ -239,6 +241,10 @@ public class DiffusjonSimulator {
                 it.remove();
             }
         }
+    }
+
+    private boolean isValidLocation(Location loc) {
+        return !((loc.getX() < 0 || loc.getX() > width - 1) || (loc.getY() < 0 || loc.getY() > width - 1) || (loc.getZ() < 0 || loc.getZ() > width - 1));
     }
 
 }
