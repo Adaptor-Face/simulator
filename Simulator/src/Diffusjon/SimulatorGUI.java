@@ -94,6 +94,7 @@ public class SimulatorGUI extends Application {
     private int tickTimer = 50;
     private Text info = new Text();
     private boolean headless = false;
+    private boolean manualViewUpdate = false;
 
     private void setFields(SimulatorGUI old) {
         this.dimensions = old.dimensions;
@@ -152,7 +153,6 @@ public class SimulatorGUI extends Application {
             }
             thirddimensions.add(gridPane);
         }
-
         showStatus();
     }
 
@@ -178,8 +178,8 @@ public class SimulatorGUI extends Application {
     }
 
     private void showStatus() {
-        if (!headless) {
-            if (visualType == 0) {
+        if ((!headless) && (!manualViewUpdate)) {
+            if (visualType == 0 || step == 0) {
                 setSqauresColor(40, 40, 40);
             }
             ArrayList<Location> particles = new ArrayList<>();
@@ -252,7 +252,6 @@ public class SimulatorGUI extends Application {
             });
             pause.play();
         }
-        showStatus();
     }
 
     private void autoRun() {
@@ -274,7 +273,6 @@ public class SimulatorGUI extends Application {
             });
             pause.play();
         }
-        showStatus();
     }
 
     private void updateVisuals(String location, String hexColor) {
@@ -446,7 +444,9 @@ public class SimulatorGUI extends Application {
         threeD.setSelected(dimensions > 2);
         dimensions = 0;
         CheckBox headLess = new CheckBox();
+        CheckBox manualView = new CheckBox();
         headLess.setSelected(headless);
+        headLess.setSelected(manualViewUpdate);
         HBox choiceBox = new HBox();
         ToggleGroup choice = new ToggleGroup();
         RadioButton color = new RadioButton();
@@ -482,6 +482,7 @@ public class SimulatorGUI extends Application {
         Text particlesTxt = new Text("Number of particles");
         Text choiceTxt = new Text("Visual type");
         Text headlessTxt = new Text("No graphical view");
+        Text manualTxt = new Text("Manual view update");
         gp.add(wTxt, 0, 0);
         gp.add(particlesTxt, 0, 1);
         gp.add(oneDTxt, 0, 2);
@@ -491,6 +492,7 @@ public class SimulatorGUI extends Application {
         gp.add(textSizeTxt, 0, 6);
         gp.add(choiceTxt, 0, 7);
         gp.add(headlessTxt, 0, 8);
+        gp.add(manualTxt, 0, 9);
         gp.add(widthInput, 1, 0);
         gp.add(particles, 1, 1);
         gp.add(oneD, 1, 2);
@@ -500,6 +502,7 @@ public class SimulatorGUI extends Application {
         gp.add(textSize, 1, 6);
         gp.add(choiceBox, 1, 7);
         gp.add(headLess, 1, 8);
+        gp.add(manualView, 1, 9);
         gp.setId("");
         class EnterHandler implements EventHandler<KeyEvent> {
 
@@ -544,6 +547,9 @@ public class SimulatorGUI extends Application {
                         particleNum = Integer.parseInt(particles.getText());
                     }
                     headless = headLess.isSelected();
+                    if (!headless) {
+                        manualViewUpdate = manualView.isSelected();
+                    }
                     alert.close();
                 }
             }
@@ -588,6 +594,9 @@ public class SimulatorGUI extends Application {
                 particleNum = Integer.parseInt(particles.getText());
             }
             headless = headLess.isSelected();
+            if (!headless) {
+                manualViewUpdate = manualView.isSelected();
+            }
             alert.close();
         });
         alert.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -663,7 +672,7 @@ public class SimulatorGUI extends Application {
         heatMap.setText("Show heat map");
         heatMap.setOnAction((ActionEvent a) -> {
             this.heatMap = heatMap.isSelected();
-            showStatus();
+            setSqauresColor(40, 40, 40);
         });
         CheckBox autoRun = new CheckBox();
         autoRun.setText("Run");
@@ -899,6 +908,31 @@ public class SimulatorGUI extends Application {
                 }
             });
             toolBar.getChildren().add(printLog);
+        }
+        if (manualViewUpdate) {
+            Button manualView = new Button("UpdateView");
+            manualView.setOnAction(eh -> {
+                setSqauresColor(40, 40, 40);
+                ArrayList<Location> particles = new ArrayList<>();
+                particles.addAll(sim.getLocs());
+                particles.forEach((Location loc) -> {
+                    updateVisuals(loc.toString(), "#CCCCCC");
+                    stats.nonFinalLog("" + loc.getDistanceFromPoint(startPoint));
+                });
+                stats.endEventLog();
+                //SLOW
+                if (visualType > 0) {
+                    gridNodes.keySet().forEach((String loc) -> {
+                        if (!particles.contains(new Location(loc))) {
+                            Text txt = gridText.get(gridNodes.get(loc));
+                            txt.setText("");
+                            txt.setId("");
+                        }
+                    });
+                }
+                particles.clear();
+            });
+            toolBar.getChildren().add(manualView);
         }
         return toolBar;
     }
