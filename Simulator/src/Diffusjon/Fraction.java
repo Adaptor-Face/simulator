@@ -57,10 +57,10 @@ public class Fraction {
             numerator = numerator.add(fract.numerator.multiply(denominator));
             denominator = newDenominator;
         }
-        while (numerator.mod(new BigInteger("" + 2)).equals(new BigInteger("" + 0)) && denominator.mod(new BigInteger("" + 2)).equals(new BigInteger("" + 0))) {
-            numerator = numerator.divide(new BigInteger("" + 2));
-            denominator = denominator.divide(new BigInteger("" + 2));
-        }
+//        while (numerator.mod(new BigInteger("" + 2)).equals(new BigInteger("" + 0)) && denominator.mod(new BigInteger("" + 2)).equals(new BigInteger("" + 0))) {
+//            numerator = numerator.divide(new BigInteger("" + 2));
+//            denominator = denominator.divide(new BigInteger("" + 2));
+//        }
     }
 
     public void multiply(Fraction fract) {
@@ -70,9 +70,9 @@ public class Fraction {
 
     @Override
     public String toString() {
-        if (denominator.intValue() != 0 && numerator.intValue() != 0 && denominator.mod(numerator).equals( new BigInteger("" + 0))) {
-            return 1 + "\n" + (denominator.divide(numerator));
-        }
+//        if (denominator.intValue() != 0 && numerator.intValue() != 0 && denominator.mod(numerator).equals( new BigInteger("" + 0))) {
+//            return 1 + "\n" + (denominator.divide(numerator));
+//        }
         return numerator + "\n" + denominator;
     }
 

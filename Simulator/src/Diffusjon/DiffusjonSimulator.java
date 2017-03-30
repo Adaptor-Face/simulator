@@ -171,7 +171,7 @@ public class DiffusjonSimulator {
         bishopMove.add(new Location(1, 1, 0));
         bishopMove.add(new Location(-1, 1, 0));
         bishopMove.add(new Location(1, -1, 0));
-        bishopMove.add(new Location(-1, 1, 0));
+        bishopMove.add(new Location(-1, -1, 0));
 
         bishopMove.add(new Location(1, 0, 1));
         bishopMove.add(new Location(-1, 0, 1));

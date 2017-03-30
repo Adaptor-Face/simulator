@@ -93,6 +93,8 @@ public class SimulatorGUI extends Application {
     private Text info = new Text();
     private boolean headless = false;
     private boolean manualViewUpdate = false;
+    private ArrayList<Text> oldLocs = new ArrayList<>();
+    private ArrayList<Text> newLocs = new ArrayList<>();
 
     private void setFields(SimulatorGUI old) {
         this.dimensions = old.dimensions;
@@ -135,9 +137,8 @@ public class SimulatorGUI extends Application {
             gridPane.setBackground(new Background(new BackgroundFill(Color.web("#000000"), CornerRadii.EMPTY, Insets.EMPTY)));
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
-                    System.out.println("" + x + "," + y + "," + z);
                     StackPane square = new StackPane();
-                    Text txt = new Text(new Location(x, y, z).getDistanceFromPoint(startPoint) + "");
+                    Text txt = new Text();
                     txt.setFill(Color.WHITE);
                     txt.setStyle("-fx-font-size: " + txtSize + "px;");
                     square.getChildren().add(txt);
@@ -171,7 +172,13 @@ public class SimulatorGUI extends Application {
         stats.writeToLogFile(autoLog);
         sim.reset();
         step = 0;
+        oldLocs.clear();
+        newLocs.clear();
         setSqauresColor(40, 40, 40);
+        gridText.values().forEach(action -> {
+            action.setText("");
+            action.setId("");
+        });
         showStatus();
 
     }
@@ -192,13 +199,15 @@ public class SimulatorGUI extends Application {
             stats.endEventLocationLog();
             //SLOW
             if (visualType > 0) {
-                gridNodes.keySet().forEach((String loc) -> {
-                    if (!particles.contains(new Location(loc))) {
-                        Text txt = gridText.get(gridNodes.get(loc));
-                        txt.setText("");
-                        txt.setId("");
-                    }
+                oldLocs.forEach(e -> {
+                    e.setText("");
                 });
+                newLocs.forEach(e -> {
+                    e.setText(e.getId());
+                    e.setId("");
+                });
+                oldLocs = new ArrayList<>(newLocs);
+                newLocs.clear();
             }
             particles.clear();
         } else {
@@ -286,18 +295,19 @@ public class SimulatorGUI extends Application {
             case 1: {
                 int num;
                 try {
-                    num = Integer.parseInt(gridText.get(gridNodes.get(location)).getText());
+                    num = Integer.parseInt(gridText.get(gridNodes.get(location)).getId());
                 } catch (NumberFormatException ex) {
                     num = 0;
+                    newLocs.add(gridText.get(gridNodes.get(location)));
                 }
                 num++;
-                gridText.get(gridNodes.get(location)).setText("" + num);
+                gridText.get(gridNodes.get(location)).setId("" + num);
                 break;
             }
             case 2: {
                 if (step == 0) {
                     Fraction fract = new Fraction(1, 1);
-                    gridText.get(gridNodes.get(location)).setText("" + fract);
+                    gridText.get(gridNodes.get(location)).setId("" + fract);
                 } else {
                     ArrayList<Location> moves = new ArrayList<>(sim.getMoves());
                     Fraction fraction;
@@ -323,15 +333,14 @@ public class SimulatorGUI extends Application {
                             }
                         }
                     });
-
-                    gridText.get(gridNodes.get(location)).setText("" + fract);
+                    gridText.get(gridNodes.get(location)).setId("" + fract);
                 }
+                newLocs.add(gridText.get(gridNodes.get(location)));
                 break;
             }
             case 3: {
                 if (step == 0) {
                     gridText.get(gridNodes.get(location)).setText("" + 1);
-                    gridText.get(gridNodes.get(location)).setId("" + 1);
                 } else {
                     ArrayList<Location> moves = new ArrayList<>(sim.getMoves());
                     double decimal;
@@ -362,7 +371,7 @@ public class SimulatorGUI extends Application {
                         }
                     });
                     gridText.get(gridNodes.get(location)).setText(String.format("%1$.5f", d.getValue()));
-                    gridText.get(gridNodes.get(location)).setId("" + d.getValue());
+                    newLocs.add(gridText.get(gridNodes.get(location)));
                 }
                 break;
             }
