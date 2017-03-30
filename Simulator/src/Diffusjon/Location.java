@@ -26,11 +26,30 @@ public class Location {
         this.y = num;
         this.z = num;
     }
+
     public Location(String location) {
         String[] str = location.split(",");
         this.x = Integer.parseInt(str[0]);
         this.y = Integer.parseInt(str[1]);
         this.z = Integer.parseInt(str[2]);
+    }
+
+    public Location(int center, int dimensions) {
+        if (dimensions > 0) {
+            x = center;
+        } else {
+            x = 0;
+        }
+        if (dimensions > 1) {
+            y = center;
+        } else {
+            y = 0;
+        }
+        if (dimensions > 2) {
+            z = center;
+        } else {
+            z = 0;
+        }
     }
 
     @Override
@@ -92,12 +111,13 @@ public class Location {
     public Object clone() {
         return new Location(x, y, z);
     }
-    
-    public int getDistanceFromPoint(Location loc){
-        return Math.abs(x-loc.x) + Math.abs(y-loc.y) + Math.abs(z-loc.z);
+
+    public int getDistanceFromPoint(Location loc) {
+        return Math.abs(x - loc.x) + Math.abs(y - loc.y) + Math.abs(z - loc.z);
     }
-    public int getDistanceFromOrigo(){
-        return Math.abs(x)+Math.abs(y)+Math.abs(z);
+
+    public int getDistanceFromOrigo() {
+        return Math.abs(x) + Math.abs(y) + Math.abs(z);
     }
 
     public int getDimensions() {
@@ -128,6 +148,5 @@ public class Location {
         y = -y;
         z = -z;
     }
-
 
 }

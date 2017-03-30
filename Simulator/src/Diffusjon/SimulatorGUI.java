@@ -62,39 +62,39 @@ import javafx.util.Duration;
 public class SimulatorGUI extends Application {
 
     private final boolean autoLog = false;
+    private boolean headless = false;
+    private boolean heatMap = false;
+    private boolean manualViewUpdate = false;
     private BorderPane root;
     private Stage primaryStage;
     private DiffusjonSimulator sim;
-    private int dimensions = 1;
+    private Stats stats;
     private final int defaultValue = 60;
+    private int dimensions = 1;
     private int height = 1;
     private int width = defaultValue;
     private int depth = 1;
     private int size = 20;
     private int txtSize = 10;
     private int particleNum = 1;
+    private int step = 0;
+    private int running = 0;
+    private int counter = 0;
+    private int tickTimer = 50;
+    private int visualType;
     private Location startPoint;
+    private Text steps;
+    private Text info = new Text();
+    private IntegerProperty currentPlane;
+    private IntegerProperty autoRunner = new SimpleIntegerProperty();
+    private ArrayList<Text> oldLocs = new ArrayList<>();
+    private ArrayList<Text> newLocs = new ArrayList<>();
     private final HashMap<String, StackPane> gridNodes = new HashMap<>();
     private final HashMap<StackPane, Text> gridText = new HashMap<>();
     private final ArrayList<GridPane> thirddimensions = new ArrayList<>();
-    private Text steps;
-    private int step = 0;
-    private Stats stats;
     private final ScrollPane centerContent = new ScrollPane();
-    private int visualType;
-    private IntegerProperty currentPlane;
     private final ArrayList<IntegerProperty> takenPlanes = new ArrayList<>();
-    private boolean heatMap = false;
     private final ArrayList<Stage> alerts = new ArrayList<>();
-    private int running = 0;
-    private IntegerProperty autoRunner = new SimpleIntegerProperty();
-    private int counter = 0;
-    private int tickTimer = 50;
-    private Text info = new Text();
-    private boolean headless = false;
-    private boolean manualViewUpdate = false;
-    private ArrayList<Text> oldLocs = new ArrayList<>();
-    private ArrayList<Text> newLocs = new ArrayList<>();
 
     private void setFields(SimulatorGUI old) {
         this.dimensions = old.dimensions;
@@ -201,10 +201,14 @@ public class SimulatorGUI extends Application {
             if (visualType > 0) {
                 oldLocs.forEach(e -> {
                     e.setText("");
+                    e.setId("");
                 });
                 newLocs.forEach(e -> {
-                    e.setText(e.getId());
-                    e.setId("");
+                    if (visualType == 3) {
+                        e.setText(String.format("%1$.3f", Double.parseDouble(e.getId())));
+                    } else {
+                        e.setText(e.getId());
+                    }
                 });
                 oldLocs = new ArrayList<>(newLocs);
                 newLocs.clear();
@@ -222,6 +226,9 @@ public class SimulatorGUI extends Application {
             particles.clear();
         }
         this.steps.setText("Steps: " + step);
+        if(visualType < 2){
+            info.setText(String.format("Current avg distance from center %1$.5f", sim.getAverageDistance()));
+        }
 
 //        Fraction sum = new Fraction(0, 1);
 //        DoubleWrapper count = new DoubleWrapper(0);
@@ -340,7 +347,8 @@ public class SimulatorGUI extends Application {
             }
             case 3: {
                 if (step == 0) {
-                    gridText.get(gridNodes.get(location)).setText("" + 1);
+                    gridText.get(gridNodes.get(location)).setId("" + 1);
+                    newLocs.add(gridText.get(gridNodes.get(location)));
                 } else {
                     ArrayList<Location> moves = new ArrayList<>(sim.getMoves());
                     double decimal;
@@ -362,6 +370,10 @@ public class SimulatorGUI extends Application {
                         Text txt = gridText.get(pane);
                         if (txt != null) {
                             String test2 = txt.getId();
+                            if (test2 == null) {
+                                test2 = "";
+                            }
+                            test2 = test2.replace(",", ".");
                             try {
                                 double value = Double.parseDouble(test2);
                                 value = value * baseDecimal;
@@ -370,7 +382,7 @@ public class SimulatorGUI extends Application {
                             }
                         }
                     });
-                    gridText.get(gridNodes.get(location)).setText(String.format("%1$.5f", d.getValue()));
+                    gridText.get(gridNodes.get(location)).setId("" + d.getValue());
                     newLocs.add(gridText.get(gridNodes.get(location)));
                 }
                 break;
