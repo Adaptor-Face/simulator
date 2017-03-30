@@ -206,7 +206,9 @@ public class SimulatorGUI extends Application {
                 newLocs.forEach(e -> {
                     if (visualType == 3) {
                         e.setText(String.format("%1$.3f", Double.parseDouble(e.getId())));
-                    } else {
+                    }else if (visualType == 2){
+                        e.setText(new Fraction(e.getId()).factorize().toString());
+                    }else {
                         e.setText(e.getId());
                     }
                 });
@@ -331,9 +333,12 @@ public class SimulatorGUI extends Application {
                         StackPane pane = gridNodes.get(loc.toString());
                         Text txt = gridText.get(pane);
                         if (txt != null) {
-                            String test2 = txt.getText();
+                            String string = txt.getId(); 
+                            if(string == null){
+                                string = "";
+                            }
                             try {
-                                Fraction fra = new Fraction(test2);
+                                Fraction fra = new Fraction(string);
                                 fra.multiply(baseFract);
                                 fract.add(new Fraction(fra));
                             } catch (NumberFormatException ex) {
@@ -369,13 +374,13 @@ public class SimulatorGUI extends Application {
                         StackPane pane = gridNodes.get(loc.toString());
                         Text txt = gridText.get(pane);
                         if (txt != null) {
-                            String test2 = txt.getId();
-                            if (test2 == null) {
-                                test2 = "";
+                            String string = txt.getId();
+                            if (string == null) {
+                                string = "";
                             }
-                            test2 = test2.replace(",", ".");
+                            string = string.replace(",", ".");
                             try {
-                                double value = Double.parseDouble(test2);
+                                double value = Double.parseDouble(string);
                                 value = value * baseDecimal;
                                 d.add(value);
                             } catch (NumberFormatException ex) {

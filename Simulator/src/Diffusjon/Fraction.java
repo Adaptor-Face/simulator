@@ -84,7 +84,6 @@ public class Fraction {
         return hash;
     }
 
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -108,6 +107,15 @@ public class Fraction {
 
     public String toDecimal() {
         return numerator.divide(denominator).toString();
+    }
+
+    public Fraction factorize() {
+        System.out.println(numerator.gcd(denominator));
+        while (!numerator.gcd(denominator).equals(new BigInteger("1"))) {
+            denominator = denominator.divide(numerator.gcd(denominator));
+            numerator = numerator.divide(numerator.gcd(denominator));
+        }
+        return this;
     }
 
 }
