@@ -50,10 +50,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * an over-engineered view for a simple diffusion simulator
  */
 /**
  *
@@ -342,6 +340,7 @@ public class SimulatorGUI extends Application {
                                 fra.multiply(baseFract);
                                 fract.add(new Fraction(fra));
                             } catch (NumberFormatException ex) {
+                                //do nothing since there was no number in the cell
                             }
                         }
                     });
@@ -384,6 +383,7 @@ public class SimulatorGUI extends Application {
                                 value = value * baseDecimal;
                                 d.add(value);
                             } catch (NumberFormatException ex) {
+                                //do nothing since there was no number in the cell
                             }
                         }
                     });
