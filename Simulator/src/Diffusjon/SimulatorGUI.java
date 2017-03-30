@@ -137,8 +137,9 @@ public class SimulatorGUI extends Application {
             gridPane.setBackground(new Background(new BackgroundFill(Color.web("#000000"), CornerRadii.EMPTY, Insets.EMPTY)));
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
+                    System.out.println("" + x + "," + y + "," + z);
                     StackPane square = new StackPane();
-                    Text txt = new Text();
+                    Text txt = new Text(new Location(x, y, z).getDistanceFromPoint(startPoint) + "");
                     txt.setFill(Color.WHITE);
                     txt.setStyle("-fx-font-size: " + txtSize + "px;");
                     square.getChildren().add(txt);
@@ -186,9 +187,11 @@ public class SimulatorGUI extends Application {
             particles.addAll(sim.getLocs());
             particles.forEach((Location loc) -> {
                 updateVisuals(loc.toString(), "#CCCCCC");
-                stats.nonFinalLog("" + loc.getDistanceFromPoint(startPoint));
+                stats.nonFinalDistanceLog("" + loc.getDistanceFromPoint(startPoint));
+                stats.nonFinalLocationLog("" + loc.toString());
             });
-            stats.endEventLog();
+            stats.endEventDistanceLog();
+            stats.endEventLocationLog();
             //SLOW
             if (visualType > 0) {
                 gridNodes.keySet().forEach((String loc) -> {
@@ -204,9 +207,11 @@ public class SimulatorGUI extends Application {
             ArrayList<Location> particles = new ArrayList<>();
             particles.addAll(sim.getLocs());
             particles.forEach((Location loc) -> {
-                stats.nonFinalLog("" + loc.getDistanceFromPoint(startPoint));
+                stats.nonFinalDistanceLog("" + loc.getDistanceFromPoint(startPoint));
+                stats.nonFinalLocationLog("" + loc.toString());
             });
-            stats.endEventLog();
+            stats.endEventDistanceLog();
+            stats.endEventLocationLog();
             particles.clear();
         }
         this.steps.setText("Steps: " + step);
@@ -622,7 +627,7 @@ public class SimulatorGUI extends Application {
     private void createMainWindow() {
         running = 0;
         sim = new DiffusjonSimulator(particleNum, width, dimensions);
-        stats = new Stats();
+        stats = new Stats(particleNum);
 //            gp.setHgap(5);
 //            gp.setVgap(5);
         this.root = createScene(primaryStage);
@@ -902,7 +907,7 @@ public class SimulatorGUI extends Application {
             planeView.setVisible(false);
             Button printLog = new Button("Print");
             printLog.setOnAction(eh -> {
-                Iterator<String> it = stats.getCurrentLog();
+                Iterator<String> it = stats.getCurrentDistanceLog();
                 while (it.hasNext()) {
                     System.out.println(it.next());
                 }
@@ -917,9 +922,9 @@ public class SimulatorGUI extends Application {
                 particles.addAll(sim.getLocs());
                 particles.forEach((Location loc) -> {
                     updateVisuals(loc.toString(), "#CCCCCC");
-                    stats.nonFinalLog("" + loc.getDistanceFromPoint(startPoint));
+                    stats.nonFinalDistanceLog("" + loc.getDistanceFromPoint(startPoint));
                 });
-                stats.endEventLog();
+                stats.endEventDistanceLog();
                 //SLOW
                 if (visualType > 0) {
                     gridNodes.keySet().forEach((String loc) -> {
