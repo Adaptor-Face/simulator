@@ -46,7 +46,7 @@ public class Fraction {
             numerator = numerator.add(fract.numerator);
         } else if (denominator.mod(fract.denominator).equals(new BigInteger("" + 0)) || fract.denominator.mod(denominator).equals(new BigInteger("" + 0))) {
             if (denominator.compareTo(fract.denominator) == 1) {
-                numerator = fract.numerator.multiply(denominator.divide(fract.denominator));
+                numerator = numerator.add(fract.numerator.multiply(denominator.divide(fract.denominator)));
             } else {
                 numerator = numerator.multiply(fract.denominator.divide(denominator)).add(fract.numerator);
                 denominator = fract.denominator;
@@ -57,10 +57,6 @@ public class Fraction {
             numerator = numerator.add(fract.numerator.multiply(denominator));
             denominator = newDenominator;
         }
-//        while (numerator.mod(new BigInteger("" + 2)).equals(new BigInteger("" + 0)) && denominator.mod(new BigInteger("" + 2)).equals(new BigInteger("" + 0))) {
-//            numerator = numerator.divide(new BigInteger("" + 2));
-//            denominator = denominator.divide(new BigInteger("" + 2));
-//        }
     }
 
     public void multiply(Fraction fract) {
@@ -110,7 +106,6 @@ public class Fraction {
     }
 
     public Fraction factorize() {
-        System.out.println(numerator.gcd(denominator));
         while (!numerator.gcd(denominator).equals(new BigInteger("1"))) {
             denominator = denominator.divide(numerator.gcd(denominator));
             numerator = numerator.divide(numerator.gcd(denominator));

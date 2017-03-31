@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.PauseTransition;
@@ -172,7 +174,9 @@ public class SimulatorGUI extends Application {
     private void reset() {
         stats.writeToLogFile(autoLog);
         sim.reset();
-        info.setText(String.format("Current avg distance from center %1$.5f", sim.getAverageDistance()));
+        if (visualType < 2) {
+            info.setText(String.format("Current avg distance from center %1$.5f", sim.getAverageDistance()));
+        }
         step = 0;
         oldText.clear();
         newText.clear();
@@ -201,13 +205,14 @@ public class SimulatorGUI extends Application {
             stats.endEventLocationLog();
             //SLOW
             if (visualType > 0) {
+                oldText.removeAll(newText);
                 oldText.forEach(e -> {
                     e.setText("");
                     e.setId("");
                 });
                 newText.forEach(e -> {
                     if (visualType == 3) {
-                        e.setText(String.format("%1$.3f", Double.parseDouble(e.getId())));
+                        e.setText(String.format("%1$.33f", Double.parseDouble(e.getId())));
                     } else if (visualType == 2) {
                         e.setText(new Fraction(e.getId()).factorize().toString());
                     } else {
@@ -243,7 +248,18 @@ public class SimulatorGUI extends Application {
         if (visualType < 2) {
             info.setText(String.format("Current avg distance from center %1$.5f", sim.getAverageDistance()));
         }
+//        Fraction sum = new Fraction(0, 1);
+//        for (Text e : oldText) {
+//            sum.add(new Fraction(e.getText()));
+//        }
+//        System.out.println(sum);
+//        System.out.println("");
 
+//        DoubleWrapper d = new DoubleWrapper(0);
+//        oldText.forEach(e -> {
+//            d.add(Double.parseDouble(e.getText().replace(",", ".")));
+//        });
+//        System.out.println(d);
 //        Fraction sum = new Fraction(0, 1);
 //        DoubleWrapper count = new DoubleWrapper(0);
 //        gridText.values().forEach(cnsmr -> {
@@ -334,13 +350,7 @@ public class SimulatorGUI extends Application {
                     gridText.get(gridNodes.get(location)).setId("" + fract);
                 } else {
                     ArrayList<Location> moves = new ArrayList<>(sim.getMoves());
-                    Fraction fraction;
-                    try {
-                        fraction = new Fraction(gridText.get(gridNodes.get(location)).getText());
-                    } catch (NumberFormatException ex) {
-                        fraction = new Fraction(1, moves.size());
-                    }
-                    Fraction baseFract = new Fraction(fraction);
+                    Fraction baseFract = new Fraction(1, moves.size());
                     Fraction fract = new Fraction(0, 1);
                     moves.forEach(e -> {
                         Location loc = new Location(location);
@@ -348,7 +358,7 @@ public class SimulatorGUI extends Application {
                         StackPane pane = gridNodes.get(loc.toString());
                         Text txt = gridText.get(pane);
                         if (txt != null) {
-                            String string = txt.getId();
+                            String string = txt.getText();
                             if (string == null) {
                                 string = "";
                             }
@@ -369,28 +379,17 @@ public class SimulatorGUI extends Application {
             case 3: {
                 if (step == 0) {
                     gridText.get(gridNodes.get(location)).setId("" + 1);
-                    newText.add(gridText.get(gridNodes.get(location)));
                 } else {
                     ArrayList<Location> moves = new ArrayList<>(sim.getMoves());
-                    double decimal;
-                    try {
-                        String id = gridText.get(gridNodes.get(location)).getId();
-                        if (id == null) {
-                            id = "";
-                        }
-                        decimal = Double.parseDouble(id);
-                    } catch (NumberFormatException ex) {
-                        decimal = (double) 1 / (double) moves.size();
-                    }
+                    double baseDecimal = (double) 1 / (double) moves.size();
                     DoubleWrapper d = new DoubleWrapper(0);
-                    double baseDecimal = decimal;
                     moves.forEach(e -> {
                         Location loc = new Location(location);
                         loc.changeLocation(e);
                         StackPane pane = gridNodes.get(loc.toString());
                         Text txt = gridText.get(pane);
                         if (txt != null) {
-                            String string = txt.getId();
+                            String string = txt.getText();
                             if (string == null) {
                                 string = "";
                             }
@@ -405,8 +404,8 @@ public class SimulatorGUI extends Application {
                         }
                     });
                     gridText.get(gridNodes.get(location)).setId("" + d.getValue());
-                    newText.add(gridText.get(gridNodes.get(location)));
                 }
+                newText.add(gridText.get(gridNodes.get(location)));
                 break;
             }
             default:
@@ -550,8 +549,8 @@ public class SimulatorGUI extends Application {
                 particles.setPromptText("");
             }
         });
-        headLess.setOnAction(e->{
-            if(headLess.isSelected()){
+        headLess.setOnAction(e -> {
+            if (headLess.isSelected()) {
                 color.setDisable(true);
                 visualType = 0;
                 count.setDisable(true);
@@ -1039,19 +1038,44 @@ public class SimulatorGUI extends Application {
                 particles.forEach((Location loc) -> {
                     updateVisuals(loc.toString());
                     stats.nonFinalDistanceLog("" + loc.getDistanceFromPoint(startPoint));
+                    stats.nonFinalLocationLog("" + loc.toString());
                 });
                 stats.endEventDistanceLog();
+                stats.endEventLocationLog();
                 //SLOW
                 if (visualType > 0) {
-                    gridNodes.keySet().forEach((String loc) -> {
-                        if (!particles.contains(new Location(loc))) {
-                            Text txt = gridText.get(gridNodes.get(loc));
-                            txt.setText("");
-                            txt.setId("");
+                    oldText.removeAll(newText);
+                    oldText.forEach(e -> {
+                        e.setText("");
+                        e.setId("");
+                    });
+                    newText.forEach(e -> {
+                        if (visualType == 3) {
+                            e.setText(String.format("%1$.33f", Double.parseDouble(e.getId())));
+                        } else if (visualType == 2) {
+                            e.setText(new Fraction(e.getId()).factorize().toString());
+                        } else {
+                            e.setText(e.getId());
                         }
                     });
+                    oldText = new ArrayList<>(newText);
+                    newText.clear();
+                } else {
+                    oldColor.forEach(e -> {
+                        setSquareColor(40, 40, 40, e.getId());
+                        e.setId("");
+                    });
+                    newColor.forEach(e -> {
+                        e.setBackground(new Background(new BackgroundFill(Color.web("#" + color), CornerRadii.EMPTY, Insets.EMPTY)));
+                    });
+                    oldColor = new ArrayList<>(newColor);
+                    newColor.clear();
                 }
                 particles.clear();
+                this.steps.setText("Steps: " + step);
+                if (visualType < 2) {
+                    info.setText(String.format("Current avg distance from center %1$.5f", sim.getAverageDistance()));
+                }
             });
             toolBar.getChildren().add(manualView);
         }
