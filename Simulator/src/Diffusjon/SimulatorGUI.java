@@ -498,7 +498,7 @@ public class SimulatorGUI extends Application {
         CheckBox headLess = new CheckBox();
         CheckBox manualView = new CheckBox();
         headLess.setSelected(headless);
-        headLess.setSelected(manualViewUpdate);
+        manualView.setSelected(manualViewUpdate);
         HBox choiceBox = new HBox();
         ToggleGroup choice = new ToggleGroup();
         RadioButton color = new RadioButton();
@@ -506,21 +506,66 @@ public class SimulatorGUI extends Application {
         color.setSelected(visualType == 0);
         color.setText("Color");
         color.setId("0");
+        color.setOnAction(e -> {
+            if (color.isSelected()) {
+                particles.setDisable(false);
+                particles.setText("" + particleNum);
+                particles.setPromptText("1");
+            }
+        });
         RadioButton count = new RadioButton();
         count.setToggleGroup(choice);
         count.setText("Count");
         count.setSelected(visualType == 1);
         count.setId("1");
+        count.setOnAction(e -> {
+            if (count.isSelected()) {
+                particles.setDisable(false);
+                particles.setText("" + particleNum);
+                particles.setPromptText("1");
+            }
+        });
         RadioButton fraction = new RadioButton();
         fraction.setToggleGroup(choice);
         fraction.setText("Fraction");
         fraction.setSelected(visualType == 2);
         fraction.setId("2");
+        fraction.setOnAction(e -> {
+            if (fraction.isSelected()) {
+                particles.setDisable(true);
+                particles.setText("");
+                particles.setPromptText("");
+            }
+        });
         RadioButton decimal = new RadioButton();
         decimal.setToggleGroup(choice);
         decimal.setText("Decimal");
         decimal.setSelected(visualType == 3);
         decimal.setId("3");
+        decimal.setOnAction(e -> {
+            if (decimal.isSelected()) {
+                particles.setDisable(true);
+                particles.setText("");
+                particles.setPromptText("");
+            }
+        });
+        headLess.setOnAction(e->{
+            if(headLess.isSelected()){
+                color.setDisable(true);
+                visualType = 0;
+                count.setDisable(true);
+                fraction.setDisable(true);
+                decimal.setDisable(true);
+                manualView.setDisable(true);
+                manualView.setSelected(false);
+            } else {
+                color.setDisable(false);
+                count.setDisable(false);
+                fraction.setDisable(false);
+                decimal.setDisable(false);
+                manualView.setDisable(false);
+            }
+        });
         choiceBox.getChildren().add(color);
         choiceBox.getChildren().add(count);
         choiceBox.getChildren().add(fraction);
