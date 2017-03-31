@@ -222,6 +222,7 @@ public class SimulatorGUI extends Application {
                 oldText = new ArrayList<>(newText);
                 newText.clear();
             } else {
+                oldColor.removeAll(newColor);
                 oldColor.forEach(e -> {
                     setSquareColor(40, 40, 40, e.getId());
                     e.setId("");
@@ -437,6 +438,9 @@ public class SimulatorGUI extends Application {
             if (bFinished > 255) {
                 bFinished = 255;
             }
+        }
+        if(square == null){
+            System.out.println("");
         }
         String hexColor = "#" + Integer.toHexString(r) + Integer.toHexString(g) + Integer.toHexString(bFinished);
         square.setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
