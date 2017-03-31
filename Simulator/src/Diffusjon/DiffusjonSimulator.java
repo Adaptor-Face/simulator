@@ -75,7 +75,7 @@ public class DiffusjonSimulator {
             particles.forEach((Location loc) -> {
                 this.moves.forEach((Location move) -> {
                     if (move.getDimensions() <= dimensions) {
-                        Location newLoc = new Location(loc.getX(), loc.getY(), loc.getZ());
+                        Location newLoc = loc.clone();
                         newLoc.changeLocation(move);
                         if (isValidLocation(newLoc)) {
                             moves.add(newLoc);

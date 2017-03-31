@@ -85,14 +85,17 @@ public class SimulatorGUI extends Application {
     private Text info = new Text();
     private IntegerProperty currentPlane;
     private IntegerProperty autoRunner = new SimpleIntegerProperty();
-    private ArrayList<Text> oldLocs = new ArrayList<>();
-    private ArrayList<Text> newLocs = new ArrayList<>();
+    private ArrayList<Text> oldText = new ArrayList<>();
+    private ArrayList<Text> newText = new ArrayList<>();
+    private ArrayList<StackPane> oldColor = new ArrayList<>();
+    private ArrayList<StackPane> newColor = new ArrayList<>();
     private final HashMap<String, StackPane> gridNodes = new HashMap<>();
     private final HashMap<StackPane, Text> gridText = new HashMap<>();
     private final ArrayList<GridPane> thirddimensions = new ArrayList<>();
     private final ScrollPane centerContent = new ScrollPane();
     private final ArrayList<IntegerProperty> takenPlanes = new ArrayList<>();
     private final ArrayList<Stage> alerts = new ArrayList<>();
+    private String color = "CCCCCC";
 
     private void setFields(SimulatorGUI old) {
         this.dimensions = old.dimensions;
@@ -170,8 +173,8 @@ public class SimulatorGUI extends Application {
         stats.writeToLogFile(autoLog);
         sim.reset();
         step = 0;
-        oldLocs.clear();
-        newLocs.clear();
+        oldText.clear();
+        newText.clear();
         setSqauresColor(40, 40, 40);
         gridText.values().forEach(action -> {
             action.setText("");
@@ -183,13 +186,13 @@ public class SimulatorGUI extends Application {
 
     private void showStatus() {
         if ((!headless) && (!manualViewUpdate)) {
-            if (visualType == 0 || step == 0) {
+            if (step == 0) {
                 setSqauresColor(40, 40, 40);
             }
             ArrayList<Location> particles = new ArrayList<>();
             particles.addAll(sim.getLocs());
             particles.forEach((Location loc) -> {
-                updateVisuals(loc.toString(), "#CCCCCC");
+                updateVisuals(loc.toString());
                 stats.nonFinalDistanceLog("" + loc.getDistanceFromPoint(startPoint));
                 stats.nonFinalLocationLog("" + loc.toString());
             });
@@ -197,21 +200,31 @@ public class SimulatorGUI extends Application {
             stats.endEventLocationLog();
             //SLOW
             if (visualType > 0) {
-                oldLocs.forEach(e -> {
+                oldText.forEach(e -> {
                     e.setText("");
                     e.setId("");
                 });
-                newLocs.forEach(e -> {
+                newText.forEach(e -> {
                     if (visualType == 3) {
                         e.setText(String.format("%1$.3f", Double.parseDouble(e.getId())));
-                    }else if (visualType == 2){
+                    } else if (visualType == 2) {
                         e.setText(new Fraction(e.getId()).factorize().toString());
-                    }else {
+                    } else {
                         e.setText(e.getId());
                     }
                 });
-                oldLocs = new ArrayList<>(newLocs);
-                newLocs.clear();
+                oldText = new ArrayList<>(newText);
+                newText.clear();
+            } else {
+                oldColor.forEach(e -> {
+                    setSquareColor(40, 40, 40, e.getId());
+                    e.setId("");
+                });
+                newColor.forEach(e -> {
+                    e.setBackground(new Background(new BackgroundFill(Color.web("#" + color), CornerRadii.EMPTY, Insets.EMPTY)));
+                });
+                oldColor = new ArrayList<>(newColor);
+                newColor.clear();
             }
             particles.clear();
         } else {
@@ -226,7 +239,7 @@ public class SimulatorGUI extends Application {
             particles.clear();
         }
         this.steps.setText("Steps: " + step);
-        if(visualType < 2){
+        if (visualType < 2) {
             info.setText(String.format("Current avg distance from center %1$.5f", sim.getAverageDistance()));
         }
 
@@ -294,10 +307,13 @@ public class SimulatorGUI extends Application {
         }
     }
 
-    private void updateVisuals(String location, String hexColor) {
+    private void updateVisuals(String location) {
         switch (visualType) {
             case 0:
-                gridNodes.get(location).setBackground(new Background(new BackgroundFill(Color.web(hexColor), CornerRadii.EMPTY, Insets.EMPTY)));
+                gridNodes.get(location).setId(location);
+                if (!newColor.contains(gridNodes.get(location))) {
+                    newColor.add(gridNodes.get(location));
+                }
                 break;
             case 1: {
                 int num;
@@ -305,7 +321,7 @@ public class SimulatorGUI extends Application {
                     num = Integer.parseInt(gridText.get(gridNodes.get(location)).getId());
                 } catch (NumberFormatException ex) {
                     num = 0;
-                    newLocs.add(gridText.get(gridNodes.get(location)));
+                    newText.add(gridText.get(gridNodes.get(location)));
                 }
                 num++;
                 gridText.get(gridNodes.get(location)).setId("" + num);
@@ -331,8 +347,8 @@ public class SimulatorGUI extends Application {
                         StackPane pane = gridNodes.get(loc.toString());
                         Text txt = gridText.get(pane);
                         if (txt != null) {
-                            String string = txt.getId(); 
-                            if(string == null){
+                            String string = txt.getId();
+                            if (string == null) {
                                 string = "";
                             }
                             try {
@@ -346,13 +362,13 @@ public class SimulatorGUI extends Application {
                     });
                     gridText.get(gridNodes.get(location)).setId("" + fract);
                 }
-                newLocs.add(gridText.get(gridNodes.get(location)));
+                newText.add(gridText.get(gridNodes.get(location)));
                 break;
             }
             case 3: {
                 if (step == 0) {
                     gridText.get(gridNodes.get(location)).setId("" + 1);
-                    newLocs.add(gridText.get(gridNodes.get(location)));
+                    newText.add(gridText.get(gridNodes.get(location)));
                 } else {
                     ArrayList<Location> moves = new ArrayList<>(sim.getMoves());
                     double decimal;
@@ -388,7 +404,7 @@ public class SimulatorGUI extends Application {
                         }
                     });
                     gridText.get(gridNodes.get(location)).setId("" + d.getValue());
-                    newLocs.add(gridText.get(gridNodes.get(location)));
+                    newText.add(gridText.get(gridNodes.get(location)));
                 }
                 break;
             }
@@ -399,7 +415,9 @@ public class SimulatorGUI extends Application {
 
     private void setSqauresColor(int r, int g, int b) {
         gridNodes.keySet().forEach((String loc) -> {
-            setSquareColor(r, g, b, loc);
+            if (!oldColor.contains(gridNodes.get(loc))) {
+                setSquareColor(r, g, b, loc);
+            }
         });
     }
 
@@ -679,8 +697,11 @@ public class SimulatorGUI extends Application {
 
     private HBox createSecondaryToolBar() {
         HBox toolBar = new HBox();
+        Text tickTxt = new Text("Min time between ticks: 50ms");
+        tickTxt.setWrappingWidth(170);
+        Text colorTxt = new Text("   Color intensity: 204");
+        colorTxt.setWrappingWidth(120);
         Slider stepTimer = new Slider();
-        Text ticks = new Text("50");
         stepTimer.setMin(1);
         stepTimer.setMax(500);
         stepTimer.setMinWidth(200);
@@ -690,12 +711,34 @@ public class SimulatorGUI extends Application {
         stepTimer.setBlockIncrement(20);
         stepTimer.valueProperty().addListener(cl -> {
             tickTimer = new Double(stepTimer.getValue()).intValue();
-            ticks.setText(" " + tickTimer + "ms");
+            tickTxt.setText("Min time between ticks: " + tickTimer + "ms");
         });
-        Text stepTimerTxt = new Text("Min time between ticks: ");
-        toolBar.getChildren().add(stepTimerTxt);
+        Slider colorSlider = new Slider();
+        colorSlider.setMin(0);
+        colorSlider.setMax(255);
+        colorSlider.setMinWidth(200);
+        colorSlider.setValue(204);
+        colorSlider.setMajorTickUnit(32);
+        colorSlider.setMinorTickCount(8);
+        colorSlider.setBlockIncrement(16);
+        colorSlider.valueProperty().addListener((cl, ov, nv) -> {
+            oldColor.forEach(e -> {
+                color = Integer.toHexString(nv.intValue());
+                if (color.length() == 2) {
+                    color = (color + color + color).toUpperCase();
+                } else {
+                    color = ("0" + color + "0" + color + "0" + color).toUpperCase();
+                }
+                e.setBackground(new Background(new BackgroundFill(Color.web("#" + color), CornerRadii.EMPTY, Insets.EMPTY)));
+                colorTxt.setText("   Color intensity: " + nv.intValue());
+            });
+        });
+        toolBar.getChildren().add(tickTxt);
         toolBar.getChildren().add(stepTimer);
-        toolBar.getChildren().add(ticks);
+        if (visualType == 0) {
+            toolBar.getChildren().add(colorTxt);
+            toolBar.getChildren().add(colorSlider);
+        }
         return toolBar;
     }
 
@@ -950,7 +993,7 @@ public class SimulatorGUI extends Application {
                 ArrayList<Location> particles = new ArrayList<>();
                 particles.addAll(sim.getLocs());
                 particles.forEach((Location loc) -> {
-                    updateVisuals(loc.toString(), "#CCCCCC");
+                    updateVisuals(loc.toString());
                     stats.nonFinalDistanceLog("" + loc.getDistanceFromPoint(startPoint));
                 });
                 stats.endEventDistanceLog();

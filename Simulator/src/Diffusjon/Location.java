@@ -108,7 +108,7 @@ public class Location {
     }
 
     @Override
-    public Object clone() {
+    public Location clone() {
         return new Location(x, y, z);
     }
 
