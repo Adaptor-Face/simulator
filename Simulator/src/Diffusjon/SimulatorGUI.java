@@ -172,6 +172,7 @@ public class SimulatorGUI extends Application {
     private void reset() {
         stats.writeToLogFile(autoLog);
         sim.reset();
+        info.setText(String.format("Current avg distance from center %1$.5f", sim.getAverageDistance()));
         step = 0;
         oldText.clear();
         newText.clear();
@@ -780,7 +781,7 @@ public class SimulatorGUI extends Application {
         });
         toolBar.getChildren().add(tickTxt);
         toolBar.getChildren().add(stepTimer);
-        if (visualType == 0) {
+        if (visualType == 0 && !headless) {
             toolBar.getChildren().add(colorTxt);
             toolBar.getChildren().add(colorSlider);
         }
@@ -1024,10 +1025,8 @@ public class SimulatorGUI extends Application {
             planeView.setVisible(false);
             Button printLog = new Button("Print");
             printLog.setOnAction(eh -> {
-                Iterator<String> it = stats.getCurrentDistanceLog();
-                while (it.hasNext()) {
-                    System.out.println(it.next());
-                }
+                System.out.println(stats.getCurrentDistanceLog().replace(",", ",     "));
+                System.out.println(stats.getCurrentLocationLog());
             });
             toolBar.getChildren().add(printLog);
         }

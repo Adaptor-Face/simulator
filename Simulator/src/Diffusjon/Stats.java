@@ -24,39 +24,52 @@ import java.util.logging.Logger;
  */
 public class Stats {
 
-    File distanceLog, locationLog;
-    ArrayList<String> runTimeDistnaceLog, runTimeLocationLog, tempDistanceLog, tempLocationLog;
+    private File distanceLog, locationLog;
+    private ArrayList<String> runTimeDistnaceLog, runTimeLocationLog, tempDistanceLog, tempLocationLog;
+    private int number;
 
     public Stats(int number) {
+        this.number = number;
         tempDistanceLog = new ArrayList<>();
         tempLocationLog = new ArrayList<>();
         runTimeDistnaceLog = new ArrayList<>();
         runTimeLocationLog = new ArrayList<>();
+        newLog();
+    }
+
+    private void newLog() {
+        runTimeDistnaceLog.clear();
+        runTimeLocationLog.clear();
         ArrayList<String> xyz = new ArrayList<>(Arrays.asList("x", "y", "z"));
         StringBuilder distanceStr = new StringBuilder();
         StringBuilder locationStr = new StringBuilder();
         for (int i = 0; i < number; i++) {
             distanceStr.append("p").append(i + 1).append(", ");
             for (String e : xyz) {
-                locationStr.append("p").append(i + 1).append(e).append(", ");
+                locationStr.append("p").append(i + 1).append(e).append(",");
             }
+            locationStr.append(" ");
         }
-        newLog();
         runTimeDistnaceLog.add(distanceStr.toString());
         runTimeLocationLog.add(locationStr.toString());
-    }
-
-    private void newLog() {
-        runTimeDistnaceLog.clear();
-        runTimeLocationLog.clear();
         DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd HH_mm_ss");
         Date date = new Date();
         distanceLog = new File("C:/SosLogs/distanceLog_" + dateFormat.format(date) + ".txt");
         locationLog = new File("C:/SosLogs/locationLog_" + dateFormat.format(date) + ".txt");
     }
 
-    public Iterator<String> getCurrentDistanceLog() {
-        return runTimeDistnaceLog.iterator();
+    public String getCurrentDistanceLog() {
+        if (runTimeDistnaceLog.size() == 1) {
+            return "";
+        }
+        return runTimeDistnaceLog.get(runTimeDistnaceLog.size() - 1);
+    }
+
+    public String getCurrentLocationLog() {
+        if (runTimeLocationLog.size() == 1) {
+            return "";
+        }
+        return runTimeLocationLog.get(runTimeLocationLog.size() - 1);
     }
 
     public void logDistance(String event) {

@@ -39,7 +39,7 @@ public class DiffusjonSimulator {
         this.width = width;
         this.dimensions = dimensionss;
         this.particles = new ArrayList<>();
-        moves = new ArrayList();
+        moves = new ArrayList<>();
         setMoves(0);
         makeMovesMatchDimesions();
         reset();
@@ -47,6 +47,7 @@ public class DiffusjonSimulator {
 
     public boolean simulateOneStep(boolean fraction) {
         averageDistance = 0;
+        Location start = new Location(width/2, dimensions);
         if (!fraction) {
             if (canMove) {
                 particles.forEach((Location loc) -> {
@@ -61,7 +62,7 @@ public class DiffusjonSimulator {
                         move.invertLocation();
 
                     }
-                    averageDistance += loc.getDistanceFromPoint(new Location(width/2, dimensions));
+                    averageDistance += loc.getDistanceFromPoint(start);
                 });
                 averageDistance = averageDistance / numberOfParticles;
                 newLocs = new ArrayList<>(particles);
@@ -83,7 +84,7 @@ public class DiffusjonSimulator {
                     }
                 });
             });
-            newLocs = new ArrayList(new LinkedHashSet<>(moves));
+            newLocs = new ArrayList<>(new LinkedHashSet<>(moves));
         }
         return canMove;
     } 
@@ -97,6 +98,7 @@ public class DiffusjonSimulator {
     }
 
     public void reset() {
+        averageDistance = 0;
         particles.clear();
         Location location = new Location(startPoint, dimensions);
         this.step = 0;
