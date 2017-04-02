@@ -47,19 +47,21 @@ public class DiffusjonSimulator {
 
     public boolean simulateOneStep(boolean fraction) {
         averageDistance = 0;
-        Location start = new Location(width/2, dimensions);
+        Location start = new Location(width / 2, dimensions);
         if (!fraction) {
             if (canMove) {
                 particles.forEach((Location loc) -> {
 
                     Location move = getMove(loc);
-
                     loc.changeLocation(move);
                     if (!isValidLocation(loc)) {
 
                         move.invertLocation();
                         loc.changeLocation(move, 2);
                         move.invertLocation();
+                        if (!isValidLocation(loc)) {
+                            loc.changeLocation(move);
+                        }
 
                     }
                     averageDistance += loc.getDistanceFromPoint(start);
@@ -78,16 +80,16 @@ public class DiffusjonSimulator {
                     if (move.getDimensions() <= dimensions) {
                         Location newLoc = loc.clone();
                         newLoc.changeLocation(move);
-                        if (isValidLocation(newLoc)) {
+                        if (isValidLocation(newLoc) & !moves.contains(newLoc)) {
                             moves.add(newLoc);
                         }
                     }
                 });
             });
-            newLocs = new ArrayList<>(new LinkedHashSet<>(moves));
+            newLocs = new ArrayList<>(moves);
         }
         return canMove;
-    } 
+    }
 
     public int getStep() {
         return step;
